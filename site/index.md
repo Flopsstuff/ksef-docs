@@ -11,7 +11,7 @@ hero:
     - theme: brand
       text: Русский
       link: /ru/
-    - theme: alt
-      text: English (coming soon)
+    - theme: brand
+      text: English
       link: /en/
 ---
