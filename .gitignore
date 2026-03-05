@@ -14,6 +14,7 @@ plan.md
 .gitpmoji
 
 # VitePress generated
+site/pl/
 site/ru/
 site/en/
 site/.vitepress/dist/

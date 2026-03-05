@@ -8,7 +8,8 @@ const TRANSLATIONS_DIR = path.join(ROOT, "translations");
 const SITE_DIR = path.join(ROOT, "site");
 
 const IMAGE_EXTENSIONS = new Set([".png", ".jpg", ".jpeg", ".svg", ".gif"]);
-const LANGUAGES = ["ru", "en"];
+const TRANSLATED_LANGUAGES = ["ru", "en"];
+const ALL_LANGUAGES = ["pl", ...TRANSLATED_LANGUAGES];
 
 function copyImages(srcDir: string, destDir: string, relPath = "") {
   const fullSrc = path.join(srcDir, relPath);
@@ -86,14 +87,8 @@ function stripFrontmatter(content: string): string {
   return escapeVueConflicts(body.trimStart());
 }
 
-function copyTranslations(lang: string) {
-  const srcDir = path.join(TRANSLATIONS_DIR, lang);
-  const destDir = path.join(SITE_DIR, lang);
-
-  if (!fs.existsSync(srcDir)) {
-    console.log(`Skipping ${lang} — no translations found`);
-    return;
-  }
+function copyMarkdownDir(srcDir: string, destDir: string, hasTranslationFrontmatter: boolean) {
+  if (!fs.existsSync(srcDir)) return false;
 
   fs.mkdirSync(destDir, { recursive: true });
 
@@ -106,28 +101,48 @@ function copyTranslations(lang: string) {
         walkAndCopy(entryRel);
       } else if (entry.name.endsWith(".md")) {
         const content = fs.readFileSync(path.join(srcDir, entryRel), "utf-8");
-        const stripped = stripFrontmatter(content);
+        const processed = hasTranslationFrontmatter
+          ? stripFrontmatter(content)
+          : escapeVueConflicts(content);
 
         // README.md → index.md for VitePress
         const destName =
           entry.name === "README.md"
             ? path.join(relPath, "index.md")
             : entryRel;
-        fs.writeFileSync(path.join(destDir, destName), stripped);
+        fs.writeFileSync(path.join(destDir, destName), processed);
       }
     }
   }
 
   walkAndCopy();
+  return true;
+}
 
-  // Copy images from original/ into site/<lang>/ so relative paths work
-  copyImages(ORIGINAL_DIR, destDir);
+function prepareLang(lang: string) {
+  const destDir = path.join(SITE_DIR, lang);
+
+  if (lang === "pl") {
+    // Polish — copy directly from original/
+    if (!copyMarkdownDir(ORIGINAL_DIR, destDir, false)) return;
+    // Images are already in place (copied from same source)
+    copyImages(ORIGINAL_DIR, destDir);
+  } else {
+    // Translated languages — copy from translations/<lang>/
+    const srcDir = path.join(TRANSLATIONS_DIR, lang);
+    if (!fs.existsSync(srcDir)) {
+      console.log(`Skipping ${lang} — no translations found`);
+      return;
+    }
+    copyMarkdownDir(srcDir, destDir, true);
+    copyImages(ORIGINAL_DIR, destDir);
+  }
 
   console.log(`Prepared site/${lang}/`);
 }
 
 // Clean existing generated content
-for (const lang of LANGUAGES) {
+for (const lang of ALL_LANGUAGES) {
   const destDir = path.join(SITE_DIR, lang);
   if (fs.existsSync(destDir)) {
     fs.rmSync(destDir, { recursive: true });
@@ -135,8 +150,8 @@ for (const lang of LANGUAGES) {
 }
 
 // Build for each language
-for (const lang of LANGUAGES) {
-  copyTranslations(lang);
+for (const lang of ALL_LANGUAGES) {
+  prepareLang(lang);
 }
 
 console.log("Site content prepared.");

@@ -6,6 +6,9 @@ hero:
   tagline: Translated documentation for Poland's National e-Invoice System (KSeF) API 2.0
   actions:
     - theme: brand
+      text: Polski (oryginał)
+      link: /pl/
+    - theme: brand
       text: Русский
       link: /ru/
     - theme: alt

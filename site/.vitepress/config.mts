@@ -1,5 +1,119 @@
 import { defineConfig } from "vitepress";
 
+const plSidebar = [
+  {
+    text: "Wprowadzenie",
+    items: [
+      { text: "Przewodnik dla Integratorow", link: "/pl/" },
+      {
+        text: "Przegląd kluczowych zmian",
+        link: "/pl/przeglad-kluczowych-zmian-ksef-api-2-0",
+      },
+      { text: "Changelog", link: "/pl/api-changelog" },
+      { text: "Środowiska KSeF API 2.0", link: "/pl/srodowiska" },
+    ],
+  },
+  {
+    text: "Uwierzytelnianie",
+    items: [
+      { text: "Uzyskiwanie dostępu", link: "/pl/uwierzytelnianie" },
+      { text: "Zarządzanie sesjami", link: "/pl/auth/sesje" },
+      { text: "Podpis XAdES", link: "/pl/auth/podpis-xades" },
+      {
+        text: "Testowe certyfikaty i podpisy",
+        link: "/pl/auth/testowe-certyfikaty-i-podpisy-xades",
+      },
+      {
+        text: "Kontekst: NIP",
+        link: "/pl/auth/context-identifier-nip",
+      },
+      {
+        text: "Kontekst: NIP VAT-UE",
+        link: "/pl/auth/context-identifier-nip-vat-ue",
+      },
+      {
+        text: "Kontekst: Internal ID",
+        link: "/pl/auth/context-identifier-internal-id",
+      },
+      {
+        text: "Podmiot: Certificate Subject",
+        link: "/pl/auth/subject-identifier-type-certificate-subject",
+      },
+      {
+        text: "Podmiot: Certificate Fingerprint",
+        link: "/pl/auth/subject-identifier-type-certificate-fingerprint",
+      },
+    ],
+  },
+  {
+    text: "Certyfikaty",
+    items: [{ text: "Certyfikaty KSeF", link: "/pl/certyfikaty-KSeF" }],
+  },
+  {
+    text: "Uprawnienia",
+    items: [{ text: "Uprawnienia", link: "/pl/uprawnienia" }],
+  },
+  {
+    text: "Tryby offline",
+    items: [
+      { text: "Tryby offline", link: "/pl/tryby-offline" },
+      {
+        text: "Korekta techniczna",
+        link: "/pl/offline/korekta-techniczna",
+      },
+      {
+        text: "Automatyczne określanie trybu",
+        link: "/pl/offline/automatyczne-okreslanie-trybu-offline",
+      },
+    ],
+  },
+  {
+    text: "Sesje",
+    items: [
+      { text: "Sesja interaktywna", link: "/pl/sesja-interaktywna" },
+      { text: "Sesja wsadowa", link: "/pl/sesja-wsadowa" },
+    ],
+  },
+  {
+    text: "Faktury",
+    items: [
+      { text: "Numer KSeF", link: "/pl/faktury/numer-ksef" },
+      {
+        text: "Weryfikacja faktury",
+        link: "/pl/faktury/weryfikacja-faktury",
+      },
+      {
+        text: "Sprawdzenie stanu i UPO",
+        link: "/pl/faktury/sesja-sprawdzenie-stanu-i-pobranie-upo",
+      },
+    ],
+  },
+  {
+    text: "Pobieranie faktur",
+    items: [
+      {
+        text: "Pobieranie faktur",
+        link: "/pl/pobieranie-faktur/pobieranie-faktur",
+      },
+      {
+        text: "Przyrostowe pobieranie",
+        link: "/pl/pobieranie-faktur/przyrostowe-pobieranie-faktur",
+      },
+      { text: "High Water Mark", link: "/pl/pobieranie-faktur/hwm" },
+    ],
+  },
+  {
+    text: "Pozostałe",
+    items: [
+      { text: "Kody QR", link: "/pl/kody-qr" },
+      { text: "Tokeny KSeF", link: "/pl/tokeny-ksef" },
+      { text: "Limity", link: "/pl/limity/limity" },
+      { text: "Limity API", link: "/pl/limity/limity-api" },
+      { text: "Dane testowe", link: "/pl/dane-testowe-scenariusze" },
+    ],
+  },
+];
+
 const ruSidebar = [
   {
     text: "Введение",
@@ -124,6 +238,15 @@ export default defineConfig({
     root: {
       label: "Home",
       lang: "en",
+    },
+    pl: {
+      label: "Polski",
+      lang: "pl",
+      themeConfig: {
+        sidebar: plSidebar,
+        nav: [{ text: "Strona główna", link: "/pl/" }],
+        outline: { label: "Spis treści" },
+      },
     },
     ru: {
       label: "Русский",
