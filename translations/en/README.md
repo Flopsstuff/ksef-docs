@@ -12,7 +12,7 @@ last_translated: 2026-03-05
 
 This document is a compendium of knowledge for developers, analysts, and system integrators implementing integration with the National e-Invoice System (KSeF) version 2.0. The guide focuses on the technical and practical aspects of communicating with the KSeF system API.
 
-## Introduction to KSeF 2.0
+##  Introduction to KSeF 2.0
 
 The National e-Invoice System (KSeF) is a central IT system for issuing and retrieving structured invoices in electronic form.
 
@@ -40,7 +40,7 @@ The guide is divided into thematic sections corresponding to key functions and i
 
 For each area, the following is provided:
 
-* a detailed description of how it works,
+* detailed description of operation,
 * example calls in C# and Java,
 * links to the [OpenAPI](https://api-test.ksef.mf.gov.pl/docs/v2) specification and reference library code.
 

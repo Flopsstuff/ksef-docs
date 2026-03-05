@@ -117,6 +117,140 @@
       "uwierzytelnianie.md": {
         "sourceHash": "336b2ea528a1ceed0e35baf6f6abeb0f1ed70b2edee6fffb5b0e63aa34b440b9",
         "translatedAt": "2026-03-05T21:52:15.664Z"
+      },
+      "uprawnienia.md": {
+        "sourceHash": "87333867349ac2f9758f274cbcc366c2cef63fb76f251cb4b8962ceeae08b9fd",
+        "translatedAt": "2026-03-05T22:38:07.025Z"
+      },
+      "api-changelog.md": {
+        "sourceHash": "9fcafeffaae437ca702e4ea1737817fb83a836757e6bdff0bc94800e07baa3ce",
+        "translatedAt": "2026-03-05T22:38:46.271Z"
+      }
+    },
+    "en": {
+      "auth/context-identifier-nip.md": {
+        "sourceHash": "f61c22623a9cba6cf7ce2d515a0bf597b6530455c96b3064d39c1af26b5d3b19",
+        "translatedAt": "2026-03-05T22:33:44.056Z"
+      },
+      "auth/subject-identifier-type-certificate-fingerprint.md": {
+        "sourceHash": "e647eba661f7885d10eb5d06437455d283bfca2f3422fe54aff606575a4334a9",
+        "translatedAt": "2026-03-05T22:33:44.277Z"
+      },
+      "auth/subject-identifier-type-certificate-subject.md": {
+        "sourceHash": "f61c22623a9cba6cf7ce2d515a0bf597b6530455c96b3064d39c1af26b5d3b19",
+        "translatedAt": "2026-03-05T22:33:44.292Z"
+      },
+      "auth/context-identifier-internal-id.md": {
+        "sourceHash": "1bb228fb39e4358c99d4632de9a9e052565e47dbda44e79d15a5eef4cb3ad9d1",
+        "translatedAt": "2026-03-05T22:33:44.415Z"
+      },
+      "auth/context-identifier-nip-vat-ue.md": {
+        "sourceHash": "04826a4f07268e7b2dd7e999ff3ee888be91eeb168c82af8da676853a9a94952",
+        "translatedAt": "2026-03-05T22:33:44.431Z"
+      },
+      "README.md": {
+        "sourceHash": "75d375d2aa2f1ff64a7c1993b53b83054cccf6fb38187413110e451dc7983be6",
+        "translatedAt": "2026-03-05T22:33:47.950Z"
+      },
+      "faktury/numer-ksef.md": {
+        "sourceHash": "9d77ca4395995eae7fb184a2a546ef1d4a9f77c3f40ffcd4ce3c21d1111a98dd",
+        "translatedAt": "2026-03-05T22:33:50.407Z"
+      },
+      "auth/sesje.md": {
+        "sourceHash": "f48f052e0419e8ebf497b4d8682c04a2a5f6b2a26a7a8cc7163692f43a009b72",
+        "translatedAt": "2026-03-05T22:33:50.560Z"
+      },
+      "auth/testowe-certyfikaty-i-podpisy-xades.md": {
+        "sourceHash": "7356956dbe03a0c476e2d1f9af07b827322740892b12e08785ab714c8ab59eb6",
+        "translatedAt": "2026-03-05T22:33:52.318Z"
+      },
+      "faktury/weryfikacja-faktury.md": {
+        "sourceHash": "b47bfd87c2a2c0437add3eed41e3b54624acd4fe60d7cc7576685d886102c455",
+        "translatedAt": "2026-03-05T22:33:53.377Z"
+      },
+      "offline/automatyczne-okreslanie-trybu-offline.md": {
+        "sourceHash": "af9b2c830ff817e94d82d2c3a1d106bc671f8a6ed25faa70abc3c5f2030de444",
+        "translatedAt": "2026-03-05T22:33:57.886Z"
+      },
+      "dane-testowe-scenariusze.md": {
+        "sourceHash": "021f89aebefd90d37bd07845bc3dfab002ae2dc8956e0bd490aafc97dbf7e25b",
+        "translatedAt": "2026-03-05T22:33:58.034Z"
+      },
+      "auth/podpis-xades.md": {
+        "sourceHash": "3d4199164bcdab8c05404c538c97db2b5298f045a278ef94322a080fd32a7aa6",
+        "translatedAt": "2026-03-05T22:33:59.521Z"
+      },
+      "offline/korekta-techniczna.md": {
+        "sourceHash": "39eba933558dd1264c34ebf8edd89ccd9e544ee143a94d3a71d876290e9463b6",
+        "translatedAt": "2026-03-05T22:34:05.663Z"
+      },
+      "pobieranie-faktur/hwm.md": {
+        "sourceHash": "3fcc154921fcb880a8f95809e986f6f9f7ce8db443b9fd923564aca06a9df956",
+        "translatedAt": "2026-03-05T22:34:06.383Z"
+      },
+      "limity/limity.md": {
+        "sourceHash": "0b82b2f72ff63b01e746541c77c8763fdb820474c72efc7218c0edd7f74c8a1d",
+        "translatedAt": "2026-03-05T22:34:12.936Z"
+      },
+      "pobieranie-faktur/pobieranie-faktur.md": {
+        "sourceHash": "4cbabff4a5ebaea6efb71d659e3f95218f78a9f8534e6214a435f1cd9a14a3a1",
+        "translatedAt": "2026-03-05T22:34:13.479Z"
+      },
+      "srodowiska.md": {
+        "sourceHash": "2b8a704b99dbadfc2f6664e99f68333e0325f2a25e036147d78e629739b7da81",
+        "translatedAt": "2026-03-05T22:34:18.771Z"
+      },
+      "sesja-interaktywna.md": {
+        "sourceHash": "508e6b8f0d800dbce7d2f592441f73b69f6528c4bd3b4b64980c413b6ed4d4c0",
+        "translatedAt": "2026-03-05T22:34:24.557Z"
+      },
+      "faktury/sesja-sprawdzenie-stanu-i-pobranie-upo.md": {
+        "sourceHash": "ab6db25f0d2579bbbcad0a7770dbeddda4e2cade7dd905389854c913b8816715",
+        "translatedAt": "2026-03-05T22:34:25.079Z"
+      },
+      "tokeny-ksef.md": {
+        "sourceHash": "34423973639af475c2b97c91d41442b1f3c9f2f1666ca5de1de7944fd007cc15",
+        "translatedAt": "2026-03-05T22:34:34.233Z"
+      },
+      "tryby-offline.md": {
+        "sourceHash": "8d0988526db746bc513f6bf84091765a722bb443efbdb0d66c8f160eb8c1e3c1",
+        "translatedAt": "2026-03-05T22:34:37.716Z"
+      },
+      "certyfikaty-KSeF.md": {
+        "sourceHash": "785427227e77aacf1d2f35d7b02547850d728512272c42ff2635f9c96dcb0d32",
+        "translatedAt": "2026-03-05T22:34:48.905Z"
+      },
+      "przeglad-kluczowych-zmian-ksef-api-2-0.md": {
+        "sourceHash": "c990c8f27622e76d037eda086b8e60dc019f65dd40b6b837e62a60e9fdd3a3fc",
+        "translatedAt": "2026-03-05T22:34:58.709Z"
+      },
+      "kody-qr.md": {
+        "sourceHash": "d1d6220a78b0ec40cf313c747302149509f2f458a013c5b1d0fc147784f64170",
+        "translatedAt": "2026-03-05T22:35:02.883Z"
+      },
+      "pobieranie-faktur/przyrostowe-pobieranie-faktur.md": {
+        "sourceHash": "b12a67bcb78487a41b473ad338f7fdc24680ac74f31261ada877002289b3f943",
+        "translatedAt": "2026-03-05T22:35:10.462Z"
+      },
+      "sesja-wsadowa.md": {
+        "sourceHash": "2d14332e70098c72d96552bbf9948ede40624262100d083ba21100219f9b5f93",
+        "translatedAt": "2026-03-05T22:35:10.973Z"
+      },
+      "limity/limity-api.md": {
+        "sourceHash": "c70ea4b26b4ad02b12e70d5f588842bfc0c2f3a2a799971c5f87074355d2176b",
+        "translatedAt": "2026-03-05T22:35:11.435Z"
+      },
+      "uwierzytelnianie.md": {
+        "sourceHash": "336b2ea528a1ceed0e35baf6f6abeb0f1ed70b2edee6fffb5b0e63aa34b440b9",
+        "translatedAt": "2026-03-05T22:36:16.260Z"
+      },
+      "uprawnienia.md": {
+        "sourceHash": "87333867349ac2f9758f274cbcc366c2cef63fb76f251cb4b8962ceeae08b9fd",
+        "translatedAt": "2026-03-05T22:38:03.695Z"
+      },
+      "api-changelog.md": {
+        "sourceHash": "9fcafeffaae437ca702e4ea1737817fb83a836757e6bdff0bc94800e07baa3ce",
+        "translatedAt": "2026-03-05T22:38:33.433Z"
       }
     }
   }
