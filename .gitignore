@@ -1,4 +1,6 @@
 node_modules/
+.yarn/
+.pnp.*
 dist/
 
 .env
@@ -7,3 +9,6 @@ dist/
 *.tsbuildinfo
 
 plan.md
+
+# ignore gitpmoji directory
+.gitpmoji
