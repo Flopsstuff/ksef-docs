@@ -1,4 +1,23 @@
 {
   "sourceCommit": "6fb819bc5a983a5023ca26d9b6c29480df744b4e",
-  "languages": {}
+  "languages": {
+    "ru": {
+      "srodowiska.md": {
+        "sourceHash": "2b8a704b99dbadfc2f6664e99f68333e0325f2a25e036147d78e629739b7da81",
+        "translatedAt": "2026-03-05T21:13:44.452Z"
+      },
+      "README.md": {
+        "sourceHash": "75d375d2aa2f1ff64a7c1993b53b83054cccf6fb38187413110e451dc7983be6",
+        "translatedAt": "2026-03-05T21:17:58.029Z"
+      },
+      "tokeny-ksef.md": {
+        "sourceHash": "34423973639af475c2b97c91d41442b1f3c9f2f1666ca5de1de7944fd007cc15",
+        "translatedAt": "2026-03-05T21:23:35.795Z"
+      },
+      "kody-qr.md": {
+        "sourceHash": "d1d6220a78b0ec40cf313c747302149509f2f458a013c5b1d0fc147784f64170",
+        "translatedAt": "2026-03-05T21:27:54.569Z"
+      }
+    }
+  }
 }

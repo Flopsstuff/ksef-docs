@@ -96,14 +96,19 @@ async function translateFile(
     userMessage += `\n\nHere is the previous translation for reference (update it to match the current original):\n\n<previous_translation>\n${existingTranslation}\n</previous_translation>`;
   }
 
-  console.log(`  Translating ${file} -> ${lang}...`);
+  const lines = originalContent.split("\n").length;
+  const kb = (Buffer.byteLength(originalContent, "utf-8") / 1024).toFixed(1);
+  console.log(`  Translating ${file} -> ${lang} (${lines} lines, ${kb} KB)...`);
 
-  const response = await client.messages.create({
-    model: "claude-sonnet-4-20250514",
-    max_tokens: 16384,
-    system: systemPrompt,
-    messages: [{ role: "user", content: userMessage }],
-  });
+  const response = await client.messages.create(
+    {
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 16384,
+      system: systemPrompt,
+      messages: [{ role: "user", content: userMessage }],
+    },
+    { timeout: 120_000 },
+  );
 
   const translatedContent =
     response.content
@@ -166,11 +171,19 @@ async function main() {
   const client = new Anthropic();
   const sourceCommit = getSubmoduleCommit();
 
+  let success = 0;
+  let failed = 0;
   for (const f of toTranslate) {
-    await translateFile(client, systemPrompt, lang, f.file, sourceCommit);
+    try {
+      await translateFile(client, systemPrompt, lang, f.file, sourceCommit);
+      success++;
+    } catch (err: any) {
+      failed++;
+      console.error(`  FAILED: ${f.file} — ${err.message}`);
+    }
   }
 
-  console.log(`\nAll done! ${toTranslate.length} file(s) translated.`);
+  console.log(`\nDone! ${success} translated, ${failed} failed.`);
 }
 
 main().catch((err) => {
