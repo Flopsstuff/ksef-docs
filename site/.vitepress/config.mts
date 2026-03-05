@@ -268,7 +268,7 @@ export default defineConfig({
 
   themeConfig: {
     socialLinks: [
-      { icon: "github", link: "https://github.com/flop/ksef-docs" },
+      { icon: "github", link: "https://github.com/flopsstuff/ksef-docs" },
     ],
   },
 });

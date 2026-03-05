@@ -4,7 +4,7 @@ Translated documentation for [KSeF 2.0](https://github.com/CIRFMF/ksef-docs) (Po
 
 ## Live Site
 
-**https://flop.github.io/ksef-docs/**
+**https://flopsstuff.github.io/ksef-docs/**
 
 Available in Polish (original), Russian, and English (in progress).
 
