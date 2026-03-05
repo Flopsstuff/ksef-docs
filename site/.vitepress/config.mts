@@ -236,7 +236,6 @@ export default defineConfig({
 
   locales: {
     root: {
-      label: "Home",
       lang: "en",
     },
     pl: {
@@ -267,6 +266,7 @@ export default defineConfig({
   },
 
   themeConfig: {
+    logoLink: "/ksef-docs/",
     socialLinks: [
       { icon: "github", link: "https://github.com/Flopsstuff/ksef-docs" },
     ],
