@@ -1,3 +1,12 @@
+/* Wider hero text on landing page */
+.VPHero .text {
+  max-width: 100% !important;
+}
+
+.VPHero .tagline {
+  max-width: 100% !important;
+}
+
 /* Translation banner blockquote styling */
 .vp-doc blockquote:first-child {
   background-color: var(--vp-c-tip-soft);
