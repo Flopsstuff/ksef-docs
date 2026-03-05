@@ -101,6 +101,22 @@
       "tryby-offline.md": {
         "sourceHash": "8d0988526db746bc513f6bf84091765a722bb443efbdb0d66c8f160eb8c1e3c1",
         "translatedAt": "2026-03-05T21:47:43.783Z"
+      },
+      "limity/limity.md": {
+        "sourceHash": "0b82b2f72ff63b01e746541c77c8763fdb820474c72efc7218c0edd7f74c8a1d",
+        "translatedAt": "2026-03-05T21:50:19.502Z"
+      },
+      "sesja-wsadowa.md": {
+        "sourceHash": "2d14332e70098c72d96552bbf9948ede40624262100d083ba21100219f9b5f93",
+        "translatedAt": "2026-03-05T21:50:59.463Z"
+      },
+      "limity/limity-api.md": {
+        "sourceHash": "c70ea4b26b4ad02b12e70d5f588842bfc0c2f3a2a799971c5f87074355d2176b",
+        "translatedAt": "2026-03-05T21:51:34.791Z"
+      },
+      "uwierzytelnianie.md": {
+        "sourceHash": "336b2ea528a1ceed0e35baf6f6abeb0f1ed70b2edee6fffb5b0e63aa34b440b9",
+        "translatedAt": "2026-03-05T21:52:15.664Z"
       }
     }
   }

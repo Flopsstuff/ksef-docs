@@ -139,7 +139,7 @@ async function translateFile(
       system: systemPrompt,
       messages: [{ role: "user", content: userMessage }],
     },
-    { timeout: 120_000 },
+    { timeout: 300_000 },
   );
 
   const translatedContent =
