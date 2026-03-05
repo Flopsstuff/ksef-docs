@@ -1,21 +1,42 @@
 # KSeF Docs — Translations
 
-Automated translation infrastructure for [KSeF 2.0 documentation](https://github.com/CIRFMF/ksef-docs) (originally in Polish).
+Translated documentation for [KSeF 2.0](https://github.com/CIRFMF/ksef-docs) (Poland's National e-Invoice System), with a static site powered by VitePress.
+
+## Live Site
+
+**https://flop.github.io/ksef-docs/**
+
+Available in Polish (original), Russian, and English (in progress).
 
 ## Structure
 
 - `original/` — git submodule pointing to the upstream repo (CIRFMF/ksef-docs)
-- `translations/ru/` — Russian translations
-- `translations/en/` — English translations
-- `scripts/` — sync, translate, and status scripts
+- `translations/ru/` — Russian translations (29/31 files)
+- `translations/en/` — English translations (7/31 files)
+- `scripts/` — sync, translate, and build scripts
+- `site/` — VitePress site (config, theme, landing page; content is generated)
 - `prompts/` — system prompt for Claude API translation
 - `translation.lock.json` — tracks which files are translated and from which source commit/hash
 
-## Usage
+## Documentation Site
 
 ```bash
 yarn install
 
+# Local dev server with hot reload
+yarn docs:dev
+
+# Production build → site/.vitepress/dist/
+yarn docs:build
+```
+
+The `docs:prepare` step copies originals and translations into `site/pl/`, `site/ru/`, `site/en/`, strips frontmatter, escapes Vue-incompatible HTML, and copies images. It runs automatically before `docs:dev` and `docs:build`.
+
+Deployed to GitHub Pages via `.github/workflows/deploy.yml` on push to `main`.
+
+## Translation Workflow
+
+```bash
 # Check what changed in upstream
 yarn sync
 
@@ -35,6 +56,7 @@ yarn translate --lang ru --all               # everything from scratch
 3. `translate` sends files to Claude API with a specialized prompt, preserving markdown structure, code examples, and API references
 4. Each translated file gets YAML frontmatter with source commit, hash, and translation date
 5. `translation.lock.json` tracks the state so we know what's up to date
+6. `docs:build` assembles all languages into a VitePress static site
 
 ## Setup
 
@@ -43,4 +65,4 @@ git clone --recurse-submodules <this-repo>
 yarn install
 ```
 
-Set `ANTHROPIC_API_KEY` in `.env`.
+Set `ANTHROPIC_API_KEY` in `.env` for translation (not needed for site build).
