@@ -19,3 +19,4 @@ site/ru/
 site/en/
 site/.vitepress/dist/
 site/.vitepress/cache/
+site/.vitepress/sidebars.json

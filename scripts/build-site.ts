@@ -141,6 +141,159 @@ function prepareLang(lang: string) {
   console.log(`Prepared site/${lang}/`);
 }
 
+// Sidebar structure: groups with file paths (order matters)
+// "index" refers to README.md/index.md
+const SIDEBAR_STRUCTURE = [
+  {
+    group: "intro",
+    files: ["index", "przeglad-kluczowych-zmian-ksef-api-2-0", "api-changelog", "srodowiska"],
+  },
+  {
+    group: "auth",
+    files: [
+      "uwierzytelnianie",
+      "auth/sesje",
+      "auth/podpis-xades",
+      "auth/testowe-certyfikaty-i-podpisy-xades",
+      "auth/context-identifier-nip",
+      "auth/context-identifier-nip-vat-ue",
+      "auth/context-identifier-internal-id",
+      "auth/subject-identifier-type-certificate-subject",
+      "auth/subject-identifier-type-certificate-fingerprint",
+    ],
+  },
+  { group: "certs", files: ["certyfikaty-KSeF"] },
+  { group: "permissions", files: ["uprawnienia"] },
+  {
+    group: "offline",
+    files: [
+      "tryby-offline",
+      "offline/korekta-techniczna",
+      "offline/automatyczne-okreslanie-trybu-offline",
+    ],
+  },
+  {
+    group: "sessions",
+    files: ["sesja-interaktywna", "sesja-wsadowa"],
+  },
+  {
+    group: "invoices",
+    files: [
+      "faktury/numer-ksef",
+      "faktury/weryfikacja-faktury",
+      "faktury/sesja-sprawdzenie-stanu-i-pobranie-upo",
+    ],
+  },
+  {
+    group: "download",
+    files: [
+      "pobieranie-faktur/pobieranie-faktur",
+      "pobieranie-faktur/przyrostowe-pobieranie-faktur",
+      "pobieranie-faktur/hwm",
+    ],
+  },
+  {
+    group: "other",
+    files: [
+      "kody-qr",
+      "tokeny-ksef",
+      "limity/limity",
+      "limity/limity-api",
+      "dane-testowe-scenariusze",
+    ],
+  },
+];
+
+// Group labels per language
+const GROUP_LABELS: Record<string, Record<string, string>> = {
+  pl: {
+    intro: "Wprowadzenie",
+    auth: "Uwierzytelnianie",
+    certs: "Certyfikaty",
+    permissions: "Uprawnienia",
+    offline: "Tryby offline",
+    sessions: "Sesje",
+    invoices: "Faktury",
+    download: "Pobieranie faktur",
+    other: "Pozostałe",
+  },
+  ru: {
+    intro: "Введение",
+    auth: "Аутентификация",
+    certs: "Сертификаты",
+    permissions: "Разрешения",
+    offline: "Офлайн режимы",
+    sessions: "Сессии",
+    invoices: "Счета-фактуры",
+    download: "Получение счетов-фактур",
+    other: "Прочее",
+  },
+  en: {
+    intro: "Introduction",
+    auth: "Authentication",
+    certs: "Certificates",
+    permissions: "Permissions",
+    offline: "Offline Modes",
+    sessions: "Sessions",
+    invoices: "Invoices",
+    download: "Downloading Invoices",
+    other: "Other",
+  },
+};
+
+function fileToTitle(file: string): string {
+  const base = path.basename(file);
+  return base.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function extractTitle(filePath: string): string | null {
+  if (!fs.existsSync(filePath)) return null;
+  const content = fs.readFileSync(filePath, "utf-8");
+  // Match first heading (# or ##), strip markdown bold/escape chars
+  const match = content.match(/^#{1,2}\s+\**(.+?)\**\s*$/m);
+  if (!match) return null;
+  return match[1].replace(/\\/g, "").replace(/\*\*/g, "").trim();
+}
+
+function generateSidebars() {
+  const sidebars: Record<string, any[]> = {};
+
+  for (const lang of ALL_LANGUAGES) {
+    const langDir = path.join(SITE_DIR, lang);
+    if (!fs.existsSync(langDir)) continue;
+
+    const labels = GROUP_LABELS[lang];
+    if (!labels) continue;
+
+    const sidebar: any[] = [];
+
+    for (const { group, files } of SIDEBAR_STRUCTURE) {
+      const items: any[] = [];
+      for (const file of files) {
+        const mdPath = file === "index"
+          ? path.join(langDir, "index.md")
+          : path.join(langDir, `${file}.md`);
+        if (!fs.existsSync(mdPath)) continue;
+        const title = extractTitle(mdPath) || fileToTitle(file);
+
+        const link = file === "index"
+          ? `/${lang}/`
+          : `/${lang}/${file}`;
+        items.push({ text: title, link });
+      }
+      if (items.length > 0) {
+        sidebar.push({ text: labels[group] || group, items });
+      }
+    }
+
+    sidebars[lang] = sidebar;
+  }
+
+  const outPath = path.join(SITE_DIR, ".vitepress", "sidebars.json");
+  fs.writeFileSync(outPath, JSON.stringify(sidebars, null, 2) + "\n");
+  console.log("Generated sidebars.json");
+}
+
 // Clean existing generated content
 for (const lang of ALL_LANGUAGES) {
   const destDir = path.join(SITE_DIR, lang);
@@ -153,5 +306,8 @@ for (const lang of ALL_LANGUAGES) {
 for (const lang of ALL_LANGUAGES) {
   prepareLang(lang);
 }
+
+// Generate sidebar config from page headings
+generateSidebars();
 
 console.log("Site content prepared.");
