@@ -1,18 +1,16 @@
 # KSeF Docs — Translations
 
-Translated documentation for [KSeF 2.0](https://github.com/CIRFMF/ksef-docs) (Poland's National e-Invoice System), with a static site powered by VitePress.
-
-## Live Site
-
 **https://flopsstuff.github.io/ksef-docs/**
 
-Available in Polish (original), Russian, and English (in progress).
+Translated documentation for [KSeF 2.0](https://github.com/CIRFMF/ksef-docs) (Poland's National e-Invoice System), with a static site powered by VitePress.
 
-## Structure
+Available in Polish (original), Russian, and English.
+
+## Repo Structure
 
 - `original/` — git submodule pointing to the upstream repo (CIRFMF/ksef-docs)
-- `translations/ru/` — Russian translations (29/31 files)
-- `translations/en/` — English translations (7/31 files)
+- `translations/ru/` — Russian translations
+- `translations/en/` — English translations
 - `scripts/` — sync, translate, and build scripts
 - `site/` — VitePress site (config, theme, landing page; content is generated)
 - `prompts/` — system prompt for Claude API translation
@@ -56,7 +54,7 @@ yarn translate --lang ru --all               # everything from scratch
 3. `translate` sends files to Claude API with a specialized prompt, preserving markdown structure, code examples, and API references
 4. Each translated file gets YAML frontmatter with source commit, hash, and translation date
 5. `translation.lock.json` tracks the state so we know what's up to date
-6. `docs:build` assembles all languages into a VitePress static site
+6. `docs:build` assembles all languages into a VitePress static site with auto-generated sidebars
 
 ## Setup
 
