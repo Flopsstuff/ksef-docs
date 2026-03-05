@@ -1,0 +1,13 @@
+/* Translation banner blockquote styling */
+.vp-doc blockquote:first-child {
+  background-color: var(--vp-c-tip-soft);
+  border-left-color: var(--vp-c-tip-1);
+  padding: 12px 16px;
+  border-radius: 4px;
+}
+
+.vp-doc blockquote:first-child p {
+  margin: 0;
+  color: var(--vp-c-text-2);
+  font-size: 0.9em;
+}

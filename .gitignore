@@ -12,3 +12,9 @@ plan.md
 
 # ignore gitpmoji directory
 .gitpmoji
+
+# VitePress generated
+site/ru/
+site/en/
+site/.vitepress/dist/
+site/.vitepress/cache/
