@@ -7,6 +7,7 @@
     "status": "ts-node scripts/status.ts"
   },
   "dependencies": {
+    "@anthropic-ai/bedrock-sdk": "^0.26.4",
     "@anthropic-ai/sdk": "^0.39.0",
     "dotenv": "^17.3.1",
     "gray-matter": "^4.0.3"

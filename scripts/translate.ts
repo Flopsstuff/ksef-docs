@@ -1,5 +1,6 @@
 import "dotenv/config";
 import Anthropic from "@anthropic-ai/sdk";
+import AnthropicBedrock from "@anthropic-ai/bedrock-sdk";
 import * as fs from "fs";
 import * as path from "path";
 import matter from "gray-matter";
@@ -24,12 +25,29 @@ const LANG_NAMES: Record<string, string> = {
 
 const DEFAULT_CONCURRENCY = 5;
 
+type Provider = "anthropic" | "bedrock";
+
+const MODELS: Record<Provider, string> = {
+  anthropic: "claude-sonnet-4-20250514",
+  bedrock: "eu.anthropic.claude-sonnet-4-20250514-v1:0",
+};
+
+function createClient(provider: Provider): Anthropic | AnthropicBedrock {
+  if (provider === "bedrock") {
+    return new AnthropicBedrock({
+      awsRegion: process.env.AWS_REGION || "eu-central-1",
+    });
+  }
+  return new Anthropic();
+}
+
 function parseArgs() {
   const args = process.argv.slice(2);
   let lang = "";
   let all = false;
   let outdated = false;
   let concurrency = DEFAULT_CONCURRENCY;
+  let provider: Provider = (process.env.TRANSLATION_PROVIDER as Provider) || "anthropic";
   const files: string[] = [];
 
   for (const arg of args) {
@@ -41,6 +59,8 @@ function parseArgs() {
       lang = arg.split("=")[1];
     } else if (arg.startsWith("--concurrency=")) {
       concurrency = parseInt(arg.split("=")[1], 10);
+    } else if (arg.startsWith("--provider=")) {
+      provider = arg.split("=")[1] as Provider;
     } else if (arg === "--lang") {
       // handled by next iteration
     } else if (!arg.startsWith("--") && !lang && args[args.indexOf(arg) - 1] === "--lang") {
@@ -51,11 +71,11 @@ function parseArgs() {
   }
 
   if (!lang) {
-    console.error("Usage: yarn translate --lang <lang> [--all | --outdated | file1 file2 ...] [--concurrency=N]");
+    console.error("Usage: yarn translate --lang <lang> [--all | --outdated | file1 file2 ...] [--concurrency=N] [--provider=anthropic|bedrock]");
     process.exit(1);
   }
 
-  return { lang, all, outdated, files, concurrency };
+  return { lang, all, outdated, files, concurrency, provider };
 }
 
 function getFilesToTranslate(lang: string, all: boolean, outdated: boolean, files: string[]): FileInfo[] {
@@ -84,7 +104,8 @@ interface TranslateResult {
 }
 
 async function translateFile(
-  client: Anthropic,
+  client: any,
+  model: string,
   systemPrompt: string,
   lang: string,
   file: string,
@@ -113,7 +134,7 @@ async function translateFile(
 
   const response = await client.messages.create(
     {
-      model: "claude-sonnet-4-20250514",
+      model,
       max_tokens: 16384,
       system: systemPrompt,
       messages: [{ role: "user", content: userMessage }],
@@ -123,8 +144,8 @@ async function translateFile(
 
   const translatedContent =
     response.content
-      .filter((b): b is Anthropic.TextBlock => b.type === "text")
-      .map((b) => b.text)
+      .filter((b: any) => b.type === "text")
+      .map((b: any) => b.text)
       .join("") + "\n";
 
   // Build frontmatter
@@ -174,7 +195,7 @@ async function runPool<T>(
 }
 
 async function main() {
-  const { lang, all, outdated, files, concurrency } = parseArgs();
+  const { lang, all, outdated, files, concurrency, provider } = parseArgs();
   const toTranslate = getFilesToTranslate(lang, all, outdated, files);
 
   if (toTranslate.length === 0) {
@@ -182,7 +203,7 @@ async function main() {
     return;
   }
 
-  console.log(`\nTranslating ${toTranslate.length} file(s) to ${lang} (concurrency: ${concurrency}):\n`);
+  console.log(`\nTranslating ${toTranslate.length} file(s) to ${lang} (provider: ${provider}, concurrency: ${concurrency}):\n`);
   for (const f of toTranslate) {
     console.log(`  ${f.status === "new" ? "+" : "~"} ${f.file}`);
   }
@@ -191,7 +212,8 @@ async function main() {
   // Load system prompt
   const systemPrompt = fs.readFileSync(path.join(PROMPTS_DIR, "translate.md"), "utf-8");
 
-  const client = new Anthropic();
+  const client = createClient(provider);
+  const model = MODELS[provider];
   const sourceCommit = getSubmoduleCommit();
 
   const results: TranslateResult[] = [];
@@ -199,7 +221,7 @@ async function main() {
 
   await runPool(toTranslate, concurrency, async (f) => {
     try {
-      const result = await translateFile(client, systemPrompt, lang, f.file, sourceCommit);
+      const result = await translateFile(client, model, systemPrompt, lang, f.file, sourceCommit);
       results.push(result);
     } catch (err: any) {
       failed++;
