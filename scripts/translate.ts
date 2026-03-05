@@ -22,11 +22,14 @@ const LANG_NAMES: Record<string, string> = {
   en: "English",
 };
 
+const DEFAULT_CONCURRENCY = 5;
+
 function parseArgs() {
   const args = process.argv.slice(2);
   let lang = "";
   let all = false;
   let outdated = false;
+  let concurrency = DEFAULT_CONCURRENCY;
   const files: string[] = [];
 
   for (const arg of args) {
@@ -36,6 +39,8 @@ function parseArgs() {
       outdated = true;
     } else if (arg.startsWith("--lang=")) {
       lang = arg.split("=")[1];
+    } else if (arg.startsWith("--concurrency=")) {
+      concurrency = parseInt(arg.split("=")[1], 10);
     } else if (arg === "--lang") {
       // handled by next iteration
     } else if (!arg.startsWith("--") && !lang && args[args.indexOf(arg) - 1] === "--lang") {
@@ -46,11 +51,11 @@ function parseArgs() {
   }
 
   if (!lang) {
-    console.error("Usage: yarn translate --lang <lang> [--all | --outdated | file1 file2 ...]");
+    console.error("Usage: yarn translate --lang <lang> [--all | --outdated | file1 file2 ...] [--concurrency=N]");
     process.exit(1);
   }
 
-  return { lang, all, outdated, files };
+  return { lang, all, outdated, files, concurrency };
 }
 
 function getFilesToTranslate(lang: string, all: boolean, outdated: boolean, files: string[]): FileInfo[] {
@@ -72,13 +77,19 @@ function getFilesToTranslate(lang: string, all: boolean, outdated: boolean, file
   return statuses.filter((s) => s.status === "outdated" || s.status === "new");
 }
 
+interface TranslateResult {
+  file: string;
+  sourceHash: string;
+  translatedAt: string;
+}
+
 async function translateFile(
   client: Anthropic,
   systemPrompt: string,
   lang: string,
   file: string,
   sourceCommit: string
-): Promise<void> {
+): Promise<TranslateResult> {
   const originalPath = path.join(ORIGINAL_DIR, file);
   const translationPath = path.join(TRANSLATIONS_DIR, lang, file);
   const originalContent = fs.readFileSync(originalPath, "utf-8");
@@ -135,23 +146,35 @@ async function translateFile(
   fs.mkdirSync(path.dirname(translationPath), { recursive: true });
   fs.writeFileSync(translationPath, output);
 
-  // Update lock
-  const lock = readLock();
-  if (!lock.languages[lang]) {
-    lock.languages[lang] = {};
-  }
-  lock.languages[lang][file] = {
+  console.log(`  Done: translations/${lang}/${file}`);
+
+  return {
+    file,
     sourceHash: sha256(originalContent),
     translatedAt: new Date().toISOString(),
   };
-  lock.sourceCommit = sourceCommit;
-  writeLock(lock);
+}
 
-  console.log(`  Done: translations/${lang}/${file}`);
+async function runPool<T>(
+  items: T[],
+  concurrency: number,
+  fn: (item: T) => Promise<void>,
+): Promise<void> {
+  let index = 0;
+
+  async function worker() {
+    while (index < items.length) {
+      const i = index++;
+      await fn(items[i]);
+    }
+  }
+
+  const workers = Array.from({ length: Math.min(concurrency, items.length) }, () => worker());
+  await Promise.all(workers);
 }
 
 async function main() {
-  const { lang, all, outdated, files } = parseArgs();
+  const { lang, all, outdated, files, concurrency } = parseArgs();
   const toTranslate = getFilesToTranslate(lang, all, outdated, files);
 
   if (toTranslate.length === 0) {
@@ -159,7 +182,7 @@ async function main() {
     return;
   }
 
-  console.log(`\nTranslating ${toTranslate.length} file(s) to ${lang}:\n`);
+  console.log(`\nTranslating ${toTranslate.length} file(s) to ${lang} (concurrency: ${concurrency}):\n`);
   for (const f of toTranslate) {
     console.log(`  ${f.status === "new" ? "+" : "~"} ${f.file}`);
   }
@@ -171,19 +194,36 @@ async function main() {
   const client = new Anthropic();
   const sourceCommit = getSubmoduleCommit();
 
-  let success = 0;
+  const results: TranslateResult[] = [];
   let failed = 0;
-  for (const f of toTranslate) {
+
+  await runPool(toTranslate, concurrency, async (f) => {
     try {
-      await translateFile(client, systemPrompt, lang, f.file, sourceCommit);
-      success++;
+      const result = await translateFile(client, systemPrompt, lang, f.file, sourceCommit);
+      results.push(result);
     } catch (err: any) {
       failed++;
       console.error(`  FAILED: ${f.file} — ${err.message}`);
     }
+  });
+
+  // Update lock file once at the end
+  if (results.length > 0) {
+    const lock = readLock();
+    if (!lock.languages[lang]) {
+      lock.languages[lang] = {};
+    }
+    for (const r of results) {
+      lock.languages[lang][r.file] = {
+        sourceHash: r.sourceHash,
+        translatedAt: r.translatedAt,
+      };
+    }
+    lock.sourceCommit = sourceCommit;
+    writeLock(lock);
   }
 
-  console.log(`\nDone! ${success} translated, ${failed} failed.`);
+  console.log(`\nDone! ${results.length} translated, ${failed} failed.`);
 }
 
 main().catch((err) => {
