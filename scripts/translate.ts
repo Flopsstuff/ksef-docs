@@ -46,7 +46,7 @@ function parseArgs() {
   let lang = "";
   let all = false;
   let outdated = false;
-  let concurrency = DEFAULT_CONCURRENCY;
+  let concurrency = parseInt(process.env.TRANSLATION_CONCURRENCY || "", 10) || DEFAULT_CONCURRENCY;
   let provider: Provider = (process.env.TRANSLATION_PROVIDER as Provider) || "anthropic";
   const files: string[] = [];
 
