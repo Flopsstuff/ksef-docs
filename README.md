@@ -65,4 +65,19 @@ git clone --recurse-submodules <this-repo>
 yarn install
 ```
 
-Set `ANTHROPIC_API_KEY` in `.env` for translation (not needed for site build).
+Create a `.env` file for translation (not needed for site build):
+
+```bash
+# Anthropic API key (required for provider=anthropic)
+ANTHROPIC_API_KEY=sk-ant-...
+
+# Translation provider: "anthropic" (default) or "bedrock"
+TRANSLATION_PROVIDER=anthropic
+
+# AWS region for Bedrock provider (default: eu-central-1)
+# Bedrock auth uses standard AWS credentials (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, or AWS_PROFILE)
+AWS_REGION=eu-central-1
+
+# Max parallel translation requests (default: 5)
+TRANSLATION_CONCURRENCY=5
+```
