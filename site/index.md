@@ -17,4 +17,7 @@ hero:
     - theme: brand
       text: Українська
       link: /uk/
+    - theme: alt
+      text: API Reference
+      link: /en/api-reference
 ---

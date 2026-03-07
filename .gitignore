@@ -18,6 +18,7 @@ site/pl/
 site/ru/
 site/en/
 site/uk/
+site/public/
 site/.vitepress/dist/
 site/.vitepress/cache/
 site/.vitepress/sidebars.json

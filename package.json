@@ -3,7 +3,9 @@
   "private": true,
   "scripts": {
     "sync": "ts-node scripts/sync.ts",
-    "translate": "ts-node scripts/translate.ts",
+    "translate": "ts-node scripts/translate-all.ts",
+    "translate:docs": "ts-node scripts/translate.ts",
+    "translate:openapi": "ts-node scripts/translate-openapi.ts",
     "status": "ts-node scripts/status.ts",
     "docs:prepare": "ts-node scripts/build-site.ts",
     "docs:dev": "yarn docs:prepare && vitepress dev site",

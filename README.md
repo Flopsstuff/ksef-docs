@@ -41,10 +41,17 @@ yarn sync
 # Show translation status per language
 yarn status
 
-# Translate files
-yarn translate --lang ru auth/sesje.md       # single file
-yarn translate --lang en --outdated          # all outdated
-yarn translate --lang ru --all               # everything from scratch
+# Translate everything (docs + OpenAPI spec)
+yarn translate --lang en --outdated
+
+# Translate only markdown docs
+yarn translate:docs --lang ru auth/sesje.md  # single file
+yarn translate:docs --lang en --outdated     # all outdated
+yarn translate:docs --lang ru --all          # everything from scratch
+
+# Translate only OpenAPI spec
+yarn translate:openapi --lang=en
+yarn translate:openapi --lang=ru --force     # force retranslate
 ```
 
 ## How it works

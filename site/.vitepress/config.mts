@@ -21,7 +21,10 @@ export default defineConfig({
       lang: "pl",
       themeConfig: {
         sidebar: sidebars.pl || [],
-        nav: [{ text: "Strona główna", link: "/pl/" }],
+        nav: [
+          { text: "Strona główna", link: "/pl/" },
+          { text: "API Reference", link: "/pl/api-reference" },
+        ],
         outline: { label: "Spis treści" },
       },
     },
@@ -30,7 +33,10 @@ export default defineConfig({
       lang: "ru",
       themeConfig: {
         sidebar: sidebars.ru || [],
-        nav: [{ text: "Главная", link: "/ru/" }],
+        nav: [
+          { text: "Главная", link: "/ru/" },
+          { text: "API Reference", link: "/ru/api-reference" },
+        ],
         outline: { label: "Содержание" },
       },
     },
@@ -39,7 +45,10 @@ export default defineConfig({
       lang: "en",
       themeConfig: {
         sidebar: sidebars.en || [],
-        nav: [{ text: "Home", link: "/en/" }],
+        nav: [
+          { text: "Home", link: "/en/" },
+          { text: "API Reference", link: "/en/api-reference" },
+        ],
         outline: { label: "On this page" },
       },
     },
@@ -48,7 +57,10 @@ export default defineConfig({
       lang: "uk",
       themeConfig: {
         sidebar: sidebars.uk || [],
-        nav: [{ text: "Головна", link: "/uk/" }],
+        nav: [
+          { text: "Головна", link: "/uk/" },
+          { text: "API Reference", link: "/uk/api-reference" },
+        ],
         outline: { label: "На цій сторінці" },
       },
     },

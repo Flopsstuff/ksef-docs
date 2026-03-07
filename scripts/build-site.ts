@@ -119,6 +119,47 @@ function copyMarkdownDir(srcDir: string, destDir: string, hasTranslationFrontmat
   return true;
 }
 
+function generateOpenApiPage(lang: string) {
+  let specSrc: string;
+  if (lang === "pl") {
+    specSrc = path.join(ORIGINAL_DIR, "open-api.json");
+  } else {
+    const translated = path.join(TRANSLATIONS_DIR, lang, "open-api.json");
+    specSrc = fs.existsSync(translated) ? translated : path.join(ORIGINAL_DIR, "open-api.json");
+  }
+
+  if (!fs.existsSync(specSrc)) return;
+
+  const specContent = fs.readFileSync(specSrc, "utf-8");
+  const publicDir = path.join(SITE_DIR, "public", lang);
+  fs.mkdirSync(publicDir, { recursive: true });
+
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KSeF API Reference</title>
+  <style>body { margin: 0; }</style>
+</head>
+<body>
+  <script id="api-reference" type="application/json">${specContent}</script>
+  <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+</body>
+</html>`;
+
+  fs.writeFileSync(path.join(publicDir, "open-api.html"), html);
+}
+
+function writeApiReferencePage(lang: string, destDir: string) {
+  const content = `---
+title: API Reference
+apiReference: true
+---
+`;
+  fs.writeFileSync(path.join(destDir, "api-reference.md"), content);
+}
+
 function prepareLang(lang: string) {
   const destDir = path.join(SITE_DIR, lang);
 
@@ -137,6 +178,9 @@ function prepareLang(lang: string) {
     copyMarkdownDir(srcDir, destDir, true);
     copyImages(ORIGINAL_DIR, destDir);
   }
+
+  generateOpenApiPage(lang);
+  writeApiReferencePage(lang, destDir);
 
   console.log(`Prepared site/${lang}/`);
 }
@@ -311,6 +355,10 @@ for (const lang of ALL_LANGUAGES) {
   if (fs.existsSync(destDir)) {
     fs.rmSync(destDir, { recursive: true });
   }
+}
+const publicDir = path.join(SITE_DIR, "public");
+if (fs.existsSync(publicDir)) {
+  fs.rmSync(publicDir, { recursive: true });
 }
 
 // Build for each language

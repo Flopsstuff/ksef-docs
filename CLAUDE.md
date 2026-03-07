@@ -12,9 +12,12 @@ Translation infrastructure for [KSeF 2.0 documentation](https://github.com/CIRFM
 yarn sync                                    # Pull upstream changes, update lock file
 yarn status                                  # Show translation status (all languages)
 yarn status --lang=ru                        # Status for one language
-yarn translate --lang en --outdated          # Translate new/changed files
-yarn translate --lang ru auth/sesje.md       # Translate specific file
-yarn translate --lang en --all               # Retranslate everything
+yarn translate --lang en --outdated          # Translate docs + OpenAPI spec
+yarn translate:docs --lang en --outdated     # Translate only markdown docs
+yarn translate:docs --lang ru auth/sesje.md  # Translate specific file
+yarn translate:docs --lang en --all          # Retranslate all docs
+yarn translate:openapi --lang=en             # Translate only OpenAPI spec
+yarn translate:openapi --lang=ru --force     # Force retranslate OpenAPI spec
 yarn docs:dev                                # Local dev server (prepare + vitepress dev)
 yarn docs:build                              # Production build → site/.vitepress/dist/
 ```
@@ -26,9 +29,10 @@ All scripts run via `ts-node`. No separate build step needed.
 ### Translation Pipeline
 
 1. `scripts/sync.ts` — runs `git submodule update --remote`, compares content hashes with `translation.lock.json`, reports new/outdated/deleted files
-2. `scripts/translate.ts` — sends files to Claude API (Anthropic or Bedrock) with system prompt from `prompts/translate.md`. Adds YAML frontmatter + translation banner. Updates lock file on completion
-3. `scripts/status.ts` — reads lock file and compares SHA256 hashes to show per-file status
-4. `scripts/lib.ts` — shared constants (`ROOT`, `ORIGINAL_DIR`, `TRANSLATIONS_DIR`), lock file I/O, hash functions, file discovery
+2. `scripts/translate.ts` — sends markdown files to Claude API (Anthropic or Bedrock) with system prompt from `prompts/translate.md`. Adds YAML frontmatter + translation banner. Updates lock file on completion
+3. `scripts/translate-openapi.ts` — translates OpenAPI spec (`original/open-api.json`). Extracts `description`/`summary`/`title` fields, splits into ~10K char chunks, translates each chunk, merges back into full spec. Saves to `translations/<lang>/open-api.json`
+4. `scripts/status.ts` — reads lock file and compares SHA256 hashes to show per-file status
+5. `scripts/lib.ts` — shared constants (`ROOT`, `ORIGINAL_DIR`, `TRANSLATIONS_DIR`), lock file I/O, hash functions, file discovery
 
 ### Site Build Pipeline
 
@@ -69,7 +73,7 @@ Bedrock uses standard AWS credential chain (`AWS_PROFILE`, `AWS_ACCESS_KEY_ID`/`
 
 ## Adding a New Language
 
-1. Create `translations/<lang>/` and translate files (via `yarn translate --lang <lang>` or manually)
+1. Create `translations/<lang>/` and translate files (via `yarn translate:docs --lang <lang>` and `yarn translate:openapi --lang=<lang>`, or manually)
 2. Add sidebar array and locale entry in `site/.vitepress/config.mts`
 3. Add language button to `site/index.md`
 4. Add `site/<lang>/` to `.gitignore`

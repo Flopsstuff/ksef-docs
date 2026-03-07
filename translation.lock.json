@@ -251,6 +251,10 @@
       "api-changelog.md": {
         "sourceHash": "c3025245f7adda7aa4deebfa98a42c50536672b7534405db2fd1dcbb7e6ad4e3",
         "translatedAt": "2026-03-07T14:20:33.023Z"
+      },
+      "open-api.json": {
+        "sourceHash": "27c53b81254a751ed6c4fdad6b1eb6b2130a3a30e011b74b4c3d83932889a66a",
+        "translatedAt": "2026-03-07T17:01:11.807Z"
       }
     },
     "uk": {
