@@ -21,6 +21,7 @@ const PROMPTS_DIR = path.join(ROOT, "prompts");
 const LANG_NAMES: Record<string, string> = {
   ru: "Russian",
   en: "English",
+  uk: "Ukrainian",
 };
 
 const DEFAULT_CONCURRENCY = 5;
@@ -97,6 +98,33 @@ function getFilesToTranslate(lang: string, all: boolean, outdated: boolean, file
   return statuses.filter((s) => s.status === "outdated" || s.status === "new");
 }
 
+interface ChangelogSection {
+  version: string;
+  text: string;
+}
+
+function parseChangelogSections(content: string): { header: string; sections: ChangelogSection[] } {
+  const lines = content.split("\n");
+  let header = "";
+  const sections: ChangelogSection[] = [];
+  let current: { version: string; lines: string[] } | null = null;
+
+  for (const line of lines) {
+    const match = line.match(/^### .+?(\d+\.\d+\.\d+)/);
+    if (match) {
+      if (current) sections.push({ version: current.version, text: current.lines.join("\n") });
+      current = { version: match[1], lines: [line] };
+    } else if (current) {
+      current.lines.push(line);
+    } else {
+      header += line + "\n";
+    }
+  }
+  if (current) sections.push({ version: current.version, text: current.lines.join("\n") });
+
+  return { header, sections };
+}
+
 interface TranslateResult {
   file: string;
   sourceHash: string;
@@ -122,6 +150,41 @@ async function translateFile(
   }
 
   const langName = LANG_NAMES[lang] || lang;
+
+  // Try incremental changelog translation
+  if (file === "api-changelog.md" && existingTranslation) {
+    const originalParsed = parseChangelogSections(originalContent);
+    const translationParsed = parseChangelogSections(existingTranslation);
+    const existingVersions = new Set(translationParsed.sections.map((s) => s.version));
+    const newSections = originalParsed.sections.filter((s) => !existingVersions.has(s.version));
+
+    if (newSections.length > 0 && newSections.length < originalParsed.sections.length) {
+      const newContent = newSections.map((s) => s.text).join("\n\n");
+      const newKb = (Buffer.byteLength(newContent, "utf-8") / 1024).toFixed(1);
+      const newVersions = newSections.map((s) => s.version).join(", ");
+      console.log(`  Translating ${file} -> ${lang} incrementally (${newSections.length} new version(s): ${newVersions}, ${newKb} KB)...`);
+
+      const userMessage = `Translate the following changelog sections from Polish to ${langName}. These are new sections to be added to an existing translation.\n\nFile: ${file}\n\n<new_sections>\n${newContent}\n</new_sections>`;
+
+      const response = await client.messages.create(
+        { model, max_tokens: 16384, system: systemPrompt, messages: [{ role: "user", content: userMessage }] },
+        { timeout: 300_000 },
+      );
+
+      const translatedNew = response.content.filter((b: any) => b.type === "text").map((b: any) => b.text).join("");
+
+      // Merge: existing header (without banner) + new sections + existing sections
+      // Strip the "> **Translation.**" banner line from header since writeTranslation adds it
+      const cleanHeader = translationParsed.header
+        .replace(/^> \*\*Translation\.\*\*.*\n\n?/m, "");
+      const translatedContent =
+        cleanHeader + translatedNew.trim() + "\n\n" +
+        translationParsed.sections.map((s) => s.text).join("\n\n") + "\n";
+
+      return writeTranslation(translationPath, file, sourceCommit, translatedContent, originalContent);
+    }
+  }
+
   let userMessage = `Translate the following document from Polish to ${langName}.\n\nFile: ${file}\n\n<original>\n${originalContent}\n</original>`;
 
   if (existingTranslation) {
@@ -148,7 +211,16 @@ async function translateFile(
       .map((b: any) => b.text)
       .join("") + "\n";
 
-  // Build frontmatter
+  return writeTranslation(translationPath, file, sourceCommit, translatedContent, originalContent);
+}
+
+function writeTranslation(
+  translationPath: string,
+  file: string,
+  sourceCommit: string,
+  translatedContent: string,
+  originalContent: string,
+): TranslateResult {
   const shortCommit = sourceCommit.slice(0, 7);
   const today = new Date().toISOString().split("T")[0];
   const sourceUrl = `https://github.com/CIRFMF/ksef-docs/blob/main/${file}`;
@@ -163,10 +235,10 @@ async function translateFile(
     `> **Translation.** Original: [${file}](${sourceUrl})\n\n` +
     translatedContent;
 
-  // Ensure directory exists
   fs.mkdirSync(path.dirname(translationPath), { recursive: true });
   fs.writeFileSync(translationPath, output);
 
+  const lang = path.relative(path.join(ROOT, "translations"), path.dirname(translationPath)).split(path.sep)[0];
   console.log(`  Done: translations/${lang}/${file}`);
 
   return {
