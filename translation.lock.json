@@ -125,6 +125,10 @@
       "api-changelog.md": {
         "sourceHash": "c3025245f7adda7aa4deebfa98a42c50536672b7534405db2fd1dcbb7e6ad4e3",
         "translatedAt": "2026-03-07T14:13:17.769Z"
+      },
+      "open-api.json": {
+        "sourceHash": "27c53b81254a751ed6c4fdad6b1eb6b2130a3a30e011b74b4c3d83932889a66a",
+        "translatedAt": "2026-03-07T17:37:01.161Z"
       }
     },
     "en": {
@@ -254,7 +258,7 @@
       },
       "open-api.json": {
         "sourceHash": "27c53b81254a751ed6c4fdad6b1eb6b2130a3a30e011b74b4c3d83932889a66a",
-        "translatedAt": "2026-03-07T17:01:11.807Z"
+        "translatedAt": "2026-03-07T18:15:54.905Z"
       }
     },
     "uk": {
@@ -381,6 +385,10 @@
       "uprawnienia.md": {
         "sourceHash": "87333867349ac2f9758f274cbcc366c2cef63fb76f251cb4b8962ceeae08b9fd",
         "translatedAt": "2026-03-07T14:06:22.389Z"
+      },
+      "open-api.json": {
+        "sourceHash": "27c53b81254a751ed6c4fdad6b1eb6b2130a3a30e011b74b4c3d83932889a66a",
+        "translatedAt": "2026-03-07T17:55:23.969Z"
       }
     }
   }

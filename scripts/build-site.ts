@@ -144,6 +144,11 @@ function generateOpenApiPage(lang: string) {
 </head>
 <body>
   <script id="api-reference" type="application/json">${specContent}</script>
+  <script>
+    document.getElementById('api-reference').dataset.configuration = JSON.stringify({
+      proxy: 'https://proxy.scalar.com',
+    });
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
 </body>
 </html>`;

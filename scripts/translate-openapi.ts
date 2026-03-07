@@ -40,6 +40,13 @@ interface TextField {
 // Extract / merge translatable fields
 // ---------------------------------------------------------------------------
 
+// Paths where "name" field should be translated (tag/group labels, not parameter names)
+const TRANSLATABLE_NAME_PREFIXES = ["tags[", "x-tagGroups["];
+
+function isTranslatableName(path: string): boolean {
+  return TRANSLATABLE_NAME_PREFIXES.some((p) => path.startsWith(p) && path.endsWith(".name"));
+}
+
 function extractFields(obj: any, prefix: string, out: TextField[]): void {
   if (obj === null || obj === undefined || typeof obj !== "object") return;
 
@@ -50,11 +57,13 @@ function extractFields(obj: any, prefix: string, out: TextField[]): void {
 
   for (const [key, value] of Object.entries(obj)) {
     const currentPath = prefix ? `${prefix}.${key}` : key;
-    if (
-      (key === "description" || key === "summary" || key === "title") &&
-      typeof value === "string"
-    ) {
-      out.push({ path: currentPath, text: value });
+    if (typeof value === "string") {
+      if (
+        key === "description" || key === "summary" || key === "title" ||
+        (key === "name" && isTranslatableName(currentPath))
+      ) {
+        out.push({ path: currentPath, text: value });
+      }
     }
     if (typeof value === "object") {
       extractFields(value, currentPath, out);
@@ -293,6 +302,40 @@ async function main() {
     for (let ti = 0; ti < translations.length; ti++) {
       setByPath(translatedSpec, chunks[ci][ti].path, translations[ti]);
       fieldIdx++;
+    }
+  }
+
+  // Update tag name references throughout the spec
+  // tags[].name is used as reference in paths.*.*.tags[] and x-tagGroups[].tags[]
+  const originalSpec = JSON.parse(specContent);
+  if (originalSpec.tags && translatedSpec.tags) {
+    const tagNameMap: Record<string, string> = {};
+    for (let i = 0; i < originalSpec.tags.length; i++) {
+      const oldName = originalSpec.tags[i].name;
+      const newName = translatedSpec.tags[i].name;
+      if (oldName !== newName) {
+        tagNameMap[oldName] = newName;
+      }
+    }
+
+    if (Object.keys(tagNameMap).length > 0) {
+      // Update paths.*.*.tags[]
+      for (const pathObj of Object.values(translatedSpec.paths || {})) {
+        for (const op of Object.values(pathObj as any)) {
+          if (op && typeof op === "object" && Array.isArray((op as any).tags)) {
+            (op as any).tags = (op as any).tags.map(
+              (t: string) => tagNameMap[t] || t,
+            );
+          }
+        }
+      }
+      // Update x-tagGroups[].tags[]
+      for (const group of translatedSpec["x-tagGroups"] || []) {
+        if (Array.isArray(group.tags)) {
+          group.tags = group.tags.map((t: string) => tagNameMap[t] || t);
+        }
+      }
+      console.log(`Updated ${Object.keys(tagNameMap).length} tag name references`);
     }
   }
 
