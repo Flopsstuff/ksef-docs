@@ -1,13 +1,20 @@
 ---
 original: api-changelog.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 6fb819b
-last_translated: 2026-03-05
+source_commit: 935d16c
+last_translated: 2026-03-07
 ---
 
 > **Translation.** Original: [api-changelog.md](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)
 
 ## Changes in API 2.0
+
+### Version 2.2.1
+
+- **Invoice sending**  
+  Added new version (`1-1E`) of `FA_RR (1)` schema.  
+  Schema `FA_RR (1) 1-0E` will be supported on TEST environment until 23.04.
+  Schema `FA_RR (1) 1-1E` will be mandatory on PRD environment from 01.04.  
 
 ### Version 2.2.0
 
