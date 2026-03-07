@@ -8,7 +8,7 @@ const TRANSLATIONS_DIR = path.join(ROOT, "translations");
 const SITE_DIR = path.join(ROOT, "site");
 
 const IMAGE_EXTENSIONS = new Set([".png", ".jpg", ".jpeg", ".svg", ".gif"]);
-const TRANSLATED_LANGUAGES = ["ru", "en"];
+const TRANSLATED_LANGUAGES = ["ru", "en", "uk"];
 const ALL_LANGUAGES = ["pl", ...TRANSLATED_LANGUAGES];
 
 function copyImages(srcDir: string, destDir: string, relPath = "") {
@@ -238,6 +238,17 @@ const GROUP_LABELS: Record<string, Record<string, string>> = {
     invoices: "Invoices",
     download: "Downloading Invoices",
     other: "Other",
+  },
+  uk: {
+    intro: "Вступ",
+    auth: "Автентифікація",
+    certs: "Сертифікати",
+    permissions: "Дозволи",
+    offline: "Офлайн режими",
+    sessions: "Сесії",
+    invoices: "Рахунки-фактури",
+    download: "Завантаження рахунків-фактур",
+    other: "Інше",
   },
 };
 

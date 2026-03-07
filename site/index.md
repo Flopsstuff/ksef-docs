@@ -14,4 +14,7 @@ hero:
     - theme: brand
       text: English
       link: /en/
+    - theme: brand
+      text: Українська
+      link: /uk/
 ---

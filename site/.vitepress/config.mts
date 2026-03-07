@@ -43,6 +43,15 @@ export default defineConfig({
         outline: { label: "On this page" },
       },
     },
+    uk: {
+      label: "Українська",
+      lang: "uk",
+      themeConfig: {
+        sidebar: sidebars.uk || [],
+        nav: [{ text: "Головна", link: "/uk/" }],
+        outline: { label: "На цій сторінці" },
+      },
+    },
   },
 
   themeConfig: {

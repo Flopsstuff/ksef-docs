@@ -17,6 +17,7 @@ plan.md
 site/pl/
 site/ru/
 site/en/
+site/uk/
 site/.vitepress/dist/
 site/.vitepress/cache/
 site/.vitepress/sidebars.json

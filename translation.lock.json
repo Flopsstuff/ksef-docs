@@ -252,6 +252,68 @@
         "sourceHash": "9fcafeffaae437ca702e4ea1737817fb83a836757e6bdff0bc94800e07baa3ce",
         "translatedAt": "2026-03-05T22:38:33.433Z"
       }
+    },
+    "uk": {
+      "auth/context-identifier-internal-id.md": {
+        "sourceHash": "1bb228fb39e4358c99d4632de9a9e052565e47dbda44e79d15a5eef4cb3ad9d1",
+        "translatedAt": "2026-03-07T13:56:47.714Z"
+      },
+      "auth/subject-identifier-type-certificate-subject.md": {
+        "sourceHash": "f61c22623a9cba6cf7ce2d515a0bf597b6530455c96b3064d39c1af26b5d3b19",
+        "translatedAt": "2026-03-07T13:56:47.755Z"
+      },
+      "auth/context-identifier-nip-vat-ue.md": {
+        "sourceHash": "04826a4f07268e7b2dd7e999ff3ee888be91eeb168c82af8da676853a9a94952",
+        "translatedAt": "2026-03-07T13:56:47.800Z"
+      },
+      "faktury/numer-ksef.md": {
+        "sourceHash": "9d77ca4395995eae7fb184a2a546ef1d4a9f77c3f40ffcd4ce3c21d1111a98dd",
+        "translatedAt": "2026-03-07T13:56:53.274Z"
+      },
+      "auth/sesje.md": {
+        "sourceHash": "f48f052e0419e8ebf497b4d8682c04a2a5f6b2a26a7a8cc7163692f43a009b72",
+        "translatedAt": "2026-03-07T13:56:55.573Z"
+      },
+      "README.md": {
+        "sourceHash": "75d375d2aa2f1ff64a7c1993b53b83054cccf6fb38187413110e451dc7983be6",
+        "translatedAt": "2026-03-07T13:56:56.810Z"
+      },
+      "auth/testowe-certyfikaty-i-podpisy-xades.md": {
+        "sourceHash": "7356956dbe03a0c476e2d1f9af07b827322740892b12e08785ab714c8ab59eb6",
+        "translatedAt": "2026-03-07T13:56:57.976Z"
+      },
+      "faktury/weryfikacja-faktury.md": {
+        "sourceHash": "b47bfd87c2a2c0437add3eed41e3b54624acd4fe60d7cc7576685d886102c455",
+        "translatedAt": "2026-03-07T13:57:00.238Z"
+      },
+      "dane-testowe-scenariusze.md": {
+        "sourceHash": "021f89aebefd90d37bd07845bc3dfab002ae2dc8956e0bd490aafc97dbf7e25b",
+        "translatedAt": "2026-03-07T13:57:03.720Z"
+      },
+      "offline/korekta-techniczna.md": {
+        "sourceHash": "39eba933558dd1264c34ebf8edd89ccd9e544ee143a94d3a71d876290e9463b6",
+        "translatedAt": "2026-03-07T13:57:06.841Z"
+      },
+      "auth/podpis-xades.md": {
+        "sourceHash": "3d4199164bcdab8c05404c538c97db2b5298f045a278ef94322a080fd32a7aa6",
+        "translatedAt": "2026-03-07T13:57:07.754Z"
+      },
+      "limity/limity.md": {
+        "sourceHash": "0b82b2f72ff63b01e746541c77c8763fdb820474c72efc7218c0edd7f74c8a1d",
+        "translatedAt": "2026-03-07T13:57:19.081Z"
+      },
+      "certyfikaty-KSeF.md": {
+        "sourceHash": "785427227e77aacf1d2f35d7b02547850d728512272c42ff2635f9c96dcb0d32",
+        "translatedAt": "2026-03-07T13:58:10.496Z"
+      },
+      "kody-qr.md": {
+        "sourceHash": "d1d6220a78b0ec40cf313c747302149509f2f458a013c5b1d0fc147784f64170",
+        "translatedAt": "2026-03-07T13:58:32.838Z"
+      },
+      "uwierzytelnianie.md": {
+        "sourceHash": "336b2ea528a1ceed0e35baf6f6abeb0f1ed70b2edee6fffb5b0e63aa34b440b9",
+        "translatedAt": "2026-03-07T13:58:57.868Z"
+      }
     }
   }
 }
