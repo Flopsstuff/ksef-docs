@@ -1,13 +1,20 @@
 ---
 original: api-changelog.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 6fb819b
-last_translated: 2026-03-05
+source_commit: 935d16c
+last_translated: 2026-03-07
 ---
 
 > **Translation.** Original: [api-changelog.md](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)
 
 ## Изменения в API 2.0
+
+### Версия 2.2.1
+
+- **Отправка счетов**  
+  Добавлена новая версия (`1-1E`) схемы `FA_RR (1)`.  
+  Схема `FA_RR (1) 1-0E` будет поддерживаться на среде TEST до 23.04.
+  Схема `FA_RR (1) 1-1E` будет действовать на среде PRD с 01.04.  
 
 ### Версия 2.2.0
 
@@ -562,8 +569,4 @@ last_translated: 2026-03-05
     - доказательство аутентификации (в зависимости от метода): 
       - `NumerReferencyjnyTokenaKSeF` - идентификатор токена аутентификации в системе KSeF,
       - `SkrotDokumentuUwierzytelniajacego` - значение функции хеша документа аутентификации в полученном системой виде (включая электронную подпись).
-  - В элементе `Dokument` добавлены:
-    - NipSprzedawcy,
-    - DataWystawieniaFaktury,
-    - DataNadaniaNumeruKSeF.
-  - Унифицирована схема UPO. UPO для счета и для сессии используют общую схему upo-v4-2.xsd. Заменяет прежние upo-faktura-v3-0.xsd и upo-sesja-v4-1.
+  - В эл

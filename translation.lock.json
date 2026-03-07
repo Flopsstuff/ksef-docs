@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "6fb819bc5a983a5023ca26d9b6c29480df744b4e",
+  "sourceCommit": "935d16ce91bff4c50d46fab004fd0d2ca24ef57d",
   "languages": {
     "ru": {
       "srodowiska.md": {
@@ -123,8 +123,8 @@
         "translatedAt": "2026-03-05T22:38:07.025Z"
       },
       "api-changelog.md": {
-        "sourceHash": "9fcafeffaae437ca702e4ea1737817fb83a836757e6bdff0bc94800e07baa3ce",
-        "translatedAt": "2026-03-05T22:38:46.271Z"
+        "sourceHash": "c3025245f7adda7aa4deebfa98a42c50536672b7534405db2fd1dcbb7e6ad4e3",
+        "translatedAt": "2026-03-07T14:13:17.769Z"
       }
     },
     "en": {
@@ -371,8 +371,8 @@
         "translatedAt": "2026-03-07T14:03:09.556Z"
       },
       "api-changelog.md": {
-        "sourceHash": "9fcafeffaae437ca702e4ea1737817fb83a836757e6bdff0bc94800e07baa3ce",
-        "translatedAt": "2026-03-07T14:05:02.460Z"
+        "sourceHash": "c3025245f7adda7aa4deebfa98a42c50536672b7534405db2fd1dcbb7e6ad4e3",
+        "translatedAt": "2026-03-07T14:13:12.311Z"
       },
       "uprawnienia.md": {
         "sourceHash": "87333867349ac2f9758f274cbcc366c2cef63fb76f251cb4b8962ceeae08b9fd",

@@ -1,13 +1,20 @@
 ---
 original: api-changelog.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 6fb819b
+source_commit: 935d16c
 last_translated: 2026-03-07
 ---
 
 > **Translation.** Original: [api-changelog.md](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)
 
 ## Зміни в API 2.0
+
+### Версія 2.2.1
+
+- **Надсилання рахунків-фактур**  
+  Додано нову версію (`1-1E`) схеми `FA_RR (1)`.  
+  Схема `FA_RR (1) 1-0E` буде підтримуватися на середовищі TEST до 23.04.
+  Схема `FA_RR (1) 1-1E` буде обов'язковою на середовищі PRD з 01.04.  
 
 ### Версія 2.2.0
 
@@ -356,7 +363,7 @@ last_translated: 2026-03-07
 
 ### Версія 2.0.0 RC5.4
 
-- **Отримання списку метаданих рахунків-фактур (POST /invoices/query/metadata)**  
+- **Отримання списку метаданых рахунків-фактур (POST /invoices/query/metadata)**  
   - Додано параметр `sortOrder`, що дозволяє визначити напрямок сортування результатів.
 
 - **Статус сесії**  
@@ -540,11 +547,3 @@ last_translated: 2026-03-07
 
 - **Отримання списку дозволів для роботи в KSeF, наданих фізичним особам або суб'єктам (POST /permissions/query/persons/grants)**  
   - Додано `contextIdentifier` у фільтрі запиту і в моделі відповіді.
-
-- **OpenAPI**  
-  Видалено невикористаний `operationId` зі специфікації. Порядкова зміна.
-
-### Версія 2.0.0 RC5
-
-- **Обробка рахунків-фактур PEF і постачальників послуг Peppol**
-  - Додано обробку рахунків-фактур `PEF`, що надсилаються постачальником послуг Peppol. Нові можливості не змінюють поточних
