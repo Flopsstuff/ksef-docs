@@ -1,13 +1,39 @@
 ---
 original: api-changelog.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 935d16c
-last_translated: 2026-03-07
+source_commit: 5e69797
+last_translated: 2026-04-04
 ---
 
 > **Translation.** Original: [api-changelog.md](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)
 
+
 ## Зміни в API 2.0
+
+### Версія 2.3.0
+
+- **Відправка заявки на сертифікацію (POST /certificates/enrollments)**  
+  Збільшено ліміти для ідентифікаторів PESEL та fingerprint:  
+  - кількість заявок на сертифікат KSeF: з 6 до 12,
+  - кількість активних сертифікатів KSeF: з 2 до 6.  
+
+- **Відправка рахунків**  
+  - Посилено валідацію вхідного XML: пролог є опціональним, однак якщо він з'являється і вказує кодування, відмінне від UTF-8, документ буде відхилено ([рахунок повинен бути збережений в кодуванні UTF-8](/faktury/weryfikacja-faktury.md)).
+  - Уточнено значення поля `Value` для схеми `FA_RR (1) 1-1E`: замість `RR` необхідно передавати `FA_RR` (відповідно до значення `TKodFormularza` в XSD).
+
+- **Отримання рахунків**   
+  - Розширено підтримку `formType` для рахунків `RR` на значення `FA_RR` (узгоджено з механізмом відправки рахунків). На середовищі TEST приймаються `RR` (до 30.03) та `FA_RR`, натомість на PRD прийматиметься виключно `FA_RR`.
+  - Дозволено пошук рахунків за від'ємними сумами у фільтрі `amount` - дозволено від'ємні значення в `amount.from` і `amount.to`.
+
+- **Експорт пакету рахунків (POST `/invoices/exports`)**  
+  - Розширено модель запиту на властивість boolean `onlyMetadata` (за замовчуванням: `false`):
+    - `onlyMetadata`=false - без змін: експорт містить рахунки та файл `_metadata.json`,
+    - `onlyMetadata`=true - експорт містить виключно файл `_metadata.json`, що дозволяє швидші та легші експорти в сценаріях, що вимагають лише метаданих.  
+
+- **OpenAPI**  
+  - Розширено `ForbiddenProblemDetails.reasonCode` на значення `context-type-not-allowed` ("Операція недоступна для автентифікованого типу контексту").
+  - Виправлено визначення `securitySchemes.Bearer` - встановлено `scheme`: `bearer` (з малої літери), відповідно до специфікації.  
+  - Незначні оновлення описів та прикладів.
 
 ### Версія 2.2.1
 
@@ -15,6 +41,7 @@ last_translated: 2026-03-07
   Додано нову версію (`1-1E`) схеми `FA_RR (1)`.  
   Схема `FA_RR (1) 1-0E` буде підтримуватися на середовищі TEST до 23.04.
   Схема `FA_RR (1) 1-1E` буде обов'язковою на середовищі PRD з 01.04.  
+
 
 ### Версія 2.2.0
 
@@ -32,6 +59,7 @@ last_translated: 2026-03-07
 - **Експорт пакету рахунків-фактур (POST `/invoices/exports`).**  
   Виправлено генерування файлу `_metadata.json` у пакеті експорту - при великій кількості рахунків-фактур файл міг бути раніше обрізаний (некоректний JSON).
 
+
 ### Версія 2.1.2
 
 - **Надсилання рахунків-фактур**  
@@ -46,6 +74,7 @@ last_translated: 2026-03-07
 - **OpenAPI**  
   Видалено `additionalProperties`: `false` у вибраних моделях. Зміна, що впорядковує специфікацію та робить контракт більш гнучким - допускає можливість появи додаткових властивостей у запитах або відповідях (наприклад, у рамках розширень). Додавання нової властивості не розглядається як порушення контракту; клієнти API повинні ігнорувати невідомі властивості.
 
+
 ### Версія 2.1.1
 
 - **Аутентифікація**  
@@ -53,6 +82,7 @@ last_translated: 2026-03-07
   Доповнено визначення `authenticationMethodInfo` - позначено властивості `category`, `code` та `displayName` як `required` у моделі відповіді.
   - **Аутентифікація з використанням підпису XAdES (POST `/auth/xades-signature`)**  
   Додано можливість раннього увімкнення нових вимог валідації XAdES на середовищах DEMO і PRD через заголовок: `X-KSeF-Feature`: `enforce-xades-compliance`.
+
 
 ### Версія 2.1.0
 
@@ -78,6 +108,7 @@ last_translated: 2026-03-07
 - **OpenAPI**  
   Незначні оновлення описів.
 
+
 ### Версія 2.0.1
 
 - **Дозволи**
@@ -99,6 +130,7 @@ last_translated: 2026-03-07
 
 - **OpenAPI**  
   Незначні оновлення описів.
+
 
 ### Версія 2.0.0
 
@@ -162,6 +194,7 @@ last_translated: 2026-03-07
   - Уточнено описи властивостей типу `byte` - значення передаються як бінарні дані, закодовані у форматі `Base64`.
   - Виправлено опечатки в специфікації.
 
+
 ### Версія 2.0.0 RC6.1
 
 - **Нова адресація середовищ**  
@@ -212,6 +245,7 @@ last_translated: 2026-03-07
   - GET `/sessions`
   - GET `/sessions/{referenceNumber}/invoices`
   - GET `/sessions/{referenceNumber}/invoices/failed`
+
 
 ### Версія 2.0.0 RC6.0
 
@@ -279,6 +313,7 @@ last_translated: 2026-03-07
   - Уточнено формат властивості `PublicKeyCertificate`, що представляє бінарні дані, закодовані `Base64`, встановлено format: `byte`.
   - Внесено незначні мовні та пунктуаційні корективи в поля `description`.
 
+
 ### Версія 2.0.0 RC5.7
 
 - **Відкриття пакетної сесії (POST `/sessions/batch`)**  
@@ -292,6 +327,7 @@ last_translated: 2026-03-07
   - Додано обмеження довжини для властивостей типу string: `minLength` та `maxLength`.  
   - Оновлено описи властивостей (`invoiceMetadataAuthorizedSubject.role`, `invoiceMetadataBuyer`, `invoiceMetadataThirdSubject.role`, `buyerIdentifier`).
   - Оновлено regex шаблони для `vatUeIdentifier`, `authorizedFingerprintIdentifier`, `internalId`, `nipVatUe`, `peppolId`.
+
 
 ### Версія 2.0.0 RC5.6
 
@@ -318,6 +354,7 @@ last_translated: 2026-03-07
   - Визначено схему `Challenge` (string, 36 символів) і застосовано в `AuthenticationChallengeResponse`.`challenge`.
   - Визначено загальну схему `PermissionId` (string, 36 символів) і застосовано її у всіх місцях: в параметрах та у властивостях відповідей.
   - Додано регулярні вирази для вибраних текстових полів.
+
 
 ### Версія 2.0.0 RC5.5
 
@@ -361,6 +398,7 @@ last_translated: 2026-03-07
   - GET `/sessions/{referenceNumber}/invoices`
   - GET `/sessions/{referenceNumber}/invoices/failed`
 
+
 ### Версія 2.0.0 RC5.4
 
 - **Отримання списку метаданых рахунків-фактур (POST /invoices/query/metadata)**  
@@ -378,6 +416,7 @@ last_translated: 2026-03-07
 - **OpenAPI**  
   - Уточнено визначення табличних параметрів в query; застосовано `style: form`. Декілька значень потрібно передавати через повторення параметра, наприклад `?statuses=InProgress&statuses=Succeeded`. Документаційна зміна, без впливу на роботу API.
   - Оновлено описи властивостей (`partUploadRequests`, `encryptedSymmetricKey`, `initializationVector`).
+
 
 ### Версія 2.0.0 RC5.3
 
@@ -453,6 +492,7 @@ last_translated: 2026-03-07
   - Видалено атрибут `required` з властивості `pageSize` в запиті GET `/sessions` ("Отримання списку сесій").
   - Оновлено приклади (example) у визначеннях endpoints.
 
+
 ### Версія 2.0.0 RC5.2
 - **Дозволи** 
   - "Надання дозволів адміністратора підпорядкованого суб'єкта" (POST `/permissions/subunits/grants`)  
@@ -481,6 +521,7 @@ last_translated: 2026-03-07
   - Оновлено приклади (example) у визначеннях endpoints.
   - Уточнено описи endpoints.
   - Додано атрибут `required` для обов'язкових властивостей у запитах і відповідях.
+
 
 ### Версія 2.0.0 RC5.1
 
@@ -547,3 +588,4 @@ last_translated: 2026-03-07
 
 - **Отримання списку дозволів для роботи в KSeF, наданих фізичним особам або суб'єктам (POST /permissions/query/persons/grants)**  
   - Додано `contextIdentifier` у фільтрі запиту і в моделі відповіді.
+

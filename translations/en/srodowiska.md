@@ -1,14 +1,14 @@
 ---
 original: srodowiska.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 6fb819b
-last_translated: 2026-03-05
+source_commit: 5e69797
+last_translated: 2026-04-04
 ---
 
 > **Translation.** Original: [srodowiska.md](https://github.com/CIRFMF/ksef-docs/blob/main/srodowiska.md)
 
 ## KSeF API 2.0 Environments 
-15.12.2025
+16.03.2026
 
 Below is a summary of the public environments.
 
@@ -26,7 +26,10 @@ In the test environment `TE`, authentication using self-signed certificates is p
 For this reason, data entered in the `TE` environment is not isolated and may be shared between integrators.
 Use random NIP identifiers for testing, avoiding any real data.
 
-### Maintenance Work on Test Environments
+### URL addresses returned by the API
+In every case when the API returns a URL address for downloading or uploading a resource, its host corresponds to the environment to which the call was directed (TEST, DEMO or PRD).
+
+### Maintenance work on test environments
 Due to the planned, systematic development of the National e-Invoice System (KSeF 2.0), **from October 1, 2025**, periodic maintenance work may be carried out on the System's test environments.
 
 This work will take place between **4:00 PM and 6:00 PM**. During this time, temporary difficulties accessing the test environments may occur.

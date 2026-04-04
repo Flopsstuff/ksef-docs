@@ -1,8 +1,8 @@
 ---
 original: auth/podpis-xades.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 6fb819b
-last_translated: 2026-03-07
+source_commit: 5e69797
+last_translated: 2026-04-04
 ---
 
 > **Translation.** Original: [auth/podpis-xades.md](https://github.com/CIRFMF/ksef-docs/blob/main/auth/podpis-xades.md)
@@ -119,9 +119,11 @@ http://www.w3.org/2007/05/xmldsig-more#sha3-512
 | 2.5.4.3             | commonName     | загальна назва власника сертифіката      |
 | 2.5.4.6             | countryName    | назва країни, код ISO 3166               |
 
-Розпізнавані шаблони атрибута `serialNumber`:<br>
-**(PNOPL|PESEL).\*?(?<number>\\d{11})**<br>
-**(TINPL|NIP).\*?(?<number>\\d{10})**<br>
+Розпізнавані шаблони атрибута `serialNumber`:  
+```regex
+(PNOPL|PESEL).*?(?<identifier>\\d{11})
+(TINPL|NIP).*?(?<identifier>\\d{10})
+```
 
 #### Сертифікати кваліфікованої печатки (видаються для організацій)
 
@@ -139,12 +141,14 @@ http://www.w3.org/2007/05/xmldsig-more#sha3-512
 | 2.5.4.42            | givenName   | ім'я     |  
 | 2.5.4.4             | surname     | прізвище |
 
-Розпізнавані шаблони атрибута `organizationIdentifier`:<br>
-**(VATPL).\*?(?<number>\\d{10})**<br>
+Розпізнавані шаблони атрибута `organizationIdentifier`:
+```regex
+(VATPL).*?(?<identifier>\\d{10})
+```
 
-### Відбиток сертифіката
+### Відбиток палця сертифіката
 
-У випадку кваліфікованих сертифікатів, що не мають відповідних ідентифікаторів, записаних в атрибуті суб'єкта OID.2.5.4.5, можлива автентифікація таким сертифікатом після попереднього надання повноважень на геш SHA-256 (так званий відбиток) цього сертифіката.
+У випадку кваліфікованих сертифікатів, що не мають відповідних ідентифікаторів, записаних в атрибуті суб'єкта OID.2.5.4.5, можлива автентифікація таким сертифікатом після попереднього надання повноважень на геш SHA-256 (так званий відбиток палця) цього сертифіката.
 
 Пов'язані документи: 
 - [Автентифікація](../uwierzytelnianie.md)

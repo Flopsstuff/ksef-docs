@@ -1,8 +1,8 @@
 ---
 original: auth/podpis-xades.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 6fb819b
-last_translated: 2026-03-05
+source_commit: 5e69797
+last_translated: 2026-04-04
 ---
 
 > **Translation.** Original: [auth/podpis-xades.md](https://github.com/CIRFMF/ksef-docs/blob/main/auth/podpis-xades.md)
@@ -119,9 +119,11 @@ http://www.w3.org/2007/05/xmldsig-more#sha3-512
 | 2.5.4.3             | commonName     | общее название владельца сертификата     |
 | 2.5.4.6             | countryName    | название страны, код ISO 3166            |
 
-Распознаваемые шаблоны атрибута `serialNumber`:<br>
-**(PNOPL|PESEL).\*?(?<number>\\d{11})**<br>
-**(TINPL|NIP).\*?(?<number>\\d{10})**<br>
+Распознаваемые шаблоны атрибута `serialNumber`:  
+```regex
+(PNOPL|PESEL).*?(?<identifier>\\d{11})
+(TINPL|NIP).*?(?<identifier>\\d{10})
+```
 
 #### Сертификаты квалифицированной печати (выдаваемые для организаций)
 
@@ -139,8 +141,10 @@ http://www.w3.org/2007/05/xmldsig-more#sha3-512
 | 2.5.4.42            | givenName   | имя      |  
 | 2.5.4.4             | surname     | фамилия  |
 
-Распознаваемые шаблоны атрибута `organizationIdentifier`:<br>
-**(VATPL).\*?(?<number>\\d{10})**<br>
+Распознаваемые шаблоны атрибута `organizationIdentifier`:
+```regex
+(VATPL).*?(?<identifier>\\d{10})
+```
 
 ### Отпечаток сертификата
 

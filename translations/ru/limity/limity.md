@@ -1,8 +1,8 @@
 ---
 original: limity/limity.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 6fb819b
-last_translated: 2026-03-05
+source_commit: 5e69797
+last_translated: 2026-04-04
 ---
 
 > **Translation.** Original: [limity/limity.md](https://github.com/CIRFMF/ksef-docs/blob/main/limity/limity.md)
@@ -39,8 +39,8 @@ last_translated: 2026-03-05
 | Идентификатор из сертификата           | Заявки на сертификат KSeF | Активные сертификаты KSeF |
 | -------------------------------------- | ------------------------- | ------------------------ |
 | NIP                                    | 300                       | 100                      |
-| PESEL                                  | 6                         | 2                        |
-| Отпечаток сертификата (fingerprint)    | 6                         | 2                        |
+| PESEL                                  | 12                        | 6                        |
+| Отпечаток сертификата (fingerprint)    | 12                        | 6                        |
 
 
 

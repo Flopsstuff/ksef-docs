@@ -1,10 +1,10 @@
 {
-  "sourceCommit": "935d16ce91bff4c50d46fab004fd0d2ca24ef57d",
+  "sourceCommit": "5e697972698519d3578796b3b83de4232068f570",
   "languages": {
     "ru": {
       "srodowiska.md": {
-        "sourceHash": "2b8a704b99dbadfc2f6664e99f68333e0325f2a25e036147d78e629739b7da81",
-        "translatedAt": "2026-03-05T21:13:44.452Z"
+        "sourceHash": "d9a7f89b53294dfd7c46fbfc571b378ab0e70ade8a4b0357f1b56b9aac238ba4",
+        "translatedAt": "2026-04-04T18:14:26.980Z"
       },
       "README.md": {
         "sourceHash": "75d375d2aa2f1ff64a7c1993b53b83054cccf6fb38187413110e451dc7983be6",
@@ -47,8 +47,8 @@
         "translatedAt": "2026-03-05T21:33:29.720Z"
       },
       "auth/podpis-xades.md": {
-        "sourceHash": "3d4199164bcdab8c05404c538c97db2b5298f045a278ef94322a080fd32a7aa6",
-        "translatedAt": "2026-03-05T21:33:35.931Z"
+        "sourceHash": "e0da9cceeaa8e6bc51b344e577a7cacb6186dcb0fe568830b7a294caa8cb5ac9",
+        "translatedAt": "2026-04-04T18:14:37.420Z"
       },
       "faktury/numer-ksef.md": {
         "sourceHash": "9d77ca4395995eae7fb184a2a546ef1d4a9f77c3f40ffcd4ce3c21d1111a98dd",
@@ -103,8 +103,8 @@
         "translatedAt": "2026-03-05T21:47:43.783Z"
       },
       "limity/limity.md": {
-        "sourceHash": "0b82b2f72ff63b01e746541c77c8763fdb820474c72efc7218c0edd7f74c8a1d",
-        "translatedAt": "2026-03-05T21:50:19.502Z"
+        "sourceHash": "e8c9c091e1a4ba9c932f0ca700ece4683757810958f2632d355b9fdd9d54e0d9",
+        "translatedAt": "2026-04-04T18:14:43.464Z"
       },
       "sesja-wsadowa.md": {
         "sourceHash": "2d14332e70098c72d96552bbf9948ede40624262100d083ba21100219f9b5f93",
@@ -119,16 +119,16 @@
         "translatedAt": "2026-03-05T21:52:15.664Z"
       },
       "uprawnienia.md": {
-        "sourceHash": "87333867349ac2f9758f274cbcc366c2cef63fb76f251cb4b8962ceeae08b9fd",
-        "translatedAt": "2026-03-05T22:38:07.025Z"
+        "sourceHash": "e54588888d56d0ffc6e629f9a6e334a9fcd4a3adf5a5dde3d348e9574bf8a4f1",
+        "translatedAt": "2026-04-04T18:17:39.378Z"
       },
       "api-changelog.md": {
-        "sourceHash": "c3025245f7adda7aa4deebfa98a42c50536672b7534405db2fd1dcbb7e6ad4e3",
-        "translatedAt": "2026-03-07T14:13:17.769Z"
+        "sourceHash": "9927977b847b576826b2e835bc2b89a80520ef896603d10fb541beb3a31e586d",
+        "translatedAt": "2026-04-04T18:14:26.811Z"
       },
       "open-api.json": {
-        "sourceHash": "27c53b81254a751ed6c4fdad6b1eb6b2130a3a30e011b74b4c3d83932889a66a",
-        "translatedAt": "2026-03-07T17:37:01.161Z"
+        "sourceHash": "81683e6389c89b5329c7c62a8d6f456e6b7e45c35fe59b43a27faeb0b87ed932",
+        "translatedAt": "2026-04-04T18:20:23.589Z"
       }
     },
     "en": {
@@ -181,8 +181,8 @@
         "translatedAt": "2026-03-05T22:33:58.034Z"
       },
       "auth/podpis-xades.md": {
-        "sourceHash": "3d4199164bcdab8c05404c538c97db2b5298f045a278ef94322a080fd32a7aa6",
-        "translatedAt": "2026-03-05T22:33:59.521Z"
+        "sourceHash": "e0da9cceeaa8e6bc51b344e577a7cacb6186dcb0fe568830b7a294caa8cb5ac9",
+        "translatedAt": "2026-04-04T18:20:41.354Z"
       },
       "offline/korekta-techniczna.md": {
         "sourceHash": "39eba933558dd1264c34ebf8edd89ccd9e544ee143a94d3a71d876290e9463b6",
@@ -193,16 +193,16 @@
         "translatedAt": "2026-03-05T22:34:06.383Z"
       },
       "limity/limity.md": {
-        "sourceHash": "0b82b2f72ff63b01e746541c77c8763fdb820474c72efc7218c0edd7f74c8a1d",
-        "translatedAt": "2026-03-05T22:34:12.936Z"
+        "sourceHash": "e8c9c091e1a4ba9c932f0ca700ece4683757810958f2632d355b9fdd9d54e0d9",
+        "translatedAt": "2026-04-04T18:20:46.784Z"
       },
       "pobieranie-faktur/pobieranie-faktur.md": {
         "sourceHash": "4cbabff4a5ebaea6efb71d659e3f95218f78a9f8534e6214a435f1cd9a14a3a1",
         "translatedAt": "2026-03-05T22:34:13.479Z"
       },
       "srodowiska.md": {
-        "sourceHash": "2b8a704b99dbadfc2f6664e99f68333e0325f2a25e036147d78e629739b7da81",
-        "translatedAt": "2026-03-05T22:34:18.771Z"
+        "sourceHash": "d9a7f89b53294dfd7c46fbfc571b378ab0e70ade8a4b0357f1b56b9aac238ba4",
+        "translatedAt": "2026-04-04T18:20:32.180Z"
       },
       "sesja-interaktywna.md": {
         "sourceHash": "508e6b8f0d800dbce7d2f592441f73b69f6528c4bd3b4b64980c413b6ed4d4c0",
@@ -249,16 +249,16 @@
         "translatedAt": "2026-03-05T22:36:16.260Z"
       },
       "uprawnienia.md": {
-        "sourceHash": "87333867349ac2f9758f274cbcc366c2cef63fb76f251cb4b8962ceeae08b9fd",
-        "translatedAt": "2026-03-05T22:38:03.695Z"
+        "sourceHash": "e54588888d56d0ffc6e629f9a6e334a9fcd4a3adf5a5dde3d348e9574bf8a4f1",
+        "translatedAt": "2026-04-04T18:24:09.552Z"
       },
       "api-changelog.md": {
-        "sourceHash": "c3025245f7adda7aa4deebfa98a42c50536672b7534405db2fd1dcbb7e6ad4e3",
-        "translatedAt": "2026-03-07T14:20:33.023Z"
+        "sourceHash": "9927977b847b576826b2e835bc2b89a80520ef896603d10fb541beb3a31e586d",
+        "translatedAt": "2026-04-04T18:20:32.086Z"
       },
       "open-api.json": {
-        "sourceHash": "27c53b81254a751ed6c4fdad6b1eb6b2130a3a30e011b74b4c3d83932889a66a",
-        "translatedAt": "2026-03-07T18:15:54.905Z"
+        "sourceHash": "81683e6389c89b5329c7c62a8d6f456e6b7e45c35fe59b43a27faeb0b87ed932",
+        "translatedAt": "2026-04-04T18:26:03.656Z"
       }
     },
     "uk": {
@@ -303,12 +303,12 @@
         "translatedAt": "2026-03-07T13:57:06.841Z"
       },
       "auth/podpis-xades.md": {
-        "sourceHash": "3d4199164bcdab8c05404c538c97db2b5298f045a278ef94322a080fd32a7aa6",
-        "translatedAt": "2026-03-07T13:57:07.754Z"
+        "sourceHash": "e0da9cceeaa8e6bc51b344e577a7cacb6186dcb0fe568830b7a294caa8cb5ac9",
+        "translatedAt": "2026-04-04T18:26:24.390Z"
       },
       "limity/limity.md": {
-        "sourceHash": "0b82b2f72ff63b01e746541c77c8763fdb820474c72efc7218c0edd7f74c8a1d",
-        "translatedAt": "2026-03-07T13:57:19.081Z"
+        "sourceHash": "e8c9c091e1a4ba9c932f0ca700ece4683757810958f2632d355b9fdd9d54e0d9",
+        "translatedAt": "2026-04-04T18:26:39.121Z"
       },
       "certyfikaty-KSeF.md": {
         "sourceHash": "785427227e77aacf1d2f35d7b02547850d728512272c42ff2635f9c96dcb0d32",
@@ -359,8 +359,8 @@
         "translatedAt": "2026-03-07T14:02:45.156Z"
       },
       "srodowiska.md": {
-        "sourceHash": "2b8a704b99dbadfc2f6664e99f68333e0325f2a25e036147d78e629739b7da81",
-        "translatedAt": "2026-03-07T14:02:45.522Z"
+        "sourceHash": "d9a7f89b53294dfd7c46fbfc571b378ab0e70ade8a4b0357f1b56b9aac238ba4",
+        "translatedAt": "2026-04-04T18:26:14.591Z"
       },
       "przeglad-kluczowych-zmian-ksef-api-2-0.md": {
         "sourceHash": "c990c8f27622e76d037eda086b8e60dc019f65dd40b6b837e62a60e9fdd3a3fc",
@@ -379,16 +379,16 @@
         "translatedAt": "2026-03-07T14:03:09.556Z"
       },
       "api-changelog.md": {
-        "sourceHash": "c3025245f7adda7aa4deebfa98a42c50536672b7534405db2fd1dcbb7e6ad4e3",
-        "translatedAt": "2026-03-07T14:13:12.311Z"
+        "sourceHash": "9927977b847b576826b2e835bc2b89a80520ef896603d10fb541beb3a31e586d",
+        "translatedAt": "2026-04-04T18:26:14.143Z"
       },
       "uprawnienia.md": {
-        "sourceHash": "87333867349ac2f9758f274cbcc366c2cef63fb76f251cb4b8962ceeae08b9fd",
-        "translatedAt": "2026-03-07T14:06:22.389Z"
+        "sourceHash": "e54588888d56d0ffc6e629f9a6e334a9fcd4a3adf5a5dde3d348e9574bf8a4f1",
+        "translatedAt": "2026-04-04T18:29:39.772Z"
       },
       "open-api.json": {
-        "sourceHash": "27c53b81254a751ed6c4fdad6b1eb6b2130a3a30e011b74b4c3d83932889a66a",
-        "translatedAt": "2026-03-07T17:55:23.969Z"
+        "sourceHash": "81683e6389c89b5329c7c62a8d6f456e6b7e45c35fe59b43a27faeb0b87ed932",
+        "translatedAt": "2026-04-04T18:32:38.801Z"
       }
     }
   }

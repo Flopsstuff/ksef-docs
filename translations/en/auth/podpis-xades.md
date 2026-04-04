@@ -1,8 +1,8 @@
 ---
 original: auth/podpis-xades.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 6fb819b
-last_translated: 2026-03-05
+source_commit: 5e69797
+last_translated: 2026-04-04
 ---
 
 > **Translation.** Original: [auth/podpis-xades.md](https://github.com/CIRFMF/ksef-docs/blob/main/auth/podpis-xades.md)
@@ -119,9 +119,11 @@ Required subject attributes:<br/>
 | 2.5.4.3             | commonName     | common name of certificate owner |
 | 2.5.4.6             | countryName    | country name, ISO 3166 code                |
 
-Recognized patterns for `serialNumber` attribute:<br>
-**(PNOPL|PESEL).\*?(?<number>\\d{11})**<br>
-**(TINPL|NIP).\*?(?<number>\\d{10})**<br>
+Recognized patterns for `serialNumber` attribute:  
+```regex
+(PNOPL|PESEL).*?(?<identifier>\\d{11})
+(TINPL|NIP).*?(?<identifier>\\d{10})
+```
 
 #### Qualified seal certificates (issued for organizations)
 
@@ -139,8 +141,10 @@ Prohibited subject attributes:
 | 2.5.4.42            | givenName   | given name      |  
 | 2.5.4.4             | surname     | surname  |
 
-Recognized patterns for `organizationIdentifier` attribute:<br>
-**(VATPL).\*?(?<number>\\d{10})**<br>
+Recognized patterns for `organizationIdentifier` attribute:
+```regex
+(VATPL).*?(?<identifier>\\d{10})
+```
 
 ### Certificate Fingerprint
 

@@ -1,8 +1,8 @@
 ---
 original: uprawnienia.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 6fb819b
-last_translated: 2026-03-07
+source_commit: 5e69797
+last_translated: 2026-04-04
 ---
 
 > **Translation.** Original: [uprawnienia.md](https://github.com/CIRFMF/ksef-docs/blob/main/uprawnienia.md)

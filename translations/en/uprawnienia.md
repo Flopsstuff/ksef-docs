@@ -1,8 +1,8 @@
 ---
 original: uprawnienia.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 6fb819b
-last_translated: 2026-03-05
+source_commit: 5e69797
+last_translated: 2026-04-04
 ---
 
 > **Translation.** Original: [uprawnienia.md](https://github.com/CIRFMF/ksef-docs/blob/main/uprawnienia.md)
@@ -367,7 +367,7 @@ GrantPermissionsAuthorizationRequest grantPermissionsAuthorizationRequest = Gran
         Value = peppolId
     })
     .WithPermission(AuthorizationPermissionType.PefInvoicing)
-    .WithDescription($"E2E: Nadanie uprawnienia do wystawiania faktur PEF dla firmy {companyNip} (na wniosek {peppolId})")
+    .WithDescription($"E2E: Granting permission to issue PEF invoices for company {companyNip} (at the request of {peppolId})")
     .Build();
 
 OperationResponse operationResponse = await KsefClient
@@ -428,7 +428,7 @@ GrantIndirectEntityPermissionsRequest request = new GrantIndirectEntityPermissio
         .withSubjectIdentifier(new SubjectIdentifier(SubjectIdentifier.IdentifierType.NIP, subjectNip))
         .withTargetIdentifier(new TargetIdentifier(TargetIdentifier.IdentifierType.NIP, targetNip))
         .withPermissions(List.of(INVOICE_WRITE))
-        .withDescription("E2E indirect grantE2E indirect grant")
+        .withDescription("E2E indirect grant")
         .build();
 
 OperationResponse response = ksefClient.grantsPermissionIndirectEntity(request, accessToken);
@@ -686,8 +686,8 @@ QueryPersonalGrantResponse response = ksefClient.searchPersonalGrantPermission(r
 ---
 ### Retrieving List of Invoice Handling Permissions in Current Context
 
-The method allows reading received invoice handling permissions in the current login context. 
- This list includes permissions:
+The method allows reading received invoice handling permissions in the current login context.
+This list includes permissions:
 - granted to the entity for invoice handling by another entity 
 
 POST [/permissions/query/entities/grants](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Wyszukiwanie-nadanych-uprawnien/paths/~1permissions~1query~entities~1grants/post)
@@ -697,11 +697,30 @@ POST [/permissions/query/entities/grants](https://api-test.ksef.mf.gov.pl/docs/v
 | `contextIdentifier`    | identifier of the entity that granted the permission for invoice handling.   ```Nip```, ```InternalId```  |
 
 Example in C#:
-```
+[KSeF.Client.Tests.Core\E2E\Permissions\EntityPermission\EntityPermissionGrantQueryE2ETests.cs](https://github.com/CIRFMF/ksef-client-csharp/blob/main/KSeF.Client.Tests.Core/E2E/Permissions/EntityPermission/EntityPermissionGrantQueryE2ETests.cs)
+```csharp
+EntityPermissionGrantQueryRequest request = new EntityPermissionGrantQueryRequest
+{
+    ContextIdentifier = new ContextIdentifier
+    {
+        Type = AuthenticationTokenContextIdentifierType.Nip,
+        Value = nip
+    }
+};
+
+EntityPermissionGrantResponse queryEntitiesGrantsAsyncResponse = 
+    await searchPermissionClient.QueryEntitiesGrantsAsync(request, authOperationStatusResponse.AccessToken.Token);
 ```
 
 Example in Java:
-```
+[SearchEntityPermissionsIntegrationTest.java](https://github.com/CIRFMF/ksef-client-java/blob/main/demo-web-app/src/integrationTest/java/pl/akmf/ksef/sdk/SearchEntityPermissionsIntegrationTest.java)
+```java
+PersonPermissionsContextIdentifier contextIdentifier = new PersonPermissionsContextIdentifier();
+contextIdentifier.setValue(nip);
+contextIdentifier.setType(PersonPermissionsContextIdentifier.IdentifierType.NIP);
+EntityPermissionsQueryRequest request = new EntityPermissionsQueryRequest(contextIdentifier);
+
+QueryEntityPermissionsResponse queryEntitiesGrantsAsyncResponse = ksefClient.searchEntityInvoiceContext(request, 0, 10, token.accessToken());
 ```
 
 ---
@@ -949,19 +968,4 @@ Example in Java:
 PermissionStatusInfo status = ksefClient.permissionOperationStatus(referenceNumber, accessToken);
 ```
 
-### Checking Status of Consent for Issuing Invoices with Attachments
-
-Consent is required to issue invoices containing attachments and applies within the current context (`ContextIdentifier`) used during authentication. Consent is granted outside the API, exclusively in the e-Tax Office service, and applications can be submitted from January 1, 2026. The API does not provide an operation to submit consent
-
-GET [/permissions/attachments/status](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Operacje/paths/~1permissions~1attachments~1status/get)
-
-Returns consent status for the current context. If consent is not active, an invoice with attachment sent to the KSeF API will be rejected.
-
-Example in C#:
-[KSeF.Client.Tests.Core\E2E\TestData\TestDataE2ETests.cs](https://github.com/CIRFMF/ksef-client-csharp/blob/main/KSeF.Client.Tests.Core/E2E/TestData/TestDataE2ETests.cs)
-```csharp
-PermissionsAttachmentAllowedResponse attachmentPermissionStatus = await KsefClient.GetAttachmentPermissionStatusAsync(authOperationStatusResponse.AccessToken.Token)
-```
-
-Example in Java:
-[PermissionAttachmentStatusIntegrationTest.java](https://github.com/CIRFMF/ksef-client-java/blob/main/demo-web-app/src/integrationTest/java/pl/akmf/ksef/sdk/PermissionAttachmentStatusIntegrationTest.
+### Checking Status of Consent for Issuing
