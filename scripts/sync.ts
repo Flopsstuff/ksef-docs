@@ -6,9 +6,8 @@ import {
   getSubmoduleCommit,
   findOriginalMdFiles,
   getFileStatuses,
+  TRANSLATED_LANGUAGES,
 } from "./lib";
-
-const SUPPORTED_LANGS = ["ru", "en"];
 
 function main() {
   // Pull latest upstream
@@ -35,7 +34,7 @@ function main() {
   console.log(`\nFound ${files.length} .md files in original/\n`);
 
   // Show status per language
-  for (const lang of SUPPORTED_LANGS) {
+  for (const lang of TRANSLATED_LANGUAGES) {
     const statuses = getFileStatuses(lang);
     const newFiles = statuses.filter((s) => s.status === "new");
     const outdated = statuses.filter((s) => s.status === "outdated");

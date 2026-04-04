@@ -1,6 +1,4 @@
-import { getFileStatuses, findOriginalMdFiles } from "./lib";
-
-const SUPPORTED_LANGS = ["ru", "en"];
+import { getFileStatuses, findOriginalMdFiles, TRANSLATED_LANGUAGES } from "./lib";
 
 const ICONS: Record<string, string> = {
   "up-to-date": "✓",
@@ -11,7 +9,7 @@ const ICONS: Record<string, string> = {
 
 function main() {
   const lang = process.argv.find((a) => a.startsWith("--lang="))?.split("=")[1];
-  const langs = lang ? [lang] : SUPPORTED_LANGS;
+  const langs = lang ? [lang] : TRANSLATED_LANGUAGES;
 
   for (const l of langs) {
     console.log(`\n=== ${l.toUpperCase()} ===\n`);

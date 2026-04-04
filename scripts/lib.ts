@@ -104,4 +104,6 @@ export function getFileStatuses(lang: string): FileInfo[] {
   return result;
 }
 
-export { ROOT, ORIGINAL_DIR, TRANSLATIONS_DIR, LOCK_PATH };
+const TRANSLATED_LANGUAGES = ["ru", "en", "uk"];
+
+export { ROOT, ORIGINAL_DIR, TRANSLATIONS_DIR, LOCK_PATH, TRANSLATED_LANGUAGES };
