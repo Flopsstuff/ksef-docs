@@ -2,7 +2,7 @@ name: Update Translations
 
 on:
   schedule:
-    - cron: "0 8 * * 1-5" # weekdays at 08:00 UTC
+    - cron: "0 8 * * 1,4" # Monday and Thursday at 08:00 UTC
   workflow_dispatch:
     inputs:
       force:
