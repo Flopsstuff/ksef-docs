@@ -4,13 +4,14 @@
 
 Translated documentation for [KSeF 2.0](https://github.com/CIRFMF/ksef-docs) (Poland's National e-Invoice System), with a static site powered by VitePress.
 
-Available in Polish (original), Russian, and English.
+Available in Polish (original), Russian, English, and Ukrainian.
 
 ## Repo Structure
 
 - `original/` — git submodule pointing to the upstream repo (CIRFMF/ksef-docs)
 - `translations/ru/` — Russian translations
 - `translations/en/` — English translations
+- `translations/uk/` — Ukrainian translations
 - `scripts/` — sync, translate, and build scripts
 - `site/` — VitePress site (config, theme, landing page; content is generated)
 - `prompts/` — system prompt for Claude API translation
@@ -32,6 +33,12 @@ The `docs:prepare` step copies originals and translations into `site/pl/`, `site
 
 Deployed to GitHub Pages via `.github/workflows/deploy.yml` on push to `main`.
 
+## Automated Translation Updates
+
+The `.github/workflows/update-translations.yml` workflow runs on Monday and Thursday at 08:00 UTC (and can be triggered manually). It syncs the upstream submodule, translates any outdated files for all languages, and pushes directly to `main`.
+
+Requires a `ENV_FILE` repository secret containing the `.env` contents (API keys, provider config).
+
 ## Translation Workflow
 
 ```bash
@@ -42,7 +49,8 @@ yarn sync
 yarn status
 
 # Translate everything (docs + OpenAPI spec)
-yarn translate --lang en --outdated
+yarn translate --lang=all --outdated    # all languages at once
+yarn translate --lang en --outdated     # single language
 
 # Translate only markdown docs
 yarn translate:docs --lang ru auth/sesje.md  # single file
