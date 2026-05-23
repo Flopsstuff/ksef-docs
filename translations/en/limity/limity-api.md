@@ -1,8 +1,8 @@
 ---
 original: limity/limity-api.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 6fb819b
-last_translated: 2026-03-05
+source_commit: d92d285
+last_translated: 2026-05-23
 ---
 
 > **Translation.** Original: [limity/limity-api.md](https://github.com/CIRFMF/ksef-docs/blob/main/limity/limity-api.md)
@@ -71,7 +71,7 @@ In case of repeated violations or extreme load, the system may automatically app
 - limiting availability for the most burdensome contexts.
 
 #### 4. Higher Limits During Night Hours
-Between 20:00-06:00, higher download limits apply than during the day. 
+Between 20:00–06:00, higher download limits apply than during the day. 
 Detailed values will be determined in the initial period of KSeF 2.0 operation, after adjusting parameters to actual loads.
 
 #### 5. Preliminary Limit Assumptions
@@ -138,7 +138,7 @@ Such an approach is permissible only in low volume profiles; with a larger numbe
 | Endpoint | | req/s | req/min | req/h |
 |----------|---|-------|---------|-------|
 | Get invoice metadata list | POST /invoices/query/metadata | 8 | 16 | 20 |
-| Export invoice package | POST /invoices/exports | 4 | 8 | 20 |
+| Export invoice package | POST /invoices/exports | 8 | 16 | 20 |
 | Get export package status | /invoices/exports/{referenceNumber} | 10 | 60 | 600 |
 | Get invoice by KSeF number | GET /invoices/ksef/{ksefNumber} | 8 | 16 | 64 |
 
@@ -147,18 +147,33 @@ Such an approach is permissible only in low volume profiles; with a larger numbe
 ## Invoice Sending - Limits
 
 ### Architectural Assumptions
-- Invoice sending, regardless of the type of sending, is queued.
-- Processing is optimized for the fastest possible confirmation of invoice correctness and return of the KSeF number.
+- Invoice sending, regardless of the sending mode, is queued.
+- Processing is optimized for the fastest possible confirmation of invoice correctness and assignment of the KSeF number.
 
 #### Batch Sending (invoice packages):
 
-- An invoice package is treated as one message in the queue (package reference instead of separate entries for each invoice) and processed with the same priority as a single document.
-- Package sending reduces network and operational overhead because:
-	- fewer HTTP requests are executed,
-	- content operations (decryption, validation, storage) are performed in batches, which is the most efficient way to handle multiple documents simultaneously.
-- Batch compression. Due to the XML format and high repeatability of elements between invoices (fixed structure, similar field names, repeatable blocks), the achieved compression ratio is usually very favorable, which significantly reduces data volume and shortens transmission time. In practice, it is faster to send one package containing e.g., 100 invoices than 100 individual invoices in an interactive session.
-- Limits. The limit mechanism works independently of the sending mode. Batch sending naturally reduces the number of requests and facilitates efficient use of available limits.
-- Application. Batch mode is recommended wherever more than one document is transmitted in one operational window. It is particularly effective for cyclical customer settlements, in e-commerce, and in automated invoicing processes.
+Batch sending is the recommended mode for transmitting a larger number of invoices.
+
+- **One package, one message in the queue.**  
+  An invoice package is treated as one message in the queue — as a reference to the package, not as a separate entry for each invoice. It is processed with the same priority as a single document.
+
+- **Lower communication overhead.**  
+  Sending in a package reduces the number of HTTP requests and decreases network and operational overhead on both the client and API side.
+
+- **More efficient processing of multiple documents.**  
+  Operations on package contents, such as decryption, validation, and storage, are performed in batches, which is the most efficient way to handle multiple documents simultaneously.
+
+- **Batch compression.**  
+  Batch sending allows transmitting multiple invoices as a single compressed package. 
+
+  For larger packages, use of the **tar.gz** format is recommended instead of the default ZIP. **tar.gz** compresses the entire package as a single data stream and better exploits the repeatability of XML structure between invoices. ZIP compresses each file individually, therefore yielding a weaker result for large sets of similar documents.
+
+- **More efficient use of limits.**  
+  The limit mechanism works independently of the sending mode. Batch sending inherently reduces the number of API requests, thus facilitating efficient use of available limits. In practice, sending one package containing e.g., 100 invoices is usually more beneficial than sending 100 individual invoices in an interactive session.
+
+- **Application.**  
+  Batch mode is recommended wherever more than one document is transmitted in one operational window. It is particularly effective for cyclical customer settlements, in e-commerce, and in automated invoicing processes.
+
 
 Example scenarios for batch mode application:
 - **Online store (e-commerce).** Orders and payments are processed asynchronously, and invoices are issued automatically by the ERP system or invoicing module. A single invoice does not need to be sent to KSeF immediately after issuance. A dedicated process can aggregate issued invoices and cyclically - e.g., every 5 minutes - send them in batch packages to KSeF, which significantly reduces the number of HTTP requests and optimizes limit utilization.

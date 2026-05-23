@@ -1,28 +1,35 @@
 ---
-original: faktury/sesja-sprawdzenie-stanu-i-pobranie-upo.md
+original: faktury/sesje/sesja-sprawdzenie-stanu-i-pobranie-upo.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 6fb819b
-last_translated: 2026-03-07
+source_commit: d92d285
+last_translated: 2026-05-23
 ---
 
-> **Translation.** Original: [faktury/sesja-sprawdzenie-stanu-i-pobranie-upo.md](https://github.com/CIRFMF/ksef-docs/blob/main/faktury/sesja-sprawdzenie-stanu-i-pobranie-upo.md)
+> **Translation.** Original: [faktury/sesje/sesja-sprawdzenie-stanu-i-pobranie-upo.md](https://github.com/CIRFMF/ksef-docs/blob/main/faktury/sesje/sesja-sprawdzenie-stanu-i-pobranie-upo.md)
 
-## Сесія – перевірка стану та отримання UPO
-10.07.2025
+## Session – Checking Status and Downloading UPO
+20.04.2026
 
-Цей документ описує операції для моніторингу стану сесії (інтерактивної чи пакетної) та отримання UPO для рахунків-фактур та всієї сесії.
+This document describes operations for monitoring the status of a session (interactive or batch) and downloading UPO for invoices and an entire session.
 
-### 1. Отримання списку сесій
-Повертає список сесій, що відповідають заданим критеріям пошуку.
+### State Diagrams
+
+#### Interactive Session
+![state diagram](sesja-interaktywna-diagram-stanow.png)
+#### Batch Session
+![state diagram](sesja-wsadowa-diagram-stanow.png)
+
+### 1. Retrieving the Session List
+Returns a list of sessions matching the specified search criteria.
 
 GET [sessions](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Status-wysylki-i-UPO/paths/~1sessions/get)
 
-Повертає поточний статус сесії разом з агрегованими даними про кількість переданих, коректно та некоректно оброблених рахунків-фактур; після закриття сесії додатково надає список посилань на збірне UPO.
+Returns the current status of the session along with aggregated data on the number of submitted, successfully and unsuccessfully processed invoices; after the session is closed, it additionally provides a list of references to the consolidated UPO.
 
-Приклад на мові C#:
+Example in C#:
 [KSeF.Client.Tests.Core/E2E/Sessions/SessionStatusE2ETests.cs](https://github.com/CIRFMF/ksef-client-csharp/blob/main/KSeF.Client.Tests.Core/E2E/Sessions/SessionStatusE2ETests.cs)
 ```csharp
-// Отримання пакетних сесій
+// Retrieving batch sessions
  List<Session> sessions = new List<Session>();
  const int pageSize = 20;
  string? continuationToken = null;
@@ -33,7 +40,7 @@ GET [sessions](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Status-wys
      sessions.AddRange(response.Sessions);
  } while (!string.IsNullOrEmpty(continuationToken));
 
-// Отримання інтерактивних сесій
+// Retrieving interactive sessions
  List<Session> sessions = new List<Session>();
  const int pageSize = 20;
  string? continuationToken = null;
@@ -45,10 +52,10 @@ GET [sessions](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Status-wys
  } while (!string.IsNullOrEmpty(continuationToken)); 
 ```
 
-`sessionsFilter` це об'єкт фільтрів, що знаходиться тут: [KSeF.Client.Core/Models/Sessions/SessionsFilter.cs](https://github.com/CIRFMF/ksef-client-csharp/blob/main/KSeF.Client.Core/Models/Sessions/SessionsFilter.cs)
+`sessionsFilter` is a filter object located here: [KSeF.Client.Core/Models/Sessions/SessionsFilter.cs](https://github.com/CIRFMF/ksef-client-csharp/blob/main/KSeF.Client.Core/Models/Sessions/SessionsFilter.cs)
 
 
-Приклад на мові Java:
+Example in Java:
 [SessionIntegrationTest.java](https://github.com/CIRFMF/ksef-client-java/blob/main/demo-web-app/src/integrationTest/java/pl/akmf/ksef/sdk/SessionIntegrationTest.java)
 
 ```java
@@ -63,14 +70,14 @@ while (Strings.isNotBlank(activeSessions.getContinuationToken())) {
 }
 ```
 
-### 2. Перевірка стану сесії
-Перевіряє поточний стан сесії.
+### 2. Checking Session Status
+Checks the current status of a session.
 
 GET [sessions/\{referenceNumber\}](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Status-wysylki-i-UPO/paths/~1sessions~1%7BreferenceNumber%7D/get)
 
-Повертає поточний статус сесії разом з агрегованими даними про кількість переданих, коректно та некоректно оброблених рахунків-фактур; після закриття сесії додатково надає список посилань на збірне UPO.
+Returns the current status of the session along with aggregated data on the number of submitted, successfully and unsuccessfully processed invoices; after the session is closed, it additionally provides a list of references to the consolidated UPO.
 
-Приклад на мові C#:
+Example in C#:
 [KSeF.Client.Tests.Core/E2E/OnlineSession/OnlineSessionE2ETests.cs](https://github.com/CIRFMF/ksef-client-csharp/blob/main/KSeF.Client.Tests.Core/E2E/OnlineSession/OnlineSessionE2ETests.cs)
 ```csharp
 SessionStatusResponse openSessionResult = await kSeFClient.GetSessionStatusAsync(referenceNumber, accessToken, cancellationToken).ConfigureAwait(false);
@@ -80,7 +87,7 @@ int successfulInvoiceCount = openSessionResult.SuccessfulInvoiceCount;
 int failedInvoiceCount = openSessionResult.FailedInvoiceCount;
 ```
 
-Приклад на мові Java:
+Example in Java:
 [OnlineSessionIntegrationTest.java](https://github.com/CIRFMF/ksef-client-java/blob/main/demo-web-app/src/integrationTest/java/pl/akmf/ksef/sdk/OnlineSessionIntegrationTest.java)
 
 ```java
@@ -88,13 +95,13 @@ SessionStatusResponse statusResponse = ksefClient.getSessionStatus(referenceNumb
 ```
 
 
-### 3. Отримання інформації про передані рахунки-фактури
+### 3. Retrieving Information About Submitted Invoices
 
 GET [sessions/\{referenceNumber\}/invoices](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Status-wysylki-i-UPO/paths/~1sessions~1%7BreferenceNumber%7D~1invoices/get)
 
-Повертає список метаданих всіх переданих рахунків-фактур разом з їх статусами та загальну кількість цих рахунків-фактур у сесії.
+Returns a list of metadata for all submitted invoices along with their statuses and the total number of invoices in the session.
 
-Приклад на мові C#:
+Example in C#:
 ```csharp
 const int pageSize = 50;
 string continuationtoken = null;
@@ -121,7 +128,7 @@ while (continuationtoken != null);
 
 ```
 
-Приклад на мові Java:
+Example in Java:
 [OnlineSessionIntegrationTest.java](https://github.com/CIRFMF/ksef-client-java/blob/main/demo-web-app/src/integrationTest/java/pl/akmf/ksef/sdk/OnlineSessionIntegrationTest.java)
 
 ```java
@@ -131,15 +138,15 @@ while (Strings.isNotBlank(sessionInvoices.getContinuationToken())) {
     sessionInvoices = ksefClient.getSessions(pageSize, sessionInvoices.getContinuationToken(), accessToken);
 }
 ```
-### 4. Отримання інформації про окремий рахунок-фактуру
+### 4. Retrieving Information About a Single Invoice
 
-Дозволяє отримати детальну інформацію про окремий рахунок-фактуру в сесії, включаючи його статус та метадані.
+Allows retrieval of detailed information about a single invoice in a session, including its status and metadata.
 
-Необхідно вказати референсний номер сесії `referenceNumber` та референсний номер рахунка-фактури `invoiceReferenceNumber`.
+You must provide the session reference number `referenceNumber` and the invoice reference number `invoiceReferenceNumber`.
 
 GET [sessions/\{referenceNumber\}/invoices/\{invoiceReferenceNumber\}](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Status-wysylki-i-UPO/paths/~1sessions~1%7BreferenceNumber%7D~1invoices~1%7BinvoiceReferenceNumber%7D/get)
 
-Приклад на мові C#:
+Example in C#:
 ```csharp
 SessionInvoice invoice = await ksefClient
                 .GetSessionInvoiceAsync(
@@ -149,7 +156,7 @@ SessionInvoice invoice = await ksefClient
                 cancellationToken);
 ```
 
-Приклад на мові Java:
+Example in Java:
 [QueryInvoiceIntegrationTest.java](https://github.com/CIRFMF/ksef-client-java/blob/main/demo-web-app/src/integrationTest/java/pl/akmf/ksef/sdk/QueryInvoiceIntegrationTest.java)
 
 ```java
@@ -157,15 +164,15 @@ SessionInvoiceStatusResponse statusResponse = ksefClient.getSessionInvoiceStatus
 
 ```
 
-### 5. Отримання UPO для рахунка-фактури
+### 5. Downloading UPO for an Invoice
 
-Дозволяє отримати UPO для окремого, коректно прийнятого рахунка-фактури.
+Allows downloading the UPO for a single, correctly accepted invoice.
 
-#### 5.1 На основі референсного номера рахунка-фактури
+#### 5.1 By Invoice Reference Number
 
 GET [sessions/\{referenceNumber\}/invoices/\{invoiceReferenceNumber\}/upo](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Status-wysylki-i-UPO/paths/~1sessions~1%7BreferenceNumber%7D~1invoices~1%7BinvoiceReferenceNumber%7D~1upo/get)
 
-Приклад на мові C#:
+Example in C#:
 ```csharp
 string upo = await ksefClient
                 .GetSessionInvoiceUpoByReferenceNumberAsync(
@@ -175,18 +182,18 @@ string upo = await ksefClient
                 cancellationToken)
 ```
 
-Приклад на мові Java:
+Example in Java:
 [OnlineSessionIntegrationTest.java](https://github.com/CIRFMF/ksef-client-java/blob/main/demo-web-app/src/integrationTest/java/pl/akmf/ksef/sdk/OnlineSessionIntegrationTest.java)
 
 ```java
 byte[] upoResponse = ksefClient.getSessionInvoiceUpoByReferenceNumber(sessionReferenceNumber, invoiceReferenceNumber, accessToken);
 ```
 
-#### 5.2 На основі номера KSeF рахунка-фактури
+#### 5.2 By KSeF Invoice Number
 
 GET [sessions/\{referenceNumber\}/invoices/ksef/\{ksefNumber\}/upo](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Status-wysylki-i-UPO/paths/~1sessions~1%7BreferenceNumber%7D~1invoices~1ksef~1%7BksefNumber%7D~1upo/get)
 
-Приклад на мові C#:
+Example in C#:
 ```csharp
 var upo = await ksefClient
                 .GetSessionInvoiceUpoByKsefNumberAsync(
@@ -196,24 +203,24 @@ var upo = await ksefClient
                 cancellationToken)
 ```
 
-Приклад на мові Java:
+Example in Java:
 [OnlineSessionIntegrationTest.java](https://github.com/CIRFMF/ksef-client-java/blob/main/demo-web-app/src/integrationTest/java/pl/akmf/ksef/sdk/OnlineSessionIntegrationTest.java)
 
 ```java
 byte[] upoResponse = ksefClient.getSessionInvoiceUpoByKsefNumber(sessionReferenceNumber, ksefNumber, accessToken);
 ```
 
-Отриманий документ XML:
-* підписаний у форматі XADES Міністерством фінансів
-* відповідає схемі [XSD](/faktury/upo/schemy/upo-v4-3.xsd).
+The received XML document is:
+* signed in XADES format by the Ministry of Finance
+* compliant with the [XSD](/faktury/upo/schemy/upo-v4-3.xsd) schema.
 
-### 6. Отримання списку некоректно прийнятих рахунків-фактур
+### 6. Retrieving the List of Incorrectly Processed Invoices
 
 GET [sessions/\{referenceNumber\}/invoices/failed](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Status-wysylki-i-UPO/paths/~1sessions~1%7BreferenceNumber%7D~1invoices~1failed/get)
 
-Повертає загальну кількість відхилених рахунків-фактур у сесії та детальну інформацію (статус та деталі помилок) для кожного некоректно обробленого рахунка-фактури.
+Returns the total number of rejected invoices in the session and detailed information (status and error details) for each incorrectly processed invoice.
 
-Приклад на мові C#:
+Example in C#:
 ```csharp
 const int pageSize = 50;
 string continuationToken = "";
@@ -234,7 +241,7 @@ do
 while (!string.IsNullOrEmpty(continuationToken));
 ```
 
-Приклад на мові Java:
+Example in Java:
 [DuplicateInvoiceIntegrationTest.java](https://github.com/CIRFMF/ksef-client-java/blob/main/demo-web-app/src/integrationTest/java/pl/akmf/ksef/sdk/DuplicateInvoiceIntegrationTest.java)
 
 ```java
@@ -251,15 +258,15 @@ while (Strings.isNotBlank(failedInvoices.getContinuationToken())) {
 }
 ```
 
-Endpoint дозволяє селективно отримати виключно відхилені рахунки-фактури, що спрощує аналіз помилок у сесіях, що містять велику кількість рахунків-фактур.
+This endpoint allows selective retrieval of only rejected invoices, which facilitates error analysis in sessions containing a large number of invoices.
 
-### 7. Отримання UPO сесії
+### 7. Downloading the Session UPO
 
-UPO сесії є збірним підтвердженням прийняття всіх рахунків-фактур, коректно переданих в рамках даної сесії.
+The session UPO is a consolidated acknowledgement of receipt for all invoices correctly submitted within a given session.
 
-Після закриття сесії, у відповіді на перевірку її [стану](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Status-wysylki-i-UPO/paths/~1sessions~1%7BreferenceNumber%7D/get) (крок 2 – Перевірка стану сесії), повертається не лише інформація про кількість коректно та помилково оброблених рахунків-фактур, а й список посилань на збірні UPO.
+After the session is closed, in response to checking its [status](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Status-wysylki-i-UPO/paths/~1sessions~1%7BreferenceNumber%7D/get) (step 2 – Checking Session Status), not only information about the number of correctly and incorrectly processed invoices is returned, but also a list of references to consolidated UPOs.
 
-Кожен елемент масиву `upo.pages[]` містить референсний номер UPO (`referenceNumber`) та посилання (`downloadUrl`), що дозволяє його завантажити:
+Each element of the `upo.pages[]` array contains the UPO reference number (`referenceNumber`) and a link (`downloadUrl`) enabling its download:
 
 ```json
 "upo": {
@@ -277,12 +284,12 @@ UPO сесії є збірним підтвердженням прийняття
 
 ```
 
-Маючи цей список, клієнт API може завантажити UPO окремо, викликавши endpoint, вказаний у полі `downloadUrl`, тобто  
+Having this list, the API client can download UPOs one by one by calling the endpoint indicated in the `downloadUrl` field, i.e.  
 GET [/sessions/\{referenceNumber\}/upo/\{upoReferenceNumber\}](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Status-wysylki-i-UPO/paths/~1sessions~1%7BreferenceNumber%7D~1upo~1%7BupoReferenceNumber%7D/get)
 
-Отриманий документ XML відповідає схемі [XSD](/faktury/upo/schemy/upo-v4-3.xsd) і може містити максимум 10 000 позицій рахунків-фактур.
+The received XML document is compliant with the [XSD](/faktury/upo/schemy/upo-v4-3.xsd) schema and may contain a maximum of 10,000 invoice entries.
 
-Приклад на мові C#:
+Example in C#:
 
 ```csharp
  string upo = await ksefClient.GetSessionUpoAsync(
@@ -293,12 +300,12 @@ GET [/sessions/\{referenceNumber\}/upo/\{upoReferenceNumber\}](https://api-test.
         );
 ```
 
-Приклад на мові Java:
+Example in Java:
 [OnlineSessionIntegrationTest.java](https://github.com/CIRFMF/ksef-client-java/blob/main/demo-web-app/src/integrationTest/java/pl/akmf/ksef/sdk/OnlineSessionIntegrationTest.java)
 
 ```java
 byte[] sessionUpo = ksefClient.getSessionUpo(sessionReferenceNumber, upoReferenceNumber, accessToken);
 ```
 
-## Пов'язані документи
-- [Номер KSeF – структура та валідація](numer-ksef.md)
+## Related Documents
+- [KSeF Number – Structure and Validation](../numer-ksef.md)

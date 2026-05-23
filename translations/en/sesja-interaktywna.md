@@ -1,8 +1,8 @@
 ---
 original: sesja-interaktywna.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 6fb819b
-last_translated: 2026-03-05
+source_commit: d92d285
+last_translated: 2026-05-23
 ---
 
 > **Translation.** Original: [sesja-interaktywna.md](https://github.com/CIRFMF/ksef-docs/blob/main/sesja-interaktywna.md)
@@ -154,6 +154,6 @@ ksefClient.closeOnlineSession(sessionReferenceNumber, accessToken);
 ```
 
 Related documents:
-- [Status Check and UPO Download](faktury/sesja-sprawdzenie-stanu-i-pobranie-upo.md)
+- [Status Check and UPO Download](faktury/sesje/sesja-sprawdzenie-stanu-i-pobranie-upo.md)
 - [Invoice Verification](faktury/weryfikacja-faktury.md)
 - [KSeF Number – Structure and Validation](faktury/numer-ksef.md)

@@ -1,8 +1,8 @@
 ---
 original: sesja-wsadowa.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 6fb819b
-last_translated: 2026-03-05
+source_commit: d92d285
+last_translated: 2026-05-23
 ---
 
 > **Translation.** Original: [sesja-wsadowa.md](https://github.com/CIRFMF/ksef-docs/blob/main/sesja-wsadowa.md)
@@ -17,6 +17,7 @@ last_translated: 2026-03-05
 Каждый счет-фактура должен быть подготовлен в формате XML согласно актуальной схеме, опубликованной Министерством финансов:
 * ZIP-пакет должен быть разделен на части не больше 100 МБ (до шифрования), которые шифруются и передаются отдельно.
 * Необходимо указать информацию о каждой части пакета в объекте ```fileParts```.
+
 
 ### Предварительные требования
 Чтобы воспользоваться пакетной отправкой, необходимо сначала пройти процесс [аутентификации](uwierzytelnianie.md) и иметь актуальный токен доступа (```accessToken```), который дает право на использование защищенных ресурсов API KSeF.
@@ -49,7 +50,7 @@ EncryptionData encryptionData = cryptographyService.getEncryptionData();
 Сгенерированные данные служат для шифрования счетов-фактур.
 
 ### 1. Подготовка ZIP-пакета
-Необходимо создать ZIP-пакет, содержащий все счета-фактуры, которые будут отправлены в рамках одной сессии.
+Необходимо создать ZIP-пакет, содержащий все счета-фактуры, которые будут отправлены в рамках одной сессии.  
 
 Пример на языке C#:
 [KSeF.Client.Tests.Core\E2E\BatchSession\BatchSessionE2ETests.cs](https://github.com/CIRFMF/ksef-client-csharp/blob/main/KSeF.Client.Tests.Core/E2E/BatchSession/BatchSessionE2ETests.cs)
@@ -298,7 +299,7 @@ ksefClient.sendBatchParts(response, encryptedZipParts);
 Общее время на отправку каждой части = количество частей × 20 минут.  
 Пример. Пакет содержит 2 части – каждая часть имеет 40 минут на отправку.
 
-Размер части не имеет значения для установления лимита времени – единственным критерием является количество частей, объявленное при открытии сессии.
+Размер части не имеет значения для установления лимита времени – единственным критерием является количество частей, объявленное при открытии сессии.  
 
 Авторизация проверяется в начале каждого HTTP-запроса. Если в момент принятия запроса адрес действителен, операция передачи выполняется полностью. Истечение срока действия в процессе передачи не прерывает начатую операцию.
 
@@ -319,7 +320,7 @@ await KsefClient.CloseBatchSessionAsync(referenceNumber, accessToken);
 ksefClient.closeBatchSession(referenceNumber, accessToken);
 ```
 
-Смотрите также 
-- [Проверка состояния и получение UPO](faktury/sesja-sprawdzenie-stanu-i-pobranie-upo.md)
+См. также
+- [Проверка состояния и получение UPO](faktury/sesje/sesja-sprawdzenie-stanu-i-pobranie-upo.md)
 - [Верификация счета-фактуры](faktury/weryfikacja-faktury.md)
 - [Номер KSeF – структура и валидация](faktury/numer-ksef.md)

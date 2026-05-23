@@ -1,14 +1,14 @@
 ---
 original: README.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 6fb819b
-last_translated: 2026-03-05
+source_commit: d92d285
+last_translated: 2026-05-23
 ---
 
 > **Translation.** Original: [README.md](https://github.com/CIRFMF/ksef-docs/blob/main/README.md)
 
 # **KSeF 2.0 \- Guide for Integrators**
-22.12.2025
+05.05.2026
 
 This document is a compendium of knowledge for developers, analysts, and system integrators implementing integration with the National e-Invoice System (KSeF) version 2.0. The guide focuses on the technical and practical aspects of communicating with the KSeF system API.
 
@@ -35,6 +35,8 @@ The guide is divided into thematic sections corresponding to key functions and i
   * [Downloading Invoices](pobieranie-faktur/pobieranie-faktur.md)
   * [Incremental Invoice Download](pobieranie-faktur/przyrostowe-pobieranie-faktur.md)
 * [KSeF Token Management](tokeny-ksef.md)
+* Security
+  * [Public Keys for Encryption](bezpieczenstwo/klucze-publiczne-do-szyfrowania.md)
 * [Limits](limity/limity.md)
 * [Test Data](dane-testowe-scenariusze.md)
 

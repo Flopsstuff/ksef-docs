@@ -1,23 +1,30 @@
 ---
-original: faktury/sesja-sprawdzenie-stanu-i-pobranie-upo.md
+original: faktury/sesje/sesja-sprawdzenie-stanu-i-pobranie-upo.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 6fb819b
-last_translated: 2026-03-05
+source_commit: d92d285
+last_translated: 2026-05-23
 ---
 
-> **Translation.** Original: [faktury/sesja-sprawdzenie-stanu-i-pobranie-upo.md](https://github.com/CIRFMF/ksef-docs/blob/main/faktury/sesja-sprawdzenie-stanu-i-pobranie-upo.md)
+> **Translation.** Original: [faktury/sesje/sesja-sprawdzenie-stanu-i-pobranie-upo.md](https://github.com/CIRFMF/ksef-docs/blob/main/faktury/sesje/sesja-sprawdzenie-stanu-i-pobranie-upo.md)
 
-## Сессия – проверка состояния и получение UPO
-10.07.2025
+## Сессия – проверка состояния и получение УПО
+20.04.2026
 
-Данный документ описывает операции для мониторинга состояния сессии (интерактивной или пакетной) и получения UPO для счетов-фактур и всей сессии.
+Данный документ описывает операции для мониторинга состояния сессии (интерактивной или пакетной) и получения УПО для счетов-фактур и всей сессии.
+
+### Диаграммы состояний
+
+#### Интерактивная сессия
+![диаграмма состояний](sesja-interaktywna-diagram-stanow.png)
+#### Пакетная сессия
+![диаграмма состояний](sesja-wsadowa-diagram-stanow.png)
 
 ### 1. Получение списка сессий
-Возвращает список сессий, удовлетворяющих заданным критериям поиска.
+Возвращает список сессий, отвечающих указанным критериям поиска.
 
 GET [sessions](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Status-wysylki-i-UPO/paths/~1sessions/get)
 
-Возвращает текущий статус сессии вместе с агрегированными данными о количестве переданных, корректно и некорректно обработанных счетов-фактур; после закрытия сессии дополнительно предоставляет список ссылок на сводный UPO.
+Возвращает текущий статус сессии с агрегированными данными о количестве отправленных, корректно и некорректно обработанных счетов-фактур; после закрытия сессии дополнительно предоставляет список ссылок на сводное УПО.
 
 Пример на языке C#:
 [KSeF.Client.Tests.Core/E2E/Sessions/SessionStatusE2ETests.cs](https://github.com/CIRFMF/ksef-client-csharp/blob/main/KSeF.Client.Tests.Core/E2E/Sessions/SessionStatusE2ETests.cs)
@@ -45,7 +52,7 @@ GET [sessions](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Status-wys
  } while (!string.IsNullOrEmpty(continuationToken)); 
 ```
 
-`sessionsFilter` это объект фильтров, находящийся здесь: [KSeF.Client.Core/Models/Sessions/SessionsFilter.cs](https://github.com/CIRFMF/ksef-client-csharp/blob/main/KSeF.Client.Core/Models/Sessions/SessionsFilter.cs)
+`sessionsFilter` — это объект фильтров, находящийся здесь: [KSeF.Client.Core/Models/Sessions/SessionsFilter.cs](https://github.com/CIRFMF/ksef-client-csharp/blob/main/KSeF.Client.Core/Models/Sessions/SessionsFilter.cs)
 
 
 Пример на языке Java:
@@ -68,7 +75,7 @@ while (Strings.isNotBlank(activeSessions.getContinuationToken())) {
 
 GET [sessions/\{referenceNumber\}](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Status-wysylki-i-UPO/paths/~1sessions~1%7BreferenceNumber%7D/get)
 
-Возвращает текущий статус сессии вместе с агрегированными данными о количестве переданных, корректно и некорректно обработанных счетов-фактур; после закрытия сессии дополнительно предоставляет список ссылок на сводный UPO.
+Возвращает текущий статус сессии с агрегированными данными о количестве отправленных, корректно и некорректно обработанных счетов-фактур; после закрытия сессии дополнительно предоставляет список ссылок на сводное УПО.
 
 Пример на языке C#:
 [KSeF.Client.Tests.Core/E2E/OnlineSession/OnlineSessionE2ETests.cs](https://github.com/CIRFMF/ksef-client-csharp/blob/main/KSeF.Client.Tests.Core/E2E/OnlineSession/OnlineSessionE2ETests.cs)
@@ -88,11 +95,11 @@ SessionStatusResponse statusResponse = ksefClient.getSessionStatus(referenceNumb
 ```
 
 
-### 3. Получение информации о переданных счетах-фактурах
+### 3. Получение информации об отправленных счетах-фактурах
 
 GET [sessions/\{referenceNumber\}/invoices](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Status-wysylki-i-UPO/paths/~1sessions~1%7BreferenceNumber%7D~1invoices/get)
 
-Возвращает список метаданных всех переданных счетов-фактур вместе с их статусами и общим количеством этих счетов-фактур в сессии.
+Возвращает список метаданных всех отправленных счетов-фактур с их статусами и общее количество этих счетов-фактур в сессии.
 
 Пример на языке C#:
 ```csharp
@@ -135,7 +142,7 @@ while (Strings.isNotBlank(sessionInvoices.getContinuationToken())) {
 
 Позволяет получить подробную информацию об отдельном счете-фактуре в сессии, включая его статус и метаданные.
 
-Необходимо указать референсный номер сессии `referenceNumber` и референсный номер счета-фактуры `invoiceReferenceNumber`.
+Необходимо указать ссылочный номер сессии `referenceNumber` и ссылочный номер счета-фактуры `invoiceReferenceNumber`.
 
 GET [sessions/\{referenceNumber\}/invoices/\{invoiceReferenceNumber\}](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Status-wysylki-i-UPO/paths/~1sessions~1%7BreferenceNumber%7D~1invoices~1%7BinvoiceReferenceNumber%7D/get)
 
@@ -157,11 +164,11 @@ SessionInvoiceStatusResponse statusResponse = ksefClient.getSessionInvoiceStatus
 
 ```
 
-### 5. Получение UPO для счета-фактуры
+### 5. Получение УПО для счета-фактуры
 
-Позволяет получить UPO для отдельного корректно принятого счета-фактуры.
+Позволяет получить УПО для отдельного, корректно принятого счета-фактуры.
 
-#### 5.1 На основе референсного номера счета-фактуры
+#### 5.1 На основе ссылочного номера счета-фактуры
 
 GET [sessions/\{referenceNumber\}/invoices/\{invoiceReferenceNumber\}/upo](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Status-wysylki-i-UPO/paths/~1sessions~1%7BreferenceNumber%7D~1invoices~1%7BinvoiceReferenceNumber%7D~1upo/get)
 
@@ -251,15 +258,15 @@ while (Strings.isNotBlank(failedInvoices.getContinuationToken())) {
 }
 ```
 
-Endpoint позволяет селективно получить только отклоненные счета-фактуры, что облегчает анализ ошибок в сессиях, содержащих большое количество счетов-фактур.
+Endpoint позволяет селективно получить только отклоненные счета-фактуры, что упрощает анализ ошибок в сессиях, содержащих большое количество счетов-фактур.
 
-### 7. Получение UPO сессии
+### 7. Получение УПО сессии
 
-UPO сессии представляет собой сводное подтверждение принятия всех корректно переданных счетов-фактур в рамках данной сессии.
+УПО сессии представляет собой сводное подтверждение приема всех счетов-фактур, корректно отправленных в рамках данной сессии.
 
-После закрытия сессии в ответе на проверку ее [состояния](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Status-wysylki-i-UPO/paths/~1sessions~1%7BreferenceNumber%7D/get) (шаг 2 – Проверка состояния сессии) возвращается не только информация о количестве корректно и ошибочно обработанных счетов-фактур, но также список ссылок на сводные UPO.
+После закрытия сессии в ответе на проверку ее [состояния](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Status-wysylki-i-UPO/paths/~1sessions~1%7BreferenceNumber%7D/get) (шаг 2 – Проверка состояния сессии) возвращаются не только сведения о количестве корректно и ошибочно обработанных счетов-фактур, но также список ссылок на сводные УПО.
 
-Каждый элемент массива `upo.pages[]` содержит референсный номер UPO (`referenceNumber`) и ссылку (`downloadUrl`), позволяющую его скачать:
+Каждый элемент массива `upo.pages[]` содержит ссылочный номер УПО (`referenceNumber`) и ссылку (`downloadUrl`), позволяющую его загрузить:
 
 ```json
 "upo": {
@@ -277,10 +284,10 @@ UPO сессии представляет собой сводное подтве
 
 ```
 
-Имея этот список, клиент API может скачать UPO по отдельности, вызвав endpoint, указанный в поле `downloadUrl`, т.е.  
+Располагая этим списком, клиент API может загрузить УПО по отдельности, вызвав endpoint, указанный в поле `downloadUrl`, т.е.  
 GET [/sessions/\{referenceNumber\}/upo/\{upoReferenceNumber\}](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Status-wysylki-i-UPO/paths/~1sessions~1%7BreferenceNumber%7D~1upo~1%7BupoReferenceNumber%7D/get)
 
-Полученный XML-документ соответствует схеме [XSD](/faktury/upo/schemy/upo-v4-3.xsd) и может содержать максимум 10 000 позиций счетов-фактур.
+Полученный XML-документ соответствует схеме [XSD](/faktury/upo/schemy/upo-v4-3.xsd) и может содержать максимально 10 000 позиций счетов-фактур.
 
 Пример на языке C#:
 
@@ -301,4 +308,4 @@ byte[] sessionUpo = ksefClient.getSessionUpo(sessionReferenceNumber, upoReferenc
 ```
 
 ## Связанные документы
-- [Номер KSeF – структура и валидация](numer-ksef.md)
+- [Номер KSeF – структура и валидация](../numer-ksef.md)
