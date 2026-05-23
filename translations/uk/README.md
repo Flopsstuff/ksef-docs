@@ -1,14 +1,14 @@
 ---
 original: README.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 6fb819b
-last_translated: 2026-03-07
+source_commit: d92d285
+last_translated: 2026-05-23
 ---
 
 > **Translation.** Original: [README.md](https://github.com/CIRFMF/ksef-docs/blob/main/README.md)
 
 # **KSeF 2.0 — Посібник для Інтеграторів**
-22.12.2025
+05.05.2026
 
 Цей документ є компендіумом знань для розробників, аналітиків та інтеграторів систем, які реалізують інтеграцію з Національною системою електронних рахунків-фактур (KSeF) версії 2.0. Посібник зосереджується на технічних та практичних аспектах, пов'язаних з комунікацією з API системи KSeF.
 
@@ -35,6 +35,8 @@ last_translated: 2026-03-07
   * [Отримання рахунків-фактур](pobieranie-faktur/pobieranie-faktur.md)
   * [Поступове отримання рахунків-фактур](pobieranie-faktur/przyrostowe-pobieranie-faktur.md)
 * [Керування токенами KSeF](tokeny-ksef.md)
+* Безпека
+  * [Публічні ключі для шифрування](bezpieczenstwo/klucze-publiczne-do-szyfrowania.md)
 * [Обмеження](limity/limity.md)
 * [Тестові дані](dane-testowe-scenariusze.md)
 

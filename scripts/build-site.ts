@@ -82,9 +82,45 @@ function escapeVueConflicts(content: string): string {
   return result.join("\n");
 }
 
+// Upstream markdown often glues a table directly under a heading and leaves no
+// blank line after it (markdownlint MD058). VitePress mostly tolerates it, but
+// normalising here keeps the rendered output clean regardless of how the
+// translations were produced. Code blocks are left untouched.
+function normalizeTableSpacing(content: string): string {
+  const lines = content.split("\n");
+  const out: string[] = [];
+  let inCodeBlock = false;
+  const isTableRow = (l: string) => /^\s*\|/.test(l);
+
+  for (const line of lines) {
+    if (line.trimStart().startsWith("```")) {
+      inCodeBlock = !inCodeBlock;
+      out.push(line);
+      continue;
+    }
+    if (inCodeBlock) {
+      out.push(line);
+      continue;
+    }
+
+    const prev = out.length ? out[out.length - 1] : "";
+    // Blank line BEFORE a table that follows non-blank content.
+    if (isTableRow(line) && prev.trim() !== "" && !isTableRow(prev)) {
+      out.push("");
+    }
+    // Blank line AFTER a table when the next content line isn't blank.
+    if (!isTableRow(line) && line.trim() !== "" && isTableRow(prev)) {
+      out.push("");
+    }
+    out.push(line);
+  }
+
+  return out.join("\n");
+}
+
 function stripFrontmatter(content: string): string {
   const { content: body } = matter(content);
-  return escapeVueConflicts(body.trimStart());
+  return normalizeTableSpacing(escapeVueConflicts(body.trimStart()));
 }
 
 function copyMarkdownDir(srcDir: string, destDir: string, hasTranslationFrontmatter: boolean) {
@@ -103,7 +139,7 @@ function copyMarkdownDir(srcDir: string, destDir: string, hasTranslationFrontmat
         const content = fs.readFileSync(path.join(srcDir, entryRel), "utf-8");
         const processed = hasTranslationFrontmatter
           ? stripFrontmatter(content)
-          : escapeVueConflicts(content);
+          : normalizeTableSpacing(escapeVueConflicts(content));
 
         // README.md → index.md for VitePress
         const destName =

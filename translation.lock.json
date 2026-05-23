@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "5e697972698519d3578796b3b83de4232068f570",
+  "sourceCommit": "d92d285b928896258afdb27f7150f9127ee18ada",
   "languages": {
     "ru": {
       "srodowiska.md": {
@@ -7,8 +7,8 @@
         "translatedAt": "2026-04-04T18:14:26.980Z"
       },
       "README.md": {
-        "sourceHash": "75d375d2aa2f1ff64a7c1993b53b83054cccf6fb38187413110e451dc7983be6",
-        "translatedAt": "2026-03-05T21:17:58.029Z"
+        "sourceHash": "bcc2900925b6c8a12956ee2ef1fd7d494011eadffaa50bda6fd0c5669dc0bdf0",
+        "translatedAt": "2026-05-23T15:43:56.905Z"
       },
       "tokeny-ksef.md": {
         "sourceHash": "34423973639af475c2b97c91d41442b1f3c9f2f1666ca5de1de7944fd007cc15",
@@ -59,12 +59,8 @@
         "translatedAt": "2026-03-05T21:33:52.822Z"
       },
       "faktury/weryfikacja-faktury.md": {
-        "sourceHash": "b47bfd87c2a2c0437add3eed41e3b54624acd4fe60d7cc7576685d886102c455",
-        "translatedAt": "2026-03-05T21:33:56.407Z"
-      },
-      "faktury/sesja-sprawdzenie-stanu-i-pobranie-upo.md": {
-        "sourceHash": "ab6db25f0d2579bbbcad0a7770dbeddda4e2cade7dd905389854c913b8816715",
-        "translatedAt": "2026-03-05T21:34:31.796Z"
+        "sourceHash": "bfc616349151d379214895fbacf448906bbb825e4720a9666a161a7acd1ebf78",
+        "translatedAt": "2026-05-23T15:44:03.885Z"
       },
       "certyfikaty-KSeF.md": {
         "sourceHash": "785427227e77aacf1d2f35d7b02547850d728512272c42ff2635f9c96dcb0d32",
@@ -87,8 +83,8 @@
         "translatedAt": "2026-03-05T21:36:01.367Z"
       },
       "sesja-interaktywna.md": {
-        "sourceHash": "508e6b8f0d800dbce7d2f592441f73b69f6528c4bd3b4b64980c413b6ed4d4c0",
-        "translatedAt": "2026-03-05T21:36:07.122Z"
+        "sourceHash": "838bfcef93b97870fbd77d1289ca663953e08e8e38433b84cb3305f35fd467c0",
+        "translatedAt": "2026-05-23T15:44:28.314Z"
       },
       "pobieranie-faktur/przyrostowe-pobieranie-faktur.md": {
         "sourceHash": "b12a67bcb78487a41b473ad338f7fdc24680ac74f31261ada877002289b3f943",
@@ -107,12 +103,12 @@
         "translatedAt": "2026-04-04T18:14:43.464Z"
       },
       "sesja-wsadowa.md": {
-        "sourceHash": "2d14332e70098c72d96552bbf9948ede40624262100d083ba21100219f9b5f93",
-        "translatedAt": "2026-03-05T21:50:59.463Z"
+        "sourceHash": "de410f44730bbd8e22ae5eccc19be00e362e4c8a7d5af05b4ee9591bed9da955",
+        "translatedAt": "2026-05-23T16:01:17.028Z"
       },
       "limity/limity-api.md": {
-        "sourceHash": "c70ea4b26b4ad02b12e70d5f588842bfc0c2f3a2a799971c5f87074355d2176b",
-        "translatedAt": "2026-03-05T21:51:34.791Z"
+        "sourceHash": "08b1a6cf0f83dcaf64bf786fd3eaacc67927226c7760fd911f2c6f8242278534",
+        "translatedAt": "2026-05-23T16:22:51.957Z"
       },
       "uwierzytelnianie.md": {
         "sourceHash": "336b2ea528a1ceed0e35baf6f6abeb0f1ed70b2edee6fffb5b0e63aa34b440b9",
@@ -123,12 +119,20 @@
         "translatedAt": "2026-04-04T18:17:39.378Z"
       },
       "api-changelog.md": {
-        "sourceHash": "9927977b847b576826b2e835bc2b89a80520ef896603d10fb541beb3a31e586d",
-        "translatedAt": "2026-04-04T18:14:26.811Z"
+        "sourceHash": "f5d98fb87038fe05593649c54923b96adba3a6858941c1c145e0e2bba1e7a4c3",
+        "translatedAt": "2026-05-23T15:44:10.908Z"
       },
       "open-api.json": {
-        "sourceHash": "81683e6389c89b5329c7c62a8d6f456e6b7e45c35fe59b43a27faeb0b87ed932",
-        "translatedAt": "2026-04-04T18:20:23.589Z"
+        "sourceHash": "fd1cbdd356a2be38962a7623e7f1501e3b6fddecfb416dff19e90599230e212e",
+        "translatedAt": "2026-05-23T16:09:38.212Z"
+      },
+      "faktury/sesje/sesja-sprawdzenie-stanu-i-pobranie-upo.md": {
+        "sourceHash": "7c888c889b120d6922785c77c1691004654d8818d5d0b94c9bc5f531bb6e8be8",
+        "translatedAt": "2026-05-23T15:44:38.594Z"
+      },
+      "bezpieczenstwo/klucze-publiczne-do-szyfrowania.md": {
+        "sourceHash": "02024e6ef459c5d6d7795ff4082d54a0386312f4ffa472a24c1f794c68333676",
+        "translatedAt": "2026-05-23T15:44:45.102Z"
       }
     },
     "en": {
@@ -153,8 +157,8 @@
         "translatedAt": "2026-03-05T22:33:44.431Z"
       },
       "README.md": {
-        "sourceHash": "75d375d2aa2f1ff64a7c1993b53b83054cccf6fb38187413110e451dc7983be6",
-        "translatedAt": "2026-03-05T22:33:47.950Z"
+        "sourceHash": "bcc2900925b6c8a12956ee2ef1fd7d494011eadffaa50bda6fd0c5669dc0bdf0",
+        "translatedAt": "2026-05-23T16:24:01.170Z"
       },
       "faktury/numer-ksef.md": {
         "sourceHash": "9d77ca4395995eae7fb184a2a546ef1d4a9f77c3f40ffcd4ce3c21d1111a98dd",
@@ -169,8 +173,8 @@
         "translatedAt": "2026-03-05T22:33:52.318Z"
       },
       "faktury/weryfikacja-faktury.md": {
-        "sourceHash": "b47bfd87c2a2c0437add3eed41e3b54624acd4fe60d7cc7576685d886102c455",
-        "translatedAt": "2026-03-05T22:33:53.377Z"
+        "sourceHash": "bfc616349151d379214895fbacf448906bbb825e4720a9666a161a7acd1ebf78",
+        "translatedAt": "2026-05-23T16:25:10.647Z"
       },
       "offline/automatyczne-okreslanie-trybu-offline.md": {
         "sourceHash": "af9b2c830ff817e94d82d2c3a1d106bc671f8a6ed25faa70abc3c5f2030de444",
@@ -205,12 +209,8 @@
         "translatedAt": "2026-04-04T18:20:32.180Z"
       },
       "sesja-interaktywna.md": {
-        "sourceHash": "508e6b8f0d800dbce7d2f592441f73b69f6528c4bd3b4b64980c413b6ed4d4c0",
-        "translatedAt": "2026-03-05T22:34:24.557Z"
-      },
-      "faktury/sesja-sprawdzenie-stanu-i-pobranie-upo.md": {
-        "sourceHash": "ab6db25f0d2579bbbcad0a7770dbeddda4e2cade7dd905389854c913b8816715",
-        "translatedAt": "2026-03-05T22:34:25.079Z"
+        "sourceHash": "838bfcef93b97870fbd77d1289ca663953e08e8e38433b84cb3305f35fd467c0",
+        "translatedAt": "2026-05-23T16:25:36.987Z"
       },
       "tokeny-ksef.md": {
         "sourceHash": "34423973639af475c2b97c91d41442b1f3c9f2f1666ca5de1de7944fd007cc15",
@@ -237,12 +237,12 @@
         "translatedAt": "2026-03-05T22:35:10.462Z"
       },
       "sesja-wsadowa.md": {
-        "sourceHash": "2d14332e70098c72d96552bbf9948ede40624262100d083ba21100219f9b5f93",
-        "translatedAt": "2026-03-05T22:35:10.973Z"
+        "sourceHash": "de410f44730bbd8e22ae5eccc19be00e362e4c8a7d5af05b4ee9591bed9da955",
+        "translatedAt": "2026-05-23T16:26:39.738Z"
       },
       "limity/limity-api.md": {
-        "sourceHash": "c70ea4b26b4ad02b12e70d5f588842bfc0c2f3a2a799971c5f87074355d2176b",
-        "translatedAt": "2026-03-05T22:35:11.435Z"
+        "sourceHash": "08b1a6cf0f83dcaf64bf786fd3eaacc67927226c7760fd911f2c6f8242278534",
+        "translatedAt": "2026-05-23T16:26:21.719Z"
       },
       "uwierzytelnianie.md": {
         "sourceHash": "336b2ea528a1ceed0e35baf6f6abeb0f1ed70b2edee6fffb5b0e63aa34b440b9",
@@ -253,12 +253,20 @@
         "translatedAt": "2026-04-04T18:24:09.552Z"
       },
       "api-changelog.md": {
-        "sourceHash": "9927977b847b576826b2e835bc2b89a80520ef896603d10fb541beb3a31e586d",
-        "translatedAt": "2026-04-04T18:20:32.086Z"
+        "sourceHash": "f5d98fb87038fe05593649c54923b96adba3a6858941c1c145e0e2bba1e7a4c3",
+        "translatedAt": "2026-05-23T16:24:19.856Z"
       },
       "open-api.json": {
-        "sourceHash": "81683e6389c89b5329c7c62a8d6f456e6b7e45c35fe59b43a27faeb0b87ed932",
-        "translatedAt": "2026-04-04T18:26:03.656Z"
+        "sourceHash": "fd1cbdd356a2be38962a7623e7f1501e3b6fddecfb416dff19e90599230e212e",
+        "translatedAt": "2026-05-23T16:32:42.658Z"
+      },
+      "bezpieczenstwo/klucze-publiczne-do-szyfrowania.md": {
+        "sourceHash": "02024e6ef459c5d6d7795ff4082d54a0386312f4ffa472a24c1f794c68333676",
+        "translatedAt": "2026-05-23T16:24:56.130Z"
+      },
+      "faktury/sesje/sesja-sprawdzenie-stanu-i-pobranie-upo.md": {
+        "sourceHash": "7c888c889b120d6922785c77c1691004654d8818d5d0b94c9bc5f531bb6e8be8",
+        "translatedAt": "2026-05-23T16:25:09.993Z"
       }
     },
     "uk": {
@@ -283,16 +291,16 @@
         "translatedAt": "2026-03-07T13:56:55.573Z"
       },
       "README.md": {
-        "sourceHash": "75d375d2aa2f1ff64a7c1993b53b83054cccf6fb38187413110e451dc7983be6",
-        "translatedAt": "2026-03-07T13:56:56.810Z"
+        "sourceHash": "bcc2900925b6c8a12956ee2ef1fd7d494011eadffaa50bda6fd0c5669dc0bdf0",
+        "translatedAt": "2026-05-23T16:33:20.741Z"
       },
       "auth/testowe-certyfikaty-i-podpisy-xades.md": {
         "sourceHash": "7356956dbe03a0c476e2d1f9af07b827322740892b12e08785ab714c8ab59eb6",
         "translatedAt": "2026-03-07T13:56:57.976Z"
       },
       "faktury/weryfikacja-faktury.md": {
-        "sourceHash": "b47bfd87c2a2c0437add3eed41e3b54624acd4fe60d7cc7576685d886102c455",
-        "translatedAt": "2026-03-07T13:57:00.238Z"
+        "sourceHash": "bfc616349151d379214895fbacf448906bbb825e4720a9666a161a7acd1ebf78",
+        "translatedAt": "2026-05-23T16:34:59.567Z"
       },
       "dane-testowe-scenariusze.md": {
         "sourceHash": "021f89aebefd90d37bd07845bc3dfab002ae2dc8956e0bd490aafc97dbf7e25b",
@@ -342,21 +350,17 @@
         "sourceHash": "4cbabff4a5ebaea6efb71d659e3f95218f78a9f8534e6214a435f1cd9a14a3a1",
         "translatedAt": "2026-03-07T14:01:15.682Z"
       },
-      "faktury/sesja-sprawdzenie-stanu-i-pobranie-upo.md": {
-        "sourceHash": "ab6db25f0d2579bbbcad0a7770dbeddda4e2cade7dd905389854c913b8816715",
-        "translatedAt": "2026-03-07T14:01:33.271Z"
-      },
       "sesja-interaktywna.md": {
-        "sourceHash": "508e6b8f0d800dbce7d2f592441f73b69f6528c4bd3b4b64980c413b6ed4d4c0",
-        "translatedAt": "2026-03-07T14:01:56.692Z"
+        "sourceHash": "838bfcef93b97870fbd77d1289ca663953e08e8e38433b84cb3305f35fd467c0",
+        "translatedAt": "2026-05-23T16:35:35.429Z"
       },
       "pobieranie-faktur/przyrostowe-pobieranie-faktur.md": {
         "sourceHash": "b12a67bcb78487a41b473ad338f7fdc24680ac74f31261ada877002289b3f943",
         "translatedAt": "2026-03-07T14:02:34.691Z"
       },
       "limity/limity-api.md": {
-        "sourceHash": "c70ea4b26b4ad02b12e70d5f588842bfc0c2f3a2a799971c5f87074355d2176b",
-        "translatedAt": "2026-03-07T14:02:45.156Z"
+        "sourceHash": "08b1a6cf0f83dcaf64bf786fd3eaacc67927226c7760fd911f2c6f8242278534",
+        "translatedAt": "2026-05-23T16:37:09.907Z"
       },
       "srodowiska.md": {
         "sourceHash": "d9a7f89b53294dfd7c46fbfc571b378ab0e70ade8a4b0357f1b56b9aac238ba4",
@@ -375,20 +379,28 @@
         "translatedAt": "2026-03-07T14:03:06.995Z"
       },
       "sesja-wsadowa.md": {
-        "sourceHash": "2d14332e70098c72d96552bbf9948ede40624262100d083ba21100219f9b5f93",
-        "translatedAt": "2026-03-07T14:03:09.556Z"
+        "sourceHash": "de410f44730bbd8e22ae5eccc19be00e362e4c8a7d5af05b4ee9591bed9da955",
+        "translatedAt": "2026-05-23T16:36:55.759Z"
       },
       "api-changelog.md": {
-        "sourceHash": "9927977b847b576826b2e835bc2b89a80520ef896603d10fb541beb3a31e586d",
-        "translatedAt": "2026-04-04T18:26:14.143Z"
+        "sourceHash": "f5d98fb87038fe05593649c54923b96adba3a6858941c1c145e0e2bba1e7a4c3",
+        "translatedAt": "2026-05-23T16:33:50.092Z"
       },
       "uprawnienia.md": {
         "sourceHash": "e54588888d56d0ffc6e629f9a6e334a9fcd4a3adf5a5dde3d348e9574bf8a4f1",
         "translatedAt": "2026-04-04T18:29:39.772Z"
       },
       "open-api.json": {
-        "sourceHash": "81683e6389c89b5329c7c62a8d6f456e6b7e45c35fe59b43a27faeb0b87ed932",
-        "translatedAt": "2026-04-04T18:32:38.801Z"
+        "sourceHash": "fd1cbdd356a2be38962a7623e7f1501e3b6fddecfb416dff19e90599230e212e",
+        "translatedAt": "2026-05-23T16:45:49.427Z"
+      },
+      "bezpieczenstwo/klucze-publiczne-do-szyfrowania.md": {
+        "sourceHash": "02024e6ef459c5d6d7795ff4082d54a0386312f4ffa472a24c1f794c68333676",
+        "translatedAt": "2026-05-23T16:34:30.948Z"
+      },
+      "faktury/sesje/sesja-sprawdzenie-stanu-i-pobranie-upo.md": {
+        "sourceHash": "7c888c889b120d6922785c77c1691004654d8818d5d0b94c9bc5f531bb6e8be8",
+        "translatedAt": "2026-05-23T16:34:49.929Z"
       }
     }
   }

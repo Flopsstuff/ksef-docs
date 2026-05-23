@@ -1,19 +1,35 @@
 ---
 original: faktury/weryfikacja-faktury.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 6fb819b
-last_translated: 2026-03-07
+source_commit: d92d285
+last_translated: 2026-05-23
 ---
 
 > **Translation.** Original: [faktury/weryfikacja-faktury.md](https://github.com/CIRFMF/ksef-docs/blob/main/faktury/weryfikacja-faktury.md)
 
 # Верифікація рахунку-фактури
-15.01.2026
+09.04.2026
 
 Рахунок-фактура, що надсилається до системи KSeF, підлягає ряду технічних та семантичних перевірок. Верифікація включає наступні критерії:
 
-## Відповідність схемі XSD
-Рахунок-фактура має бути підготований у форматі XML, закодований у UTF-8 без символу BOM (перші 3 байти 0xEF 0xBB 0xBF), відповідно до заявленої схеми, вказаної при відкритті сесії.
+## Відповідність XML
+Рахунок-фактура має одночасно відповідати таким вимогам:
+
+- має бути підготований як коректний документ XML, відповідно до правил XML 1.0,
+- має бути закодований у UTF-8 без символу BOM (перші 3 байти 0xEF 0xBB 0xBF),
+- має відповідати задекларованій схемі, вказаній при відкритті сесії,
+- може містити пролог XML, однак якщо він присутній, він не може вказувати кодування інше, ніж UTF-8,
+- не може містити інструкцій обробки XML (processing instructions),
+- не може містити небажаних символів Unicode, визначених у специфікації [XML W3C](https://www.w3.org/TR/xml/#charsets), тобто символів з діапазонів:  
+  [#x7F-#x84], [#x86-#x9F], [#xFDD0-#xFDEF],   
+  [#x1FFFE-#x1FFFF], [#x2FFFE-#x2FFFF], [#x3FFFE-#x3FFFF],  
+  [#x4FFFE-#x4FFFF], [#x5FFFE-#x5FFFF], [#x6FFFE-#x6FFFF],  
+  [#x7FFFE-#x7FFFF], [#x8FFFE-#x8FFFF], [#x9FFFE-#x9FFFF],  
+  [#xAFFFE-#xAFFFF], [#xBFFFE-#xBFFFF], [#xCFFFE-#xCFFFF],  
+  [#xDFFFE-#xDFFFF], [#xEFFFE-#xEFFFF], [#xFFFFE-#xFFFFF],  
+  [#x10FFFE-#x10FFFF].
+
+Недотримання будь-якої з наведених вище вимог призведе до відхилення рахунку-фактури.
 
 ## Унікальність рахунку-фактури
 - KSeF виявляє дублікати рахунків-фактур глобально, на основі даних, що зберігаються в системі. Критерієм ідентифікації дубліката є комбінація:

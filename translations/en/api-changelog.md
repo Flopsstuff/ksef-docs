@@ -1,14 +1,109 @@
 ---
 original: api-changelog.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 5e69797
-last_translated: 2026-04-04
+source_commit: d92d285
+last_translated: 2026-05-23
 ---
 
 > **Translation.** Original: [api-changelog.md](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)
 
 
+
 ## Changes in API 2.0
+
+### Version 2.6.0
+
+| Environment | Deployment date |
+| ----------- | --------------: |
+| **TEST**    |      19.05.2026 |
+| **DEMO**    |      21.05.2026 |
+| **PRD**     |      26.05.2026 |
+
+- **Batch sending (POST `/sessions/batch`) and invoice package export (POST `/invoices/exports`)**  
+  Added the `TarGz` compression type as an alternative to `Zip`. The `TarGz` format is recommended due to the potential for a better compression ratio for packages containing many similar XML documents. The default compression type remains `Zip` for backwards compatibility.
+
+- **Technical warnings (`X-System-Warning`)**  
+  Added an optional `X-System-Warning` response header, allowing technical warnings to be communicated without affecting the operation result (e.g. when behaviour is detected that may result in request rejection in the future). On the TEST environment, a warning can be forced using the `X-Test-System-Warning` header.
+
+- **OpenAPI**  
+  - Unified regular expressions for IP addresses (`Ip4Address`, `Ip4Range`, `Ip4Mask`) in POST `/auth/ksef-token` — the same patterns as in the AuthTokenRequest 2.1 schema are now applied.
+  - Added the missing description for `InvoiceMetadataThirdSubject` ("Third party subject identifier.").
+
+
+### Version 2.5.0
+| Environment | Deployment date |
+| ----------- | --------------: |
+| **TEST**    |      06.05.2026 |
+| **DEMO**    |      07.05.2026 |
+| **PRD**     |      11.05.2026 |
+
+- **KSeF public keys (key rotation and selection)**  
+  Introduced the passing of the `publicKeyId` selector in requests to operations where the client encrypts data with a KSeF public key — this enables unambiguous identification of the key used and correct, automatic handling of re-certification/rotation. The extension applies to the following endpoints:
+    - POST `/auth/ksef-token`,
+    - POST `/sessions/online`,
+    - POST `/sessions/batch`,
+    - POST `/invoices/exports`.
+
+  Additionally, the [documentation](bezpieczenstwo/klucze-publiczne-do-szyfrowania.md) has been supplemented with a description of public key publication and rotation.
+
+- **Authentication using an XAdES signature (POST `/auth/xades-signature`)**  
+  - Extended support for the `AuthTokenRequest` document to schema version 2.1 (while maintaining compatibility with schema 2.0).
+  - In schema 2.1, updated the regular expressions for IP addresses (`Ip4Address`, `Ip4Range`, `Ip4Mask`) to be compatible with typical parsers.
+
+- **API rate limits**  
+  Default API rate limits on the TEST environment have been aligned with the values in effect on PRD. The `/testdata/rate-limits` endpoint group remains available on the TEST environment, allowing testing of custom rate limit profiles.
+
+- **OpenAPI**  
+  - Added descriptions for the `certificateSerialNumber` parameter including format and constraints (`minLength/maxLength: 16`, `pattern: ^[0-9A-F]{16}$`). This change is documentation-only — it does not introduce additional validation on the API side and does not change the behaviour of endpoints (e.g. POST `/certificates/retrieve`).
+  - Removed values related to RR invoices, previously marked as deprecated (including `InvoiceQueryFormType.RR`).
+
+
+### Version 2.4.0
+
+| Environment | Deployment date | Notes                                                                          |
+| ----------- | --------------: | ------------------------------------------------------------------------------ |
+| **TEST**    |      10.04.2026 | —                                                                              |
+| **DEMO**    |      13.04.2026 | —                                                                              |
+| **PRD**     |      16.04.2026 | Stricter XML validation will take effect from **16.07.2026**. |
+
+
+- **KSeF tokens**
+  - Enabled operations on the token used for authentication without additional permissions:
+    - DELETE `/tokens/{referenceNumber}` allows revoking one's own token (the one used for authentication) without the `CredentialsManage` permission,
+    - GET `/tokens` and GET `/tokens/{referenceNumber}` return information about the token used for authentication even when it does not have the `CredentialsManage` / `CredentialsRead` permissions.
+  - Description updates:
+    - DELETE `/tokens/{referenceNumber}`,
+    - GET `/tokens/`
+
+- **Invoice sending**  
+  - Stricter XML content verification has been introduced:
+    - the document must not contain discouraged Unicode characters as indicated in the W3C XML specification,
+    - the document must not contain XML processing instructions.
+
+    Details: [Invoice verification](/faktury/weryfikacja-faktury.md).
+
+- **Retention of asynchronous operation statuses**  
+  Retention has been introduced for technical responses and statuses of asynchronous operations (used for short-term polling of progress and retrieval of results). Retention does not apply to business data resulting from the execution of an operation. Once the retention period expires, polling the status returns `410 Gone`.
+  Applicable retention periods:
+    - Authentication — GET `/auth/{referenceNumber}`: 7 days,
+    - Invoice export — GET `/invoices/exports/{referenceNumber}`: 7 days,
+    - Certificate issuance — GET `/certificates/enrollments/{referenceNumber}`: 30 days,
+    - Granting/revoking permissions — GET `/permissions/operations/{referenceNumber}`: 30 days.
+
+  Retention for session statuses and invoice sending statuses is not currently planned.
+
+- **OpenAPI**  
+  - Made the optional Problem Details error format (`application/problem+json`) available for `400 Bad Request` and `429 Too Many Requests` responses (consistent with the format already used for `401` and `403`). The format can be enabled via the `X-Error-Format: problem-details` header; the existing `application/json` responses remain supported.
+  - Added support for `410 Gone` responses in Problem Details format (`application/problem+json`).
+  - In `400` responses in Problem Details format, an `errors` list is returned (without aggregating multiple errors into a single entry).
+  - Extended `ForbiddenProblemDetails` and `UnauthorizedProblemDetails` with a `timestamp` property ("Date and time of the error occurrence in UTC.").
+  - Clarified constraints for the `AllowedIps` property in the POST `/auth/ksef-token` request model — added `minimum` and `maximum` attributes (element count limits for the `ip4Addresses`, `ip4Ranges`, `ip4Masks` lists). This change is documentation-only: the limits were enforced previously as well, and exceeding them resulted in a validation error.
+  - Minor description and example updates.
+
+- **API rate limits**  
+  Increased rate limits for POST `/invoices/exports`, aligning them with the values in effect for POST `/invoices/query/metadata`:
+    - req/s: from 4 to 8,
+    - req/min: from 8 to 16.
 
 ### Version 2.3.0
 
@@ -35,12 +130,14 @@ last_translated: 2026-04-04
   - Fixed the `securitySchemes.Bearer` definition - set `scheme`: `bearer` (lowercase), according to the specification.  
   - Minor updates to descriptions and examples.
 
+
 ### Version 2.2.1
 
 - **Invoice sending**  
   Added new version (`1-1E`) of `FA_RR (1)` schema.  
   Schema `FA_RR (1) 1-0E` will be supported on TEST environment until 23.04.
   Schema `FA_RR (1) 1-1E` will be mandatory on PRD environment from 01.04.  
+
 
 
 ### Version 2.2.0
@@ -60,6 +157,7 @@ last_translated: 2026-04-04
   Fixed generation of `_metadata.json` file in export package - with large number of invoices, the file could previously be truncated (invalid JSON).
 
 
+
 ### Version 2.1.2
 
 - **Invoice sending**  
@@ -75,6 +173,7 @@ last_translated: 2026-04-04
   Removed `additionalProperties`: `false` in selected models. Change organizing specification and making contract more flexible - allows possibility of additional properties appearing in requests or responses (e.g. as extensions). Adding new property is not treated as contract breaking; API clients should ignore unknown properties.
 
 
+
 ### Version 2.1.1
 
 - **Authentication**  
@@ -82,6 +181,7 @@ last_translated: 2026-04-04
   Completed `authenticationMethodInfo` definition - marked `category`, `code` and `displayName` properties as `required` in response model.
   - **Authentication using XAdES signature (POST `/auth/xades-signature`)**  
   Added possibility to enable new XAdES validation requirements earlier on DEMO and PRD environments via header: `X-KSeF-Feature`: `enforce-xades-compliance`.  
+
 
 
 ### Version 2.1.0
@@ -109,6 +209,7 @@ last_translated: 2026-04-04
   Minor description updates.
 
 
+
 ### Version 2.0.1
 
 - **Permissions**
@@ -130,6 +231,7 @@ last_translated: 2026-04-04
 
 - **OpenAPI**  
   Minor description updates.
+
 
 
 ### Version 2.0.0
@@ -195,6 +297,7 @@ last_translated: 2026-04-04
   - Fixed typos in specification.
 
 
+
 ### Version 2.0.0 RC6.1
 
 - **New environment addressing**  
@@ -245,6 +348,7 @@ last_translated: 2026-04-04
   - GET `/sessions`
   - GET `/sessions/{referenceNumber}/invoices`
   - GET `/sessions/{referenceNumber}/invoices/failed`
+
 
 
 ### Version 2.0.0 RC6.0
@@ -314,6 +418,7 @@ last_translated: 2026-04-04
   - Introduced minor language and punctuation corrections in `description` fields.
 
 
+
 ### Version 2.0.0 RC5.7
 
 - **Open batch session (POST `/sessions/batch`)**  
@@ -327,6 +432,7 @@ last_translated: 2026-04-04
   - Added length constraints for string type properties: `minLength` and `maxLength`.  
   - Updated property descriptions (`invoiceMetadataAuthorizedSubject.role`, `invoiceMetadataBuyer`, `invoiceMetadataThirdSubject.role`, `buyerIdentifier`).
   - Updated regex patterns for `vatUeIdentifier`, `authorizedFingerprintIdentifier`, `internalId`, `nipVatUe`, `peppolId`.
+
 
 
 ### Version 2.0.0 RC5.6
@@ -354,6 +460,7 @@ last_translated: 2026-04-04
   - Defined `Challenge` schema (string, 36 characters) and applied in `AuthenticationChallengeResponse`.`challenge`.
   - Defined common `PermissionId` schema (string, 36 characters) and applied everywhere: in parameters and response properties.
   - Added regular expressions for selected text fields.
+
 
 
 ### Version 2.0.0 RC5.5
@@ -399,6 +506,7 @@ last_translated: 2026-04-04
   - GET `/sessions/{referenceNumber}/invoices/failed`
 
 
+
 ### Version 2.0.0 RC5.4
 
 - **Retrieve invoice metadata list (POST /invoices/query/metadata)**  
@@ -416,6 +524,7 @@ last_translated: 2026-04-04
 - **OpenAPI**  
   - Clarified array parameter definitions in query; applied `style: form`. Multiple values should be passed by repeating parameter, e.g. `?statuses=InProgress&statuses=Succeeded`. Documentation change, no impact on API operation.
   - Updated property descriptions (`partUploadRequests`, `encryptedSymmetricKey`, `initializationVector`).
+
 
 
 ### Version 2.0.0 RC5.3
@@ -493,6 +602,7 @@ last_translated: 2026-04-04
   - Updated examples in endpoint definitions.
 
 
+
 ### Version 2.0.0 RC5.2
 - **Permissions** 
   - "Grant sub-entity administrator permissions" (POST `/permissions/subunits/grants`)  
@@ -521,6 +631,7 @@ last_translated: 2026-04-04
   - Updated examples in endpoint definitions.
   - Clarified endpoint descriptions.
   - Added `required` attribute for required properties in requests and responses.
+
 
 
 ### Version 2.0.0 RC5.1
@@ -591,6 +702,7 @@ last_translated: 2026-04-04
 
 - **OpenAPI**  
   Removed unused `operationId` from specification. Organizing change.
+
 
 
 ### Version 2.0.0 RC5
@@ -752,6 +864,7 @@ last_translated: 2026-04-04
   - Updated C# and Java code examples.
 
 
+
 ### Version 2.0.0 RC4
 
 - **KSeF certificates**
@@ -804,6 +917,7 @@ Extended response model with fields:
     - `/invoices/async-query/{operationReferenceNumber}` – check status and retrieve ready package.
   - Changed model name from `InvoiceMetadataQueryRequest` to `QueryInvoicesMetadataResponse`.
   - Extended `PersonPermissionsAuthorIdentifier` type with new `System` value (System identifier). This value is used to mark permissions granted by KSeF based on submitted ZAW-FA application. Change applies to endpoint: `/permissions/query/persons/grants`.
+
 
 
 ### Version 2.0.0 RC3
@@ -859,6 +973,7 @@ Extended response model with fields:
 
 
 
+
 ### Version 2.0.0 RC2
 - **New endpoints for authentication session management**  
   Enable viewing and invalidating active authentication sessions.  
@@ -878,4 +993,5 @@ Extended response model with fields:
 - **Added invoiceFileName field in batch session response**\
   `/sessions/{referenceNumber}/invoices` – added invoiceFileName field containing invoice file name. Field appears only for batch sessions.
    [Retrieve information about sent invoices](faktury/sesja-sprawdzenie-stanu-i-pobranie-upo.md#3-pobranie-informacji-na-temat-przesłanych-faktur)
+
 

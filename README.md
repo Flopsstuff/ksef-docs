@@ -6,6 +6,23 @@ Translated documentation for [KSeF 2.0](https://github.com/CIRFMF/ksef-docs) (Po
 
 Available in Polish (original), Russian, English, and Ukrainian.
 
+## 🙏 Help Keep Translations Running
+
+This project translates the docs using LLMs, and **API credits are paid out of pocket**. Rate limits and token budgets are currently the main bottleneck for keeping all languages up to date.
+
+**To put it in numbers:** catching up on the drift across two minor upstream releases (2.5 + 2.6) — re-translating the changed docs + OpenAPI spec for all languages — took roughly **1M input + 1M output tokens (~2M total)**, about **$18 on Claude Sonnet** (at $3/M input + $15/M output). A routine single-version sync is lighter, but upstream updates land regularly, so it adds up over time.
+
+**If you can spare an API key or some tokens for this project, it would directly help.** It doesn't have to be much; even a small budget keeps the translations flowing.
+
+It doesn't have to be Claude — **any AI provider works**: OpenAI, Google (Gemini), Anthropic, etc. An **[OpenRouter](https://openrouter.ai/) key is ideal**, since it gives access to many models through one key. Any amount is appreciated.
+
+To contribute credits (or just say hi):
+
+- 📧 Email **[flopspm@gmail.com](mailto:flopspm@gmail.com)**
+- 🐛 Or open an [issue](https://github.com/flopsstuff/ksef-docs/issues) right here on the repo
+
+Thank you! 💛
+
 ## Repo Structure
 
 - `original/` — git submodule pointing to the upstream repo (CIRFMF/ksef-docs)
@@ -81,16 +98,32 @@ yarn install
 Create a `.env` file for translation (not needed for site build):
 
 ```bash
+# Translation provider: "anthropic" (default), "bedrock", or "openrouter"
+TRANSLATION_PROVIDER=anthropic
+
 # Anthropic API key (required for provider=anthropic)
 ANTHROPIC_API_KEY=sk-ant-...
 
-# Translation provider: "anthropic" (default) or "bedrock"
-TRANSLATION_PROVIDER=anthropic
+# OpenRouter (required for provider=openrouter) — OpenAI-compatible, one key for many models
+OPENROUTER_API_KEY=sk-or-...
+
+# Model override — works for ANY provider (highest-priority env var).
+# Leave unset to use the provider's built-in default.
+# TRANSLATION_MODEL=anthropic/claude-sonnet-4.5
+# Or set per-provider: ANTHROPIC_MODEL / BEDROCK_MODEL / OPENROUTER_MODEL
 
 # AWS region for Bedrock provider (default: eu-central-1)
 # Bedrock auth uses standard AWS credentials (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, or AWS_PROFILE)
 AWS_REGION=eu-central-1
 
-# Max parallel translation requests (default: 5)
-TRANSLATION_CONCURRENCY=5
+# Max parallel translation requests (default: 2)
+TRANSLATION_CONCURRENCY=2
+```
+
+Verify your provider/key works before a big run:
+
+```bash
+yarn check                       # uses TRANSLATION_PROVIDER from .env
+yarn check --provider=openrouter # override provider
+yarn check --model=openai/gpt-4o # override model (OpenRouter)
 ```

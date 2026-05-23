@@ -13,7 +13,7 @@ function main() {
 
   for (const l of langs) {
     console.log(`\n=== ${l.toUpperCase()} ===\n`);
-    const statuses = getFileStatuses(l);
+    const statuses = getFileStatuses(l, { includeOpenApi: true });
 
     for (const s of statuses) {
       const icon = ICONS[s.status];

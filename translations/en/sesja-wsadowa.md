@@ -1,8 +1,8 @@
 ---
 original: sesja-wsadowa.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 6fb819b
-last_translated: 2026-03-05
+source_commit: d92d285
+last_translated: 2026-05-23
 ---
 
 > **Translation.** Original: [sesja-wsadowa.md](https://github.com/CIRFMF/ksef-docs/blob/main/sesja-wsadowa.md)
@@ -294,7 +294,7 @@ ksefClient.sendBatchParts(response, encryptedZipParts);
 ```
 
 **Time limit for sending parts in batch session**  
-File sending in batch session is time-limited. This time depends solely on the number of declared parts and is 20 minutes per part. Each additional part proportionally increases the time limit **for each part** in the package.
+File sending in a batch session is time-limited. This time depends solely on the number of declared parts and is 20 minutes per part. Each additional part proportionally increases the time limit **for each part** in the package.
 
 Total time to send each part = number of parts × 20 minutes.  
 Example. Package contains 2 parts – each part has 40 minutes to send.
@@ -321,6 +321,6 @@ ksefClient.closeBatchSession(referenceNumber, accessToken);
 ```
 
 See 
-- [Status checking and UPO retrieval](faktury/sesja-sprawdzenie-stanu-i-pobranie-upo.md)
+- [Status checking and UPO retrieval](faktury/sesje/sesja-sprawdzenie-stanu-i-pobranie-upo.md)
 - [Invoice verification](faktury/weryfikacja-faktury.md)
 - [KSeF number – structure and validation](faktury/numer-ksef.md)

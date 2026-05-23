@@ -1,6 +1,4 @@
-import "dotenv/config";
-import Anthropic from "@anthropic-ai/sdk";
-import AnthropicBedrock from "@anthropic-ai/bedrock-sdk";
+import dotenv from "dotenv";
 import * as fs from "fs";
 import * as path from "path";
 import {
@@ -11,7 +9,13 @@ import {
   writeLock,
   getSubmoduleCommit,
   sha256,
+  formatError,
 } from "./lib";
+import { Provider, PROVIDERS, resolveModel, createClient, streamComplete } from "./llm";
+
+// Make .env authoritative: override variables already present in the shell
+// environment (e.g. an ANTHROPIC_API_KEY exported in the user's profile).
+dotenv.config({ override: true });
 
 const PROMPTS_DIR = path.join(ROOT, "prompts");
 
@@ -21,15 +25,8 @@ const LANG_NAMES: Record<string, string> = {
   uk: "Ukrainian",
 };
 
-const DEFAULT_CONCURRENCY = 5;
+const DEFAULT_CONCURRENCY = 2;
 const CHUNK_CHAR_LIMIT = 10_000;
-
-type Provider = "anthropic" | "bedrock";
-
-const MODELS: Record<Provider, string> = {
-  anthropic: "claude-sonnet-4-20250514",
-  bedrock: "eu.anthropic.claude-sonnet-4-20250514-v1:0",
-};
 
 interface TextField {
   path: string;
@@ -121,17 +118,9 @@ function chunkFields(fields: TextField[]): TextField[][] {
 // Translation
 // ---------------------------------------------------------------------------
 
-function createClient(provider: Provider): Anthropic | AnthropicBedrock {
-  if (provider === "bedrock") {
-    return new AnthropicBedrock({
-      awsRegion: process.env.AWS_REGION || "eu-central-1",
-    });
-  }
-  return new Anthropic();
-}
-
 async function translateChunk(
   client: any,
+  provider: Provider,
   model: string,
   systemPrompt: string,
   lang: string,
@@ -150,25 +139,14 @@ async function translateChunk(
     chunk.map((f) => ({ path: f.path, text: f.text })),
   );
 
-  const response = await client.messages.create(
-    {
-      model,
-      max_tokens: 16384,
-      system: systemPrompt,
-      messages: [
-        {
-          role: "user",
-          content: `Translate the following fields from Polish to ${langName}.\n\n${input}`,
-        },
-      ],
-    },
-    { timeout: 300_000 },
-  );
-
-  const raw = response.content
-    .filter((b: any) => b.type === "text")
-    .map((b: any) => b.text)
-    .join("");
+  const { text: raw } = await streamComplete({
+    client,
+    provider,
+    model,
+    system: systemPrompt,
+    userContent: `Translate the following fields from Polish to ${langName}.\n\n${input}`,
+    maxTokens: 16000,
+  });
 
   // Parse the response — expect a JSON array of strings
   const cleaned = raw.replace(/^```json?\s*/m, "").replace(/```\s*$/m, "").trim();
@@ -217,8 +195,13 @@ function parseArgs() {
 
   if (!lang) {
     console.error(
-      "Usage: yarn translate:openapi --lang=<lang> [--force] [--concurrency=N] [--provider=anthropic|bedrock]",
+      "Usage: yarn translate:openapi --lang=<lang> [--force] [--concurrency=N] [--provider=anthropic|bedrock|openrouter]",
     );
+    process.exit(1);
+  }
+
+  if (!PROVIDERS.includes(provider)) {
+    console.error(`Unknown provider "${provider}". Valid: ${PROVIDERS.join(", ")}`);
     process.exit(1);
   }
 
@@ -255,14 +238,14 @@ async function main() {
   // Chunk
   const chunks = chunkFields(fields);
   console.log(`Split into ${chunks.length} chunks (~${CHUNK_CHAR_LIMIT} chars each)`);
-  console.log(`Translating to ${lang} (provider: ${provider}, concurrency: ${concurrency})\n`);
+  console.log(`Translating to ${lang} (provider: ${provider}, model: ${resolveModel(provider)}, concurrency: ${concurrency})\n`);
 
   const systemPrompt = fs.readFileSync(
     path.join(PROMPTS_DIR, "translate-openapi.md"),
     "utf-8",
   );
   const client = createClient(provider);
-  const model = MODELS[provider];
+  const model = resolveModel(provider);
 
   // Translate chunks with concurrency pool
   const allTranslations: (string[] | null)[] = new Array(chunks.length).fill(null);
@@ -274,11 +257,11 @@ async function main() {
       const i = nextIndex++;
       try {
         allTranslations[i] = await translateChunk(
-          client, model, systemPrompt, lang, chunks[i], i, chunks.length,
+          client, provider, model, systemPrompt, lang, chunks[i], i, chunks.length,
         );
       } catch (err: any) {
         failed++;
-        console.error(`  FAILED chunk ${i + 1}: ${err.message}`);
+        console.error(`  FAILED chunk ${i + 1}: ${formatError(err)}`);
       }
     }
   }
