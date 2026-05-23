@@ -50,6 +50,10 @@ jobs:
         env:
           ENV_FILE: ${{ secrets.ENV_FILE }}
 
+      - name: Verify provider/key works
+        if: steps.check.outputs.has_updates == 'true' || inputs.force
+        run: yarn check
+
       - name: Translate outdated files
         if: steps.check.outputs.has_updates == 'true' || inputs.force
         run: |

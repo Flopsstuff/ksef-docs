@@ -2,6 +2,7 @@
   "name": "ksef-docs",
   "private": true,
   "scripts": {
+    "check": "ts-node scripts/check-provider.ts",
     "sync": "ts-node scripts/sync.ts",
     "translate": "ts-node scripts/translate-all.ts",
     "translate:docs": "ts-node scripts/translate.ts",
