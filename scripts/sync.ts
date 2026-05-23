@@ -35,7 +35,7 @@ function main() {
 
   // Show status per language
   for (const lang of TRANSLATED_LANGUAGES) {
-    const statuses = getFileStatuses(lang);
+    const statuses = getFileStatuses(lang, { includeOpenApi: true });
     const newFiles = statuses.filter((s) => s.status === "new");
     const outdated = statuses.filter((s) => s.status === "outdated");
     const upToDate = statuses.filter((s) => s.status === "up-to-date");

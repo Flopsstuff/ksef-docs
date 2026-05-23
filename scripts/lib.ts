@@ -7,6 +7,7 @@ const ROOT = path.resolve(__dirname, "..");
 const ORIGINAL_DIR = path.join(ROOT, "original");
 const TRANSLATIONS_DIR = path.join(ROOT, "translations");
 const LOCK_PATH = path.join(ROOT, "translation.lock.json");
+const OPENAPI_FILE = "open-api.json";
 
 export interface FileLock {
   sourceHash: string;
@@ -105,10 +106,22 @@ export interface FileInfo {
   lockHash: string | null;
 }
 
-export function getFileStatuses(lang: string): FileInfo[] {
+export function getFileStatuses(
+  lang: string,
+  opts: { includeOpenApi?: boolean } = {},
+): FileInfo[] {
   const lock = readLock();
   const langLock = lock.languages[lang] || {};
   const originalFiles = findOriginalMdFiles();
+
+  // The OpenAPI spec is a non-.md file translated by a separate script
+  // (translate-openapi.ts). Reporting tools (status/sync) can opt in to see it
+  // hash-compared like any other file; the markdown translate flow must not,
+  // or it would try to translate the JSON spec as a document.
+  if (opts.includeOpenApi && fs.existsSync(path.join(ORIGINAL_DIR, OPENAPI_FILE))) {
+    originalFiles.push(OPENAPI_FILE);
+  }
+
   const result: FileInfo[] = [];
 
   for (const file of originalFiles) {
