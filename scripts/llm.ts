@@ -8,6 +8,9 @@ export const PROVIDERS: Provider[] = ["anthropic", "bedrock", "openrouter"];
 
 const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
 
+// Deterministic output for translation — minimise variation between runs.
+const TEMPERATURE = 0;
+
 /** Fallback model per provider, used when nothing is set via env or CLI. */
 const DEFAULT_MODELS: Record<Provider, string> = {
   anthropic: "claude-sonnet-4-6",
@@ -88,6 +91,7 @@ export async function streamComplete(opts: CompleteOptions): Promise<LlmResult> 
       {
         model,
         max_tokens: maxTokens,
+        temperature: TEMPERATURE,
         stream: true,
         stream_options: { include_usage: true },
         messages: [
@@ -115,7 +119,7 @@ export async function streamComplete(opts: CompleteOptions): Promise<LlmResult> 
   // anthropic & bedrock — Messages API
   const msg = await client.messages
     .stream(
-      { model, max_tokens: maxTokens, system, messages: [{ role: "user", content: userContent }] },
+      { model, max_tokens: maxTokens, temperature: TEMPERATURE, system, messages: [{ role: "user", content: userContent }] },
       { timeout: timeoutMs },
     )
     .finalMessage();
