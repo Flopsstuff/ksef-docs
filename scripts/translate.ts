@@ -1,4 +1,4 @@
-import "dotenv/config";
+import dotenv from "dotenv";
 import Anthropic from "@anthropic-ai/sdk";
 import AnthropicBedrock from "@anthropic-ai/bedrock-sdk";
 import * as fs from "fs";
@@ -13,8 +13,13 @@ import {
   getSubmoduleCommit,
   sha256,
   getFileStatuses,
+  formatError,
   FileInfo,
 } from "./lib";
+
+// Make .env authoritative: override variables already present in the shell
+// environment (e.g. an ANTHROPIC_API_KEY exported in the user's profile).
+dotenv.config({ override: true });
 
 const PROMPTS_DIR = path.join(ROOT, "prompts");
 
@@ -24,12 +29,12 @@ const LANG_NAMES: Record<string, string> = {
   uk: "Ukrainian",
 };
 
-const DEFAULT_CONCURRENCY = 5;
+const DEFAULT_CONCURRENCY = 2;
 
 type Provider = "anthropic" | "bedrock";
 
 const MODELS: Record<Provider, string> = {
-  anthropic: "claude-sonnet-4-20250514",
+  anthropic: "claude-sonnet-4-6",
   bedrock: "eu.anthropic.claude-sonnet-4-20250514-v1:0",
 };
 
@@ -166,10 +171,12 @@ async function translateFile(
 
       const userMessage = `Translate the following changelog sections from Polish to ${langName}. These are new sections to be added to an existing translation.\n\nFile: ${file}\n\n<new_sections>\n${newContent}\n</new_sections>`;
 
-      const response = await client.messages.create(
-        { model, max_tokens: 16384, system: systemPrompt, messages: [{ role: "user", content: userMessage }] },
-        { timeout: 300_000 },
-      );
+      const response = await client.messages
+        .stream(
+          { model, max_tokens: 16000, system: systemPrompt, messages: [{ role: "user", content: userMessage }] },
+          { timeout: 300_000 },
+        )
+        .finalMessage();
 
       const translatedNew = response.content.filter((b: any) => b.type === "text").map((b: any) => b.text).join("");
 
@@ -195,15 +202,17 @@ async function translateFile(
   const kb = (Buffer.byteLength(originalContent, "utf-8") / 1024).toFixed(1);
   console.log(`  Translating ${file} -> ${lang} (${lines} lines, ${kb} KB)...`);
 
-  const response = await client.messages.create(
-    {
-      model,
-      max_tokens: 16384,
-      system: systemPrompt,
-      messages: [{ role: "user", content: userMessage }],
-    },
-    { timeout: 300_000 },
-  );
+  const response = await client.messages
+    .stream(
+      {
+        model,
+        max_tokens: 16000,
+        system: systemPrompt,
+        messages: [{ role: "user", content: userMessage }],
+      },
+      { timeout: 300_000 },
+    )
+    .finalMessage();
 
   const translatedContent =
     response.content
@@ -297,7 +306,7 @@ async function main() {
       results.push(result);
     } catch (err: any) {
       failed++;
-      console.error(`  FAILED: ${f.file} — ${err.message}`);
+      console.error(`  FAILED: ${f.file} — ${formatError(err)}`);
     }
   });
 

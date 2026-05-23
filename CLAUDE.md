@@ -67,7 +67,7 @@ Only needed for translation, not for site build:
 | `ANTHROPIC_API_KEY` | — | Required when `TRANSLATION_PROVIDER=anthropic` |
 | `TRANSLATION_PROVIDER` | `anthropic` | `anthropic` or `bedrock` |
 | `AWS_REGION` | `eu-central-1` | AWS region for Bedrock |
-| `TRANSLATION_CONCURRENCY` | `5` | Max parallel translation requests |
+| `TRANSLATION_CONCURRENCY` | `2` | Max parallel translation requests |
 
 Bedrock uses standard AWS credential chain (`AWS_PROFILE`, `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY`).
 

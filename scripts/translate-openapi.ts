@@ -1,4 +1,4 @@
-import "dotenv/config";
+import dotenv from "dotenv";
 import Anthropic from "@anthropic-ai/sdk";
 import AnthropicBedrock from "@anthropic-ai/bedrock-sdk";
 import * as fs from "fs";
@@ -11,7 +11,12 @@ import {
   writeLock,
   getSubmoduleCommit,
   sha256,
+  formatError,
 } from "./lib";
+
+// Make .env authoritative: override variables already present in the shell
+// environment (e.g. an ANTHROPIC_API_KEY exported in the user's profile).
+dotenv.config({ override: true });
 
 const PROMPTS_DIR = path.join(ROOT, "prompts");
 
@@ -21,13 +26,13 @@ const LANG_NAMES: Record<string, string> = {
   uk: "Ukrainian",
 };
 
-const DEFAULT_CONCURRENCY = 5;
+const DEFAULT_CONCURRENCY = 2;
 const CHUNK_CHAR_LIMIT = 10_000;
 
 type Provider = "anthropic" | "bedrock";
 
 const MODELS: Record<Provider, string> = {
-  anthropic: "claude-sonnet-4-20250514",
+  anthropic: "claude-sonnet-4-6",
   bedrock: "eu.anthropic.claude-sonnet-4-20250514-v1:0",
 };
 
@@ -150,20 +155,22 @@ async function translateChunk(
     chunk.map((f) => ({ path: f.path, text: f.text })),
   );
 
-  const response = await client.messages.create(
-    {
-      model,
-      max_tokens: 16384,
-      system: systemPrompt,
-      messages: [
-        {
-          role: "user",
-          content: `Translate the following fields from Polish to ${langName}.\n\n${input}`,
-        },
-      ],
-    },
-    { timeout: 300_000 },
-  );
+  const response = await client.messages
+    .stream(
+      {
+        model,
+        max_tokens: 16000,
+        system: systemPrompt,
+        messages: [
+          {
+            role: "user",
+            content: `Translate the following fields from Polish to ${langName}.\n\n${input}`,
+          },
+        ],
+      },
+      { timeout: 300_000 },
+    )
+    .finalMessage();
 
   const raw = response.content
     .filter((b: any) => b.type === "text")
@@ -278,7 +285,7 @@ async function main() {
         );
       } catch (err: any) {
         failed++;
-        console.error(`  FAILED chunk ${i + 1}: ${err.message}`);
+        console.error(`  FAILED chunk ${i + 1}: ${formatError(err)}`);
       }
     }
   }

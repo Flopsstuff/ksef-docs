@@ -37,6 +37,47 @@ export function sha256(content: string): string {
   return createHash("sha256").update(content).digest("hex");
 }
 
+/**
+ * Build a verbose, single-string description of an error thrown by the
+ * Anthropic SDK (or any fetch/network error). The SDK's `APIConnectionError`
+ * only carries the message "Connection error." — the real cause lives in
+ * `.cause`, and API errors carry `.status` / `.request_id` / a response body.
+ */
+export function formatError(err: any): string {
+  if (!err) return String(err);
+  const parts: string[] = [err.name ? `${err.name}: ${err.message}` : String(err.message ?? err)];
+
+  if (err.status !== undefined) parts.push(`status=${err.status}`);
+  const requestId = err.request_id ?? err.requestID ?? err.headers?.["request-id"];
+  if (requestId) parts.push(`request_id=${requestId}`);
+
+  // API error body (e.g. { error: { type, message } })
+  const body = err.error ?? err.response?.data;
+  if (body && typeof body === "object") {
+    const inner = body.error ?? body;
+    if (inner?.type || inner?.message) {
+      parts.push(`api_error=${inner.type ?? "?"}: ${inner.message ?? ""}`.trim());
+    }
+  }
+
+  // Rate-limit hints
+  const retryAfter = err.headers?.["retry-after"];
+  if (retryAfter) parts.push(`retry-after=${retryAfter}s`);
+
+  // Underlying network cause (APIConnectionError wraps the real error here)
+  const cause = err.cause;
+  if (cause) {
+    const causeBits = [cause.code, cause.message].filter(Boolean).join(" ");
+    parts.push(`cause=${causeBits || JSON.stringify(cause)}`);
+    if (cause.cause) {
+      const c2 = cause.cause;
+      parts.push(`cause.cause=${[c2.code, c2.message].filter(Boolean).join(" ") || JSON.stringify(c2)}`);
+    }
+  }
+
+  return parts.join(" | ");
+}
+
 export function findOriginalMdFiles(): string[] {
   const results: string[] = [];
 
