@@ -60,7 +60,7 @@ async function main() {
       model,
       system: "You are a translation provider connectivity check. Translate the given Polish text into English, Russian and Ukrainian. Respond with exactly three lines and nothing else, in this format:\nEN: {translation}\nRU: {translation}\nUK: {translation}",
       userContent: "Faktura została pomyślnie przyjęta przez Krajowy System e-Faktur i otrzymała numer KSeF.",
-      maxTokens: 256,
+      maxTokens: 512,
       timeoutMs: 30_000,
     });
     const ms = Date.now() - started;
