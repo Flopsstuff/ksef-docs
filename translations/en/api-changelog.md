@@ -12,6 +12,7 @@ last_translated: 2026-05-23
 ## Changes in API 2.0
 
 ### Version 2.6.0
+
 | Environment | Deployment date |
 | ----------- | --------------: |
 | **TEST**    |      19.05.2026 |
