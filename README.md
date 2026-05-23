@@ -31,7 +31,7 @@ Thank you! 💛
 - `translations/uk/` — Ukrainian translations
 - `scripts/` — sync, translate, and build scripts
 - `site/` — VitePress site (config, theme, landing page; content is generated)
-- `prompts/` — system prompt for Claude API translation
+- `prompts/` — system prompts for translation
 - `translation.lock.json` — tracks which files are translated and from which source commit/hash
 
 ## Documentation Site
@@ -46,7 +46,7 @@ yarn docs:dev
 yarn docs:build
 ```
 
-The `docs:prepare` step copies originals and translations into `site/pl/`, `site/ru/`, `site/en/`, strips frontmatter, escapes Vue-incompatible HTML, and copies images. It runs automatically before `docs:dev` and `docs:build`.
+The `docs:prepare` step copies originals and translations into `site/pl/`, `site/ru/`, `site/en/`, `site/uk/`, strips frontmatter, escapes Vue-incompatible HTML, normalizes table spacing, and copies images. It runs automatically before `docs:dev` and `docs:build`.
 
 Deployed to GitHub Pages via `.github/workflows/deploy.yml` on push to `main`.
 
@@ -83,7 +83,7 @@ yarn translate:openapi --lang=ru --force     # force retranslate
 
 1. The original Polish documentation lives in the `original/` submodule
 2. `sync` pulls the latest upstream and detects new/changed/deleted files
-3. `translate` sends files to Claude API with a specialized prompt, preserving markdown structure, code examples, and API references
+3. `translate` sends files to the configured LLM provider (Anthropic, Bedrock, or OpenRouter) with a specialized prompt, preserving markdown structure, code examples, and API references
 4. Each translated file gets YAML frontmatter with source commit, hash, and translation date
 5. `translation.lock.json` tracks the state so we know what's up to date
 6. `docs:build` assembles all languages into a VitePress static site with auto-generated sidebars
@@ -95,35 +95,18 @@ git clone --recurse-submodules <this-repo>
 yarn install
 ```
 
-Create a `.env` file for translation (not needed for site build):
+For translation (not needed for the site build), copy the example env file and fill in a key:
 
 ```bash
-# Translation provider: "anthropic" (default), "bedrock", or "openrouter"
-TRANSLATION_PROVIDER=anthropic
-
-# Anthropic API key (required for provider=anthropic)
-ANTHROPIC_API_KEY=sk-ant-...
-
-# OpenRouter (required for provider=openrouter) — OpenAI-compatible, one key for many models
-OPENROUTER_API_KEY=sk-or-...
-
-# Model override — works for ANY provider (highest-priority env var).
-# Leave unset to use the provider's built-in default.
-# TRANSLATION_MODEL=anthropic/claude-sonnet-4.5
-# Or set per-provider: ANTHROPIC_MODEL / BEDROCK_MODEL / OPENROUTER_MODEL
-
-# AWS region for Bedrock provider (default: eu-central-1)
-# Bedrock auth uses standard AWS credentials (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, or AWS_PROFILE)
-AWS_REGION=eu-central-1
-
-# Max parallel translation requests (default: 2)
-TRANSLATION_CONCURRENCY=2
+cp .env.example .env
 ```
 
-Verify your provider/key works before a big run:
+[`.env.example`](.env.example) documents every variable — provider choice, API keys, model override, and concurrency. At minimum set `TRANSLATION_PROVIDER` and the matching key (`ANTHROPIC_API_KEY` / `OPENROUTER_API_KEY`, or AWS credentials for Bedrock).
+
+Verify your provider/key/model works before a big run:
 
 ```bash
-yarn check                       # uses TRANSLATION_PROVIDER from .env
-yarn check --provider=openrouter # override provider
-yarn check --model=openai/gpt-4o # override model (OpenRouter)
+yarn check                        # uses TRANSLATION_PROVIDER from .env
+yarn check --provider=openrouter  # override provider
+yarn check --model=openai/gpt-4o  # override model
 ```

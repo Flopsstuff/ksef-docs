@@ -9,6 +9,8 @@ Translation infrastructure for [KSeF 2.0 documentation](https://github.com/CIRFM
 ## Commands
 
 ```bash
+yarn check                                   # Verify the selected provider/key works (tiny test request)
+yarn check --provider=openrouter             # Override provider/model for the check
 yarn sync                                    # Pull upstream changes, update lock file
 yarn status                                  # Show translation status (all languages)
 yarn status --lang=ru                        # Status for one language
@@ -33,7 +35,7 @@ All scripts run via `ts-node`. No separate build step needed.
 3. `scripts/translate-openapi.ts` — translates OpenAPI spec (`original/open-api.json`). Extracts `description`/`summary`/`title` fields, splits into ~10K char chunks, translates each chunk, merges back into full spec. Saves to `translations/<lang>/open-api.json`
 4. `scripts/status.ts` — reads lock file and compares SHA256 hashes to show per-file status
 5. `scripts/lib.ts` — shared constants (`ROOT`, `ORIGINAL_DIR`, `TRANSLATIONS_DIR`), lock file I/O, hash functions, file discovery, `formatError()`
-6. `scripts/llm.ts` — provider abstraction: `Provider` type, `resolveModel()`, `createClient()`, and `streamComplete()` (unified streaming completion over Anthropic/Bedrock Messages API and OpenRouter Chat Completions API). Used by both translate scripts and `check-provider.ts`
+6. `scripts/llm.ts` — provider abstraction: `Provider` type, `resolveModel()`, `createClient()`, and `streamComplete()` (unified completion over Anthropic/Bedrock Messages API and OpenRouter Chat Completions API). Always **streams** (keeps the socket alive on long generations — avoids `read ETIMEDOUT`) and uses **temperature 0**. Used by both translate scripts and `check-provider.ts`
 7. `scripts/check-provider.ts` (`yarn check`) — sends a tiny request to verify the selected provider/key works; supports `--provider` / `--model`
 
 ### Site Build Pipeline
@@ -44,11 +46,12 @@ All scripts run via `ts-node`. No separate build step needed.
 - Renames `README.md` → `index.md` for VitePress
 - Copies images from `original/` into each `site/<lang>/` so relative paths work
 - Runs `escapeVueConflicts()` to escape `<word>` patterns that Vue's template compiler would choke on (e.g., regex named groups like `(?<number>...)`)
+- Runs `normalizeTableSpacing()` to ensure blank lines around markdown tables (upstream often glues a table directly under a heading), skipping code blocks
 
 ### VitePress Config (`site/.vitepress/config.mts`)
 
 - `base: '/ksef-docs/'` for GitHub Pages
-- 4 locales: `root` (landing page), `pl`, `ru`, `en`
+- 5 locales: `root` (landing page), `pl`, `ru`, `en`, `uk`
 - Each locale has its own sidebar definition
 - `ignoreDeadLinks: true` — some docs link to untranslated files or binary assets (XSD schemas)
 - Must use `.mts` extension (ESM) because VitePress is ESM-only but the project tsconfig is CommonJS
@@ -58,7 +61,8 @@ All scripts run via `ts-node`. No separate build step needed.
 - **Translation frontmatter**: Every translated file has YAML frontmatter (`original`, `source_repo`, `source_commit`, `last_translated`) and a `> **Translation.**` banner linking to the original. The build script strips these before site generation
 - **File names stay Polish**: Internal links keep original file names (e.g., `[Session Management](auth/sesje.md)`). Only link text is translated
 - **Lock file** (`translation.lock.json`): Tracks `sourceCommit` and per-file SHA256 hashes per language. Used to detect outdated translations
-- **Generated dirs in .gitignore**: `site/pl/`, `site/ru/`, `site/en/`, `site/.vitepress/dist/`, `site/.vitepress/cache/` are all generated and not committed
+- **Generated dirs in .gitignore**: `site/pl/`, `site/ru/`, `site/en/`, `site/uk/`, `site/.vitepress/dist/`, `site/.vitepress/cache/`, `site/.vitepress/sidebars.json` are all generated and not committed
+- **Secrets**: `.env` (API keys, gitignored) is the real config; `.env.example` is the committed template. A PreToolUse hook (`.claude/settings.json` → `.claude/hooks/deny-env-read.sh`) blocks reading `.env` from within Claude Code — read `.env.example` or run `yarn check` instead
 
 ## Environment Variables (`.env`)
 
