@@ -1,6 +1,4 @@
 import dotenv from "dotenv";
-import Anthropic from "@anthropic-ai/sdk";
-import AnthropicBedrock from "@anthropic-ai/bedrock-sdk";
 import * as fs from "fs";
 import * as path from "path";
 import matter from "gray-matter";
@@ -16,6 +14,7 @@ import {
   formatError,
   FileInfo,
 } from "./lib";
+import { Provider, PROVIDERS, resolveModel, createClient, streamComplete } from "./llm";
 
 // Make .env authoritative: override variables already present in the shell
 // environment (e.g. an ANTHROPIC_API_KEY exported in the user's profile).
@@ -30,22 +29,6 @@ const LANG_NAMES: Record<string, string> = {
 };
 
 const DEFAULT_CONCURRENCY = 2;
-
-type Provider = "anthropic" | "bedrock";
-
-const MODELS: Record<Provider, string> = {
-  anthropic: "claude-sonnet-4-6",
-  bedrock: "eu.anthropic.claude-sonnet-4-20250514-v1:0",
-};
-
-function createClient(provider: Provider): Anthropic | AnthropicBedrock {
-  if (provider === "bedrock") {
-    return new AnthropicBedrock({
-      awsRegion: process.env.AWS_REGION || "eu-central-1",
-    });
-  }
-  return new Anthropic();
-}
 
 function parseArgs() {
   const args = process.argv.slice(2);
@@ -77,7 +60,12 @@ function parseArgs() {
   }
 
   if (!lang) {
-    console.error("Usage: yarn translate --lang <lang> [--all | --outdated | file1 file2 ...] [--concurrency=N] [--provider=anthropic|bedrock]");
+    console.error("Usage: yarn translate --lang <lang> [--all | --outdated | file1 file2 ...] [--concurrency=N] [--provider=anthropic|bedrock|openrouter]");
+    process.exit(1);
+  }
+
+  if (!PROVIDERS.includes(provider)) {
+    console.error(`Unknown provider "${provider}". Valid: ${PROVIDERS.join(", ")}`);
     process.exit(1);
   }
 
@@ -138,6 +126,7 @@ interface TranslateResult {
 
 async function translateFile(
   client: any,
+  provider: Provider,
   model: string,
   systemPrompt: string,
   lang: string,
@@ -171,14 +160,9 @@ async function translateFile(
 
       const userMessage = `Translate the following changelog sections from Polish to ${langName}. These are new sections to be added to an existing translation.\n\nFile: ${file}\n\n<new_sections>\n${newContent}\n</new_sections>`;
 
-      const response = await client.messages
-        .stream(
-          { model, max_tokens: 16000, system: systemPrompt, messages: [{ role: "user", content: userMessage }] },
-          { timeout: 300_000 },
-        )
-        .finalMessage();
-
-      const translatedNew = response.content.filter((b: any) => b.type === "text").map((b: any) => b.text).join("");
+      const { text: translatedNew } = await streamComplete({
+        client, provider, model, system: systemPrompt, userContent: userMessage, maxTokens: 16000,
+      });
 
       // Merge: existing header (without banner) + new sections + existing sections
       // Strip the "> **Translation.**" banner line from header since writeTranslation adds it
@@ -202,23 +186,10 @@ async function translateFile(
   const kb = (Buffer.byteLength(originalContent, "utf-8") / 1024).toFixed(1);
   console.log(`  Translating ${file} -> ${lang} (${lines} lines, ${kb} KB)...`);
 
-  const response = await client.messages
-    .stream(
-      {
-        model,
-        max_tokens: 16000,
-        system: systemPrompt,
-        messages: [{ role: "user", content: userMessage }],
-      },
-      { timeout: 300_000 },
-    )
-    .finalMessage();
-
-  const translatedContent =
-    response.content
-      .filter((b: any) => b.type === "text")
-      .map((b: any) => b.text)
-      .join("") + "\n";
+  const { text } = await streamComplete({
+    client, provider, model, system: systemPrompt, userContent: userMessage, maxTokens: 16000,
+  });
+  const translatedContent = text + "\n";
 
   return writeTranslation(translationPath, file, sourceCommit, translatedContent, originalContent);
 }
@@ -284,7 +255,7 @@ async function main() {
     return;
   }
 
-  console.log(`\nTranslating ${toTranslate.length} file(s) to ${lang} (provider: ${provider}, concurrency: ${concurrency}):\n`);
+  console.log(`\nTranslating ${toTranslate.length} file(s) to ${lang} (provider: ${provider}, model: ${resolveModel(provider)}, concurrency: ${concurrency}):\n`);
   for (const f of toTranslate) {
     console.log(`  ${f.status === "new" ? "+" : "~"} ${f.file}`);
   }
@@ -294,7 +265,7 @@ async function main() {
   const systemPrompt = fs.readFileSync(path.join(PROMPTS_DIR, "translate.md"), "utf-8");
 
   const client = createClient(provider);
-  const model = MODELS[provider];
+  const model = resolveModel(provider);
   const sourceCommit = getSubmoduleCommit();
 
   const results: TranslateResult[] = [];
@@ -302,7 +273,7 @@ async function main() {
 
   await runPool(toTranslate, concurrency, async (f) => {
     try {
-      const result = await translateFile(client, model, systemPrompt, lang, f.file, sourceCommit);
+      const result = await translateFile(client, provider, model, systemPrompt, lang, f.file, sourceCommit);
       results.push(result);
     } catch (err: any) {
       failed++;

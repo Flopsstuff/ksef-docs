@@ -98,11 +98,19 @@ yarn install
 Create a `.env` file for translation (not needed for site build):
 
 ```bash
+# Translation provider: "anthropic" (default), "bedrock", or "openrouter"
+TRANSLATION_PROVIDER=anthropic
+
 # Anthropic API key (required for provider=anthropic)
 ANTHROPIC_API_KEY=sk-ant-...
 
-# Translation provider: "anthropic" (default) or "bedrock"
-TRANSLATION_PROVIDER=anthropic
+# OpenRouter (required for provider=openrouter) — OpenAI-compatible, one key for many models
+OPENROUTER_API_KEY=sk-or-...
+
+# Model override — works for ANY provider (highest-priority env var).
+# Leave unset to use the provider's built-in default.
+# TRANSLATION_MODEL=anthropic/claude-sonnet-4.5
+# Or set per-provider: ANTHROPIC_MODEL / BEDROCK_MODEL / OPENROUTER_MODEL
 
 # AWS region for Bedrock provider (default: eu-central-1)
 # Bedrock auth uses standard AWS credentials (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, or AWS_PROFILE)
@@ -110,4 +118,12 @@ AWS_REGION=eu-central-1
 
 # Max parallel translation requests (default: 2)
 TRANSLATION_CONCURRENCY=2
+```
+
+Verify your provider/key works before a big run:
+
+```bash
+yarn check                       # uses TRANSLATION_PROVIDER from .env
+yarn check --provider=openrouter # override provider
+yarn check --model=openai/gpt-4o # override model (OpenRouter)
 ```

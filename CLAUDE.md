@@ -29,10 +29,12 @@ All scripts run via `ts-node`. No separate build step needed.
 ### Translation Pipeline
 
 1. `scripts/sync.ts` — runs `git submodule update --remote`, compares content hashes with `translation.lock.json`, reports new/outdated/deleted files
-2. `scripts/translate.ts` — sends markdown files to Claude API (Anthropic or Bedrock) with system prompt from `prompts/translate.md`. Adds YAML frontmatter + translation banner. Updates lock file on completion
+2. `scripts/translate.ts` — sends markdown files to the configured provider with system prompt from `prompts/translate.md`. Adds YAML frontmatter + translation banner. Updates lock file on completion
 3. `scripts/translate-openapi.ts` — translates OpenAPI spec (`original/open-api.json`). Extracts `description`/`summary`/`title` fields, splits into ~10K char chunks, translates each chunk, merges back into full spec. Saves to `translations/<lang>/open-api.json`
 4. `scripts/status.ts` — reads lock file and compares SHA256 hashes to show per-file status
-5. `scripts/lib.ts` — shared constants (`ROOT`, `ORIGINAL_DIR`, `TRANSLATIONS_DIR`), lock file I/O, hash functions, file discovery
+5. `scripts/lib.ts` — shared constants (`ROOT`, `ORIGINAL_DIR`, `TRANSLATIONS_DIR`), lock file I/O, hash functions, file discovery, `formatError()`
+6. `scripts/llm.ts` — provider abstraction: `Provider` type, `resolveModel()`, `createClient()`, and `streamComplete()` (unified streaming completion over Anthropic/Bedrock Messages API and OpenRouter Chat Completions API). Used by both translate scripts and `check-provider.ts`
+7. `scripts/check-provider.ts` (`yarn check`) — sends a tiny request to verify the selected provider/key works; supports `--provider` / `--model`
 
 ### Site Build Pipeline
 
@@ -64,12 +66,17 @@ Only needed for translation, not for site build:
 
 | Variable | Default | Description |
 |---|---|---|
+| `TRANSLATION_PROVIDER` | `anthropic` | `anthropic`, `bedrock`, or `openrouter` |
 | `ANTHROPIC_API_KEY` | — | Required when `TRANSLATION_PROVIDER=anthropic` |
-| `TRANSLATION_PROVIDER` | `anthropic` | `anthropic` or `bedrock` |
+| `OPENROUTER_API_KEY` | — | Required when `TRANSLATION_PROVIDER=openrouter` |
+| `TRANSLATION_MODEL` | — | Generic model override for **any** provider (highest-priority env) |
+| `ANTHROPIC_MODEL` / `BEDROCK_MODEL` / `OPENROUTER_MODEL` | — | Per-provider model override |
 | `AWS_REGION` | `eu-central-1` | AWS region for Bedrock |
 | `TRANSLATION_CONCURRENCY` | `2` | Max parallel translation requests |
 
-Bedrock uses standard AWS credential chain (`AWS_PROFILE`, `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY`).
+Model resolution (`resolveModel` in `scripts/llm.ts`), first match wins: `--model` CLI flag → `TRANSLATION_MODEL` → provider-specific `*_MODEL` → built-in default per provider (`claude-sonnet-4-6` / `eu.anthropic.claude-sonnet-4-20250514-v1:0` / `anthropic/claude-sonnet-4.5`).
+
+Bedrock uses standard AWS credential chain (`AWS_PROFILE`, `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY`). OpenRouter uses the OpenAI-compatible Chat Completions API (`https://openrouter.ai/api/v1`). Provider abstraction lives in `scripts/llm.ts` (model resolution, client creation, unified streaming completion). Verify a provider/key/model works with `yarn check` (optionally `yarn check --provider=openrouter --model=<id>`).
 
 ## Adding a New Language
 

@@ -1,27 +1,9 @@
 import dotenv from "dotenv";
-import Anthropic from "@anthropic-ai/sdk";
-import AnthropicBedrock from "@anthropic-ai/bedrock-sdk";
 import { formatError } from "./lib";
+import { Provider, PROVIDERS, resolveModel, createClient, streamComplete } from "./llm";
 
 // Make .env authoritative, same as the translation scripts.
 dotenv.config({ override: true });
-
-type Provider = "anthropic" | "bedrock";
-
-// Keep in sync with scripts/translate.ts
-const MODELS: Record<Provider, string> = {
-  anthropic: "claude-sonnet-4-6",
-  bedrock: "eu.anthropic.claude-sonnet-4-20250514-v1:0",
-};
-
-function createClient(provider: Provider): Anthropic | AnthropicBedrock {
-  if (provider === "bedrock") {
-    return new AnthropicBedrock({
-      awsRegion: process.env.AWS_REGION || "eu-central-1",
-    });
-  }
-  return new Anthropic();
-}
 
 function parseArgs(): { provider: Provider; model?: string } {
   let provider: Provider = (process.env.TRANSLATION_PROVIDER as Provider) || "anthropic";
@@ -40,7 +22,13 @@ function mask(value: string | undefined): string {
 
 async function main() {
   const { provider, model: modelOverride } = parseArgs();
-  const model = modelOverride || MODELS[provider];
+
+  if (!PROVIDERS.includes(provider)) {
+    console.error(`Unknown provider "${provider}". Valid: ${PROVIDERS.join(", ")}`);
+    process.exit(1);
+  }
+
+  const model = resolveModel(provider, modelOverride);
 
   console.log(`Provider:  ${provider}`);
   console.log(`Model:     ${model}`);
@@ -50,30 +38,36 @@ async function main() {
       console.error("\n❌ ANTHROPIC_API_KEY is not set (check your .env).");
       process.exit(1);
     }
+  } else if (provider === "openrouter") {
+    console.log(`API key:   ${mask(process.env.OPENROUTER_API_KEY)}`);
+    if (!process.env.OPENROUTER_API_KEY) {
+      console.error("\n❌ OPENROUTER_API_KEY is not set (check your .env).");
+      process.exit(1);
+    }
   } else {
     console.log(`AWS region: ${process.env.AWS_REGION || "eu-central-1"}`);
     console.log(`AWS creds:  AWS_PROFILE=${process.env.AWS_PROFILE || "(unset)"}, AWS_ACCESS_KEY_ID=${mask(process.env.AWS_ACCESS_KEY_ID)}`);
   }
 
-  const client: any = createClient(provider);
+  const client = createClient(provider);
   const started = Date.now();
 
   try {
     console.log("\nSending a tiny test request…");
-    const res = await client.messages.create(
-      {
-        model,
-        max_tokens: 16,
-        messages: [{ role: "user", content: "Reply with exactly: OK" }],
-      },
-      { timeout: 30_000 },
-    );
-    const text = res.content.filter((b: any) => b.type === "text").map((b: any) => b.text).join("").trim();
+    const { text, usage } = await streamComplete({
+      client,
+      provider,
+      model,
+      system: "You are a translation provider connectivity check. Translate the given Polish text into English, Russian and Ukrainian. Respond with exactly three lines and nothing else, in this format:\nEN: {translation}\nRU: {translation}\nUK: {translation}",
+      userContent: "Faktura została pomyślnie przyjęta przez Krajowy System e-Faktur i otrzymała numer KSeF.",
+      maxTokens: 256,
+      timeoutMs: 30_000,
+    });
     const ms = Date.now() - started;
-    console.log(`\n✅ Works. (${ms} ms)`);
-    console.log(`   Response: ${JSON.stringify(text)}`);
-    if (res.usage) {
-      console.log(`   Tokens:   in=${res.usage.input_tokens}, out=${res.usage.output_tokens}`);
+    console.log(`\n✅ Works. (${ms} ms)  tokens: in=${usage.input}, out=${usage.output}`);
+    console.log("   Response:");
+    for (const line of text.trim().split("\n")) {
+      console.log(`     ${line}`);
     }
   } catch (err: any) {
     const ms = Date.now() - started;
