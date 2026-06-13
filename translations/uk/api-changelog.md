@@ -1,15 +1,32 @@
 ---
 original: api-changelog.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: d92d285
-last_translated: 2026-05-23
+source_commit: 33e6268
+last_translated: 2026-06-13
 ---
 
 > **Translation.** Original: [api-changelog.md](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)
 
 
 
+
 ## Зміни в API 2.0
+
+### Версія 2.6.1
+| Середовище | Дата впровадження |
+| ---------- | -------------: |
+| **TEST**   |     10.06.2026 |
+| **DEMO**   |     11.06.2026 |
+| **PRD**    |     16.06.2026 |
+
+- **Отримання статусу автентифікації (GET `/auth/{referenceNumber})`**  
+  Уніфіковано повідомлення у полі `details` для статусу `450` ("Автентифікація завершилася невдачею через неправильний токен") – тексти тепер повертаються польською мовою, згідно з документацією. Додатково доповнено документацію кількома варіантами `details`, які зустрічалися у відповідях API, але раніше не були описані.
+
+- **Експорт пакету рахунків (POST `/invoices/exports`)**  
+  Виправлено розбиття пакетів у режимі `onlyMetadata=true` для експорту, що охоплює понад 10 000 рахунків – раніше файл `_metadata.json` міг містити 10 001 запис у одному пакеті, а `isTruncated` залишався `false`. Пакети розбиваються коректно, а значення `isTruncated` відображає реальний стан результату.
+
+- **OpenAPI**  
+  Оновлено посилання на документацію: CIRFMF/ksef-docs → CIRFMF/ksef-api.
 
 ### Версія 2.6.0
 
@@ -28,6 +45,7 @@ last_translated: 2026-05-23
 - **OpenAPI**  
   - Уніфіковано регулярні вирази для IP-адрес (`Ip4Address`, `Ip4Range`, `Ip4Mask`) у POST `/auth/ksef-token` — застосовано ті самі патерни, що й у схемі AuthTokenRequest 2.1.
   - Додано відсутній опис для `InvoiceMetadataThirdSubject` ("Ідентифікатор третьої сторони.").
+
 
 
 ### Версія 2.5.0
@@ -56,6 +74,7 @@ last_translated: 2026-05-23
 - **OpenAPI**  
   - Доповнено описи параметра `certificateSerialNumber` форматом і обмеженнями (`minLength/maxLength: 16`, `pattern: ^[0-9A-F]{16}$`). Зміна має документаційний характер — не вводить додаткової валідації на боці API і не змінює поведінки endpoint-ів (наприклад, POST `/certificates/retrieve`).
   - Видалено значення, пов'язані з рахунками-фактурами RR, раніше позначені як deprecated (зокрема `InvoiceQueryFormType.RR`).
+
 
 
 ### Версія 2.4.0
@@ -105,6 +124,7 @@ last_translated: 2026-05-23
     - req/s: з 4 до 8,
     - req/min: з 8 до 16.
 
+
 ### Версія 2.3.0
 
 - **Відправка заявки на сертифікацію (POST /certificates/enrollments)**  
@@ -131,12 +151,14 @@ last_translated: 2026-05-23
   - Незначні оновлення описів та прикладів.
 
 
+
 ### Версія 2.2.1
 
 - **Надсилання рахунків-фактур**  
   Додано нову версію (`1-1E`) схеми `FA_RR (1)`.  
   Схема `FA_RR (1) 1-0E` буде підтримуватися на середовищі TEST до 23.04.
   Схема `FA_RR (1) 1-1E` буде обов'язковою на середовищі PRD з 01.04.  
+
 
 
 
@@ -158,6 +180,7 @@ last_translated: 2026-05-23
 
 
 
+
 ### Версія 2.1.2
 
 - **Надсилання рахунків-фактур**  
@@ -174,6 +197,7 @@ last_translated: 2026-05-23
 
 
 
+
 ### Версія 2.1.1
 
 - **Аутентифікація**  
@@ -181,6 +205,7 @@ last_translated: 2026-05-23
   Доповнено визначення `authenticationMethodInfo` - позначено властивості `category`, `code` та `displayName` як `required` у моделі відповіді.
   - **Аутентифікація з використанням підпису XAdES (POST `/auth/xades-signature`)**  
   Додано можливість раннього увімкнення нових вимог валідації XAdES на середовищах DEMO і PRD через заголовок: `X-KSeF-Feature`: `enforce-xades-compliance`.
+
 
 
 
@@ -210,6 +235,7 @@ last_translated: 2026-05-23
 
 
 
+
 ### Версія 2.0.1
 
 - **Дозволи**
@@ -231,6 +257,7 @@ last_translated: 2026-05-23
 
 - **OpenAPI**  
   Незначні оновлення описів.
+
 
 
 
@@ -298,6 +325,7 @@ last_translated: 2026-05-23
 
 
 
+
 ### Версія 2.0.0 RC6.1
 
 - **Нова адресація середовищ**  
@@ -348,6 +376,7 @@ last_translated: 2026-05-23
   - GET `/sessions`
   - GET `/sessions/{referenceNumber}/invoices`
   - GET `/sessions/{referenceNumber}/invoices/failed`
+
 
 
 
@@ -419,6 +448,7 @@ last_translated: 2026-05-23
 
 
 
+
 ### Версія 2.0.0 RC5.7
 
 - **Відкриття пакетної сесії (POST `/sessions/batch`)**  
@@ -432,6 +462,7 @@ last_translated: 2026-05-23
   - Додано обмеження довжини для властивостей типу string: `minLength` та `maxLength`.  
   - Оновлено описи властивостей (`invoiceMetadataAuthorizedSubject.role`, `invoiceMetadataBuyer`, `invoiceMetadataThirdSubject.role`, `buyerIdentifier`).
   - Оновлено regex шаблони для `vatUeIdentifier`, `authorizedFingerprintIdentifier`, `internalId`, `nipVatUe`, `peppolId`.
+
 
 
 
@@ -460,6 +491,7 @@ last_translated: 2026-05-23
   - Визначено схему `Challenge` (string, 36 символів) і застосовано в `AuthenticationChallengeResponse`.`challenge`.
   - Визначено загальну схему `PermissionId` (string, 36 символів) і застосовано її у всіх місцях: в параметрах та у властивостях відповідей.
   - Додано регулярні вирази для вибраних текстових полів.
+
 
 
 
@@ -507,6 +539,7 @@ last_translated: 2026-05-23
 
 
 
+
 ### Версія 2.0.0 RC5.4
 
 - **Отримання списку метаданых рахунків-фактур (POST /invoices/query/metadata)**  
@@ -524,6 +557,7 @@ last_translated: 2026-05-23
 - **OpenAPI**  
   - Уточнено визначення табличних параметрів в query; застосовано `style: form`. Декілька значень потрібно передавати через повторення параметра, наприклад `?statuses=InProgress&statuses=Succeeded`. Документаційна зміна, без впливу на роботу API.
   - Оновлено описи властивостей (`partUploadRequests`, `encryptedSymmetricKey`, `initializationVector`).
+
 
 
 
@@ -603,6 +637,7 @@ last_translated: 2026-05-23
 
 
 
+
 ### Версія 2.0.0 RC5.2
 - **Дозволи** 
   - "Надання дозволів адміністратора підпорядкованого суб'єкта" (POST `/permissions/subunits/grants`)  
@@ -631,6 +666,7 @@ last_translated: 2026-05-23
   - Оновлено приклади (example) у визначеннях endpoints.
   - Уточнено описи endpoints.
   - Додано атрибут `required` для обов'язкових властивостей у запитах і відповідях.
+
 
 
 
@@ -699,5 +735,6 @@ last_translated: 2026-05-23
 
 - **Отримання списку дозволів для роботи в KSeF, наданих фізичним особам або суб'єктам (POST /permissions/query/persons/grants)**  
   - Додано `contextIdentifier` у фільтрі запиту і в моделі відповіді.
+
 
 

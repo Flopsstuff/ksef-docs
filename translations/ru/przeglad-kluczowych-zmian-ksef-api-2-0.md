@@ -1,8 +1,8 @@
 ---
 original: przeglad-kluczowych-zmian-ksef-api-2-0.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 6fb819b
-last_translated: 2026-03-05
+source_commit: 33e6268
+last_translated: 2026-06-13
 ---
 
 > **Translation.** Original: [przeglad-kluczowych-zmian-ksef-api-2-0.md](https://github.com/CIRFMF/ksef-docs/blob/main/przeglad-kluczowych-zmian-ksef-api-2-0.md)
@@ -52,7 +52,7 @@ last_translated: 2026-03-05
 
 * **Руководство по интеграции / tutorial:**  
   Практические инструкции шаг за шагом с фрагментами кода, иллюстрирующими способ использования ключевых endpoints системы.
-  <br/>\[[link](https://github.com/CIRFMF/ksef-docs)\]
+  <br/>\[[link](https://github.com/CIRFMF/ksef-api)\]
 
 # Ключевые изменения в API 2.0
 
@@ -72,7 +72,7 @@ last_translated: 2026-03-05
 * возможность многократного использования токена для создания множества сессий,  
 * **поддержка обновления и аннулирования токенов**.
 
-Подробности процесса аутентификации: \[[link](https://github.com/CIRFMF/ksef-docs/blob/main/uwierzytelnianie.md)\]
+Подробности процесса аутентификации: \[[link](/uwierzytelnianie.md)\]
 
 ## Унифицированный процесс инициализации для пакетной и интерактивной сессии
 
@@ -87,8 +87,8 @@ last_translated: 2026-03-05
 В случае пакетной отправки также передается список частичных файлов с метаданными, входящими в состав пакета.
 
 Подробности и примеры использования: 
-* интерактивная отправка \[[link](https://github.com/CIRFMF/ksef-docs/blob/main/sesja-interaktywna.md)\]
-* пакетная отправка \[[link](https://github.com/CIRFMF/ksef-docs/blob/main/sesja-wsadowa.md)\]
+* интерактивная отправка \[[link](/sesja-interaktywna.md)\]
+* пакетная отправка \[[link](/sesja-wsadowa.md)\]
 
 ## Обязательное шифрование всех счетов-фактур
 

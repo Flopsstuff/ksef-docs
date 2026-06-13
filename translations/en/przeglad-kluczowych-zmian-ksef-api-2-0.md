@@ -1,8 +1,8 @@
 ---
 original: przeglad-kluczowych-zmian-ksef-api-2-0.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 6fb819b
-last_translated: 2026-03-05
+source_commit: 33e6268
+last_translated: 2026-06-13
 ---
 
 > **Translation.** Original: [przeglad-kluczowych-zmian-ksef-api-2-0.md](https://github.com/CIRFMF/ksef-docs/blob/main/przeglad-kluczowych-zmian-ksef-api-2-0.md)
@@ -52,7 +52,7 @@ The KSeF 2.0 Client library will be available in official package repositories f
 
 * **Integration guide / tutorial:**  
   Practical step-by-step instructions along with code fragments illustrating how to use key system endpoints.
-  <br/>\[[link](https://github.com/CIRFMF/ksef-docs)\]
+  <br/>\[[link](https://github.com/CIRFMF/ksef-api)\]
 
 # Key Changes in API 2.0
 
@@ -72,7 +72,7 @@ Benefits:
 * ability to reuse tokens to create multiple sessions,  
 * **support for token refresh and revocation**.
 
-Authentication process details: \[[link](https://github.com/CIRFMF/ksef-docs/blob/main/uwierzytelnianie.md)\]
+Authentication process details: \[[link](/uwierzytelnianie.md)\]
 
 ## Unified initialization process for batch and interactive sessions
 
@@ -87,8 +87,8 @@ In both cases, a simple JSON is passed containing:
 In the case of batch sending, a list of partial files along with metadata included in the package is also passed.
 
 Details and usage examples: 
-* interactive sending \[[link](https://github.com/CIRFMF/ksef-docs/blob/main/sesja-interaktywna.md)\]
-* batch sending \[[link](https://github.com/CIRFMF/ksef-docs/blob/main/sesja-wsadowa.md)\]
+* interactive sending \[[link](/sesja-interaktywna.md)\]
+* batch sending \[[link](/sesja-wsadowa.md)\]
 
 ## Mandatory encryption of all invoices
 

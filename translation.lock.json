@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "d92d285b928896258afdb27f7150f9127ee18ada",
+  "sourceCommit": "33e62684724938dd51b38b663e8cc086edb961b6",
   "languages": {
     "ru": {
       "srodowiska.md": {
@@ -91,8 +91,8 @@
         "translatedAt": "2026-03-05T21:37:02.721Z"
       },
       "przeglad-kluczowych-zmian-ksef-api-2-0.md": {
-        "sourceHash": "c990c8f27622e76d037eda086b8e60dc019f65dd40b6b837e62a60e9fdd3a3fc",
-        "translatedAt": "2026-03-05T21:37:17.168Z"
+        "sourceHash": "5bfc6a9b3c1b60f71699f49c656c7a788a45b413ee9b7b97b870caf82ed4226f",
+        "translatedAt": "2026-06-13T14:24:18.725Z"
       },
       "tryby-offline.md": {
         "sourceHash": "8d0988526db746bc513f6bf84091765a722bb443efbdb0d66c8f160eb8c1e3c1",
@@ -119,8 +119,8 @@
         "translatedAt": "2026-04-04T18:17:39.378Z"
       },
       "api-changelog.md": {
-        "sourceHash": "f5d98fb87038fe05593649c54923b96adba3a6858941c1c145e0e2bba1e7a4c3",
-        "translatedAt": "2026-05-23T15:44:10.908Z"
+        "sourceHash": "7b0748e69c3813592615fa636d4ba3277640c42698002fd0a9788aa06c017179",
+        "translatedAt": "2026-06-13T14:22:57.228Z"
       },
       "open-api.json": {
         "sourceHash": "fd1cbdd356a2be38962a7623e7f1501e3b6fddecfb416dff19e90599230e212e",
@@ -225,8 +225,8 @@
         "translatedAt": "2026-03-05T22:34:48.905Z"
       },
       "przeglad-kluczowych-zmian-ksef-api-2-0.md": {
-        "sourceHash": "c990c8f27622e76d037eda086b8e60dc019f65dd40b6b837e62a60e9fdd3a3fc",
-        "translatedAt": "2026-03-05T22:34:58.709Z"
+        "sourceHash": "5bfc6a9b3c1b60f71699f49c656c7a788a45b413ee9b7b97b870caf82ed4226f",
+        "translatedAt": "2026-06-13T14:40:25.287Z"
       },
       "kody-qr.md": {
         "sourceHash": "d1d6220a78b0ec40cf313c747302149509f2f458a013c5b1d0fc147784f64170",
@@ -253,8 +253,8 @@
         "translatedAt": "2026-04-04T18:24:09.552Z"
       },
       "api-changelog.md": {
-        "sourceHash": "f5d98fb87038fe05593649c54923b96adba3a6858941c1c145e0e2bba1e7a4c3",
-        "translatedAt": "2026-05-23T16:24:19.856Z"
+        "sourceHash": "7b0748e69c3813592615fa636d4ba3277640c42698002fd0a9788aa06c017179",
+        "translatedAt": "2026-06-13T14:39:16.731Z"
       },
       "open-api.json": {
         "sourceHash": "fd1cbdd356a2be38962a7623e7f1501e3b6fddecfb416dff19e90599230e212e",
@@ -367,8 +367,8 @@
         "translatedAt": "2026-04-04T18:26:14.591Z"
       },
       "przeglad-kluczowych-zmian-ksef-api-2-0.md": {
-        "sourceHash": "c990c8f27622e76d037eda086b8e60dc019f65dd40b6b837e62a60e9fdd3a3fc",
-        "translatedAt": "2026-03-07T14:02:51.950Z"
+        "sourceHash": "5bfc6a9b3c1b60f71699f49c656c7a788a45b413ee9b7b97b870caf82ed4226f",
+        "translatedAt": "2026-06-13T14:57:31.663Z"
       },
       "tokeny-ksef.md": {
         "sourceHash": "34423973639af475c2b97c91d41442b1f3c9f2f1666ca5de1de7944fd007cc15",
@@ -383,8 +383,8 @@
         "translatedAt": "2026-05-23T16:36:55.759Z"
       },
       "api-changelog.md": {
-        "sourceHash": "f5d98fb87038fe05593649c54923b96adba3a6858941c1c145e0e2bba1e7a4c3",
-        "translatedAt": "2026-05-23T16:33:50.092Z"
+        "sourceHash": "7b0748e69c3813592615fa636d4ba3277640c42698002fd0a9788aa06c017179",
+        "translatedAt": "2026-06-13T14:55:41.070Z"
       },
       "uprawnienia.md": {
         "sourceHash": "e54588888d56d0ffc6e629f9a6e334a9fcd4a3adf5a5dde3d348e9574bf8a4f1",
