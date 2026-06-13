@@ -14,7 +14,7 @@ import {
   formatError,
   FileInfo,
 } from "./lib";
-import { Provider, PROVIDERS, resolveModel, createClient, streamComplete } from "./llm";
+import { Provider, PROVIDERS, resolveModelChain, createClient, streamComplete } from "./llm";
 
 // Make .env authoritative: override variables already present in the shell
 // environment (e.g. an ANTHROPIC_API_KEY exported in the user's profile).
@@ -127,12 +127,14 @@ interface TranslateResult {
 async function translateFile(
   client: any,
   provider: Provider,
-  model: string,
+  model: string | string[],
   systemPrompt: string,
   lang: string,
   file: string,
   sourceCommit: string
 ): Promise<TranslateResult> {
+  const onFallback = (failed: string, next: string, error: string) =>
+    console.warn(`  ⚠️ ${file} -> ${lang}: ${failed} failed (${error}); trying ${next}`);
   const originalPath = path.join(ORIGINAL_DIR, file);
   const translationPath = path.join(TRANSLATIONS_DIR, lang, file);
   const originalContent = fs.readFileSync(originalPath, "utf-8");
@@ -161,7 +163,7 @@ async function translateFile(
       const userMessage = `Translate the following changelog sections from Polish to ${langName}. These are new sections to be added to an existing translation.\n\nFile: ${file}\n\n<new_sections>\n${newContent}\n</new_sections>`;
 
       const { text: translatedNew } = await streamComplete({
-        client, provider, model, system: systemPrompt, userContent: userMessage, maxTokens: 16000,
+        client, provider, model, system: systemPrompt, userContent: userMessage, maxTokens: 16000, onFallback,
       });
 
       // Merge: existing header (without banner) + new sections + existing sections
@@ -187,7 +189,7 @@ async function translateFile(
   console.log(`  Translating ${file} -> ${lang} (${lines} lines, ${kb} KB)...`);
 
   const { text } = await streamComplete({
-    client, provider, model, system: systemPrompt, userContent: userMessage, maxTokens: 16000,
+    client, provider, model, system: systemPrompt, userContent: userMessage, maxTokens: 16000, onFallback,
   });
   const translatedContent = text + "\n";
 
@@ -255,7 +257,9 @@ async function main() {
     return;
   }
 
-  console.log(`\nTranslating ${toTranslate.length} file(s) to ${lang} (provider: ${provider}, model: ${resolveModel(provider)}, concurrency: ${concurrency}):\n`);
+  const modelChain = resolveModelChain(provider);
+  const modelLabel = modelChain.length > 1 ? `${modelChain[0]} (fallbacks: ${modelChain.slice(1).join(", ")})` : modelChain[0];
+  console.log(`\nTranslating ${toTranslate.length} file(s) to ${lang} (provider: ${provider}, model: ${modelLabel}, concurrency: ${concurrency}):\n`);
   for (const f of toTranslate) {
     console.log(`  ${f.status === "new" ? "+" : "~"} ${f.file}`);
   }
@@ -265,7 +269,7 @@ async function main() {
   const systemPrompt = fs.readFileSync(path.join(PROMPTS_DIR, "translate.md"), "utf-8");
 
   const client = createClient(provider);
-  const model = resolveModel(provider);
+  const model = modelChain;
   const sourceCommit = getSubmoduleCommit();
 
   const results: TranslateResult[] = [];

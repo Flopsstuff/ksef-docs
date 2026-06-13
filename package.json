@@ -3,6 +3,8 @@
   "private": true,
   "scripts": {
     "check": "ts-node scripts/check-provider.ts",
+    "benchmark:free": "ts-node scripts/benchmark-free.ts",
+    "translate:compare": "ts-node scripts/translate-compare.ts",
     "sync": "ts-node scripts/sync.ts",
     "translate": "ts-node scripts/translate-all.ts",
     "translate:docs": "ts-node scripts/translate.ts",

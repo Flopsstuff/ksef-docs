@@ -11,6 +11,9 @@ Translation infrastructure for [KSeF 2.0 documentation](https://github.com/CIRFM
 ```bash
 yarn check                                   # Verify the selected provider/key works (tiny test request)
 yarn check --provider=openrouter             # Override provider/model for the check
+yarn benchmark:free                          # Benchmark free OpenRouter models (availability + latency) → output/
+yarn benchmark:free --update-doc             # ...and write the result table to output/
+yarn translate:compare                       # Translate one snippet with N models × N runs → output/ (for manual quality review)
 yarn sync                                    # Pull upstream changes, update lock file
 yarn status                                  # Show translation status (all languages)
 yarn status --lang=ru                        # Status for one language
@@ -35,8 +38,10 @@ All scripts run via `ts-node`. No separate build step needed.
 3. `scripts/translate-openapi.ts` — translates OpenAPI spec (`original/open-api.json`). Extracts `description`/`summary`/`title` fields, splits into ~10K char chunks, translates each chunk, merges back into full spec. Saves to `translations/<lang>/open-api.json`
 4. `scripts/status.ts` — reads lock file and compares SHA256 hashes to show per-file status
 5. `scripts/lib.ts` — shared constants (`ROOT`, `ORIGINAL_DIR`, `TRANSLATIONS_DIR`), lock file I/O, hash functions, file discovery, `formatError()`
-6. `scripts/llm.ts` — provider abstraction: `Provider` type, `resolveModel()`, `createClient()`, and `streamComplete()` (unified completion over Anthropic/Bedrock Messages API and OpenRouter Chat Completions API). Always **streams** (keeps the socket alive on long generations — avoids `read ETIMEDOUT`) and uses **temperature 0**. Used by both translate scripts and `check-provider.ts`
-7. `scripts/check-provider.ts` (`yarn check`) — sends a tiny request to verify the selected provider/key works; supports `--provider` / `--model`
+6. `scripts/llm.ts` — provider abstraction: `Provider` type, `resolveModel()`, `resolveModelChain()` (primary + numbered fallbacks), `createClient()`, and `streamComplete()` (unified completion over Anthropic/Bedrock Messages API and OpenRouter Chat Completions API, with model fallback). Always **streams** (keeps the socket alive on long generations — avoids `read ETIMEDOUT`) and uses **temperature 0**. Used by both translate scripts and `check-provider.ts`
+7. `scripts/check-provider.ts` (`yarn check`) — sends a tiny request to verify the selected provider/key works; supports `--provider` / `--model`; honors the fallback chain
+8. `scripts/benchmark-free.ts` (`yarn benchmark:free`) — discovers free, translation-capable OpenRouter models live from the `/models` API and probes each (success/latency/sample); writes a table to `output/` (gitignored) with `--update-doc`
+9. `scripts/translate-compare.ts` (`yarn translate:compare`) — translates a fixture snippet (`scripts/fixtures/compare-snippet.md`) with several models × N runs into EN/RU/UK using the real translate prompt; dumps all outputs to `output/` for manual quality comparison
 
 ### Site Build Pipeline
 
@@ -75,10 +80,13 @@ Only needed for translation, not for site build:
 | `OPENROUTER_API_KEY` | — | Required when `TRANSLATION_PROVIDER=openrouter` |
 | `TRANSLATION_MODEL` | — | Generic model override for **any** provider (highest-priority env) |
 | `ANTHROPIC_MODEL` / `BEDROCK_MODEL` / `OPENROUTER_MODEL` | — | Per-provider model override |
+| `TRANSLATION_MODEL_2`, `..._3` / `OPENROUTER_MODEL_2`, `..._3` | — | Fallback models — tried in order if the primary fails (see below) |
 | `AWS_REGION` | `eu-central-1` | AWS region for Bedrock |
 | `TRANSLATION_CONCURRENCY` | `2` | Max parallel translation requests |
 
 Model resolution (`resolveModel` in `scripts/llm.ts`), first match wins: `--model` CLI flag → `TRANSLATION_MODEL` → provider-specific `*_MODEL` → built-in default per provider (`claude-sonnet-4-6` / `eu.anthropic.claude-sonnet-4-20250514-v1:0` / `anthropic/claude-sonnet-4.5`).
+
+**Model fallback chain** (`resolveModelChain` in `scripts/llm.ts`): the primary model (resolved above) is followed by numbered fallbacks `TRANSLATION_MODEL_<i>` or `<PROVIDER>_MODEL_<i>` (e.g. `OPENROUTER_MODEL_2`, scanned `_2`…`_10`). `streamComplete()` tries each in order and only fails if **all** fail — this keeps the CI pipeline alive when a free OpenRouter model gets pulled (404) or rate-limits (429). Used by `translate.ts`, `translate-openapi.ts`, and `check-provider.ts` (`yarn check`). An explicit `--model` flag disables fallbacks (you asked for exactly that model).
 
 Bedrock uses standard AWS credential chain (`AWS_PROFILE`, `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY`). OpenRouter uses the OpenAI-compatible Chat Completions API (`https://openrouter.ai/api/v1`). Provider abstraction lives in `scripts/llm.ts` (model resolution, client creation, unified streaming completion). Verify a provider/key/model works with `yarn check` (optionally `yarn check --provider=openrouter --model=<id>`).
 

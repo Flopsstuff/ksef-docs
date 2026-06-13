@@ -11,7 +11,7 @@ import {
   sha256,
   formatError,
 } from "./lib";
-import { Provider, PROVIDERS, resolveModel, createClient, streamComplete } from "./llm";
+import { Provider, PROVIDERS, resolveModelChain, createClient, streamComplete } from "./llm";
 
 // Make .env authoritative: override variables already present in the shell
 // environment (e.g. an ANTHROPIC_API_KEY exported in the user's profile).
@@ -121,7 +121,7 @@ function chunkFields(fields: TextField[]): TextField[][] {
 async function translateChunk(
   client: any,
   provider: Provider,
-  model: string,
+  model: string | string[],
   systemPrompt: string,
   lang: string,
   chunk: TextField[],
@@ -146,6 +146,8 @@ async function translateChunk(
     system: systemPrompt,
     userContent: `Translate the following fields from Polish to ${langName}.\n\n${input}`,
     maxTokens: 16000,
+    onFallback: (failed, next, error) =>
+      console.warn(`    ⚠️ chunk ${chunkIndex + 1}/${totalChunks}: ${failed} failed (${error}); trying ${next}`),
   });
 
   // Parse the response — expect a JSON array of strings
@@ -237,15 +239,17 @@ async function main() {
 
   // Chunk
   const chunks = chunkFields(fields);
+  const modelChain = resolveModelChain(provider);
+  const modelLabel = modelChain.length > 1 ? `${modelChain[0]} (fallbacks: ${modelChain.slice(1).join(", ")})` : modelChain[0];
   console.log(`Split into ${chunks.length} chunks (~${CHUNK_CHAR_LIMIT} chars each)`);
-  console.log(`Translating to ${lang} (provider: ${provider}, model: ${resolveModel(provider)}, concurrency: ${concurrency})\n`);
+  console.log(`Translating to ${lang} (provider: ${provider}, model: ${modelLabel}, concurrency: ${concurrency})\n`);
 
   const systemPrompt = fs.readFileSync(
     path.join(PROMPTS_DIR, "translate-openapi.md"),
     "utf-8",
   );
   const client = createClient(provider);
-  const model = resolveModel(provider);
+  const model = modelChain;
 
   // Translate chunks with concurrency pool
   const allTranslations: (string[] | null)[] = new Array(chunks.length).fill(null);

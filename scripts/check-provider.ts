@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import { formatError } from "./lib";
-import { Provider, PROVIDERS, resolveModel, createClient, streamComplete } from "./llm";
+import { Provider, PROVIDERS, resolveModelChain, createClient, streamComplete } from "./llm";
 
 // Make .env authoritative, same as the translation scripts.
 dotenv.config({ override: true });
@@ -28,10 +28,11 @@ async function main() {
     process.exit(1);
   }
 
-  const model = resolveModel(provider, modelOverride);
+  const modelChain = resolveModelChain(provider, modelOverride);
 
   console.log(`Provider:  ${provider}`);
-  console.log(`Model:     ${model}`);
+  console.log(`Model:     ${modelChain[0]}`);
+  if (modelChain.length > 1) console.log(`Fallbacks: ${modelChain.slice(1).join(", ")}`);
   if (provider === "anthropic") {
     console.log(`API key:   ${mask(process.env.ANTHROPIC_API_KEY)}`);
     if (!process.env.ANTHROPIC_API_KEY) {
@@ -54,17 +55,19 @@ async function main() {
 
   try {
     console.log("\nSending a tiny test request…");
-    const { text, usage } = await streamComplete({
+    const { text, usage, model } = await streamComplete({
       client,
       provider,
-      model,
+      model: modelChain,
       system: "You are a translation provider connectivity check. Translate the given Polish text into English, Russian and Ukrainian. Respond with exactly three lines and nothing else, in this format:\nEN: {translation}\nRU: {translation}\nUK: {translation}",
       userContent: "Faktura została pomyślnie przyjęta przez Krajowy System e-Faktur i otrzymała numer KSeF.",
       maxTokens: 512,
       timeoutMs: 30_000,
+      onFallback: (failed, next, error) => console.warn(`   ⚠️ ${failed} failed (${error}); trying ${next}`),
     });
     const ms = Date.now() - started;
-    console.log(`\n✅ Works. (${ms} ms)  tokens: in=${usage.input}, out=${usage.output}`);
+    const via = model !== modelChain[0] ? ` via fallback ${model}` : "";
+    console.log(`\n✅ Works${via}. (${ms} ms)  tokens: in=${usage.input}, out=${usage.output}`);
     console.log("   Response:");
     for (const line of text.trim().split("\n")) {
       console.log(`     ${line}`);

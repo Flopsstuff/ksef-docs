@@ -9,6 +9,9 @@ dist/
 
 *.tsbuildinfo
 
+# benchmark:free / translate:compare scratch output
+output/
+
 plan.md
 
 # ignore gitpmoji directory
