@@ -11,6 +11,7 @@ Translation infrastructure for [KSeF 2.0 documentation](https://github.com/CIRFM
 ```bash
 yarn check                                   # Verify the selected provider/key works (tiny test request)
 yarn check --provider=openrouter             # Override provider/model for the check
+yarn test:tm                                 # Run TM unit smoke-tests (dedup, load-validation, idempotency)
 yarn benchmark:free                          # Benchmark free OpenRouter models (availability + latency) → output/
 yarn benchmark:free --update-doc             # ...and write the result table to output/
 yarn translate:compare                       # Translate one snippet with N models × N runs → output/ (for manual quality review)
@@ -35,13 +36,14 @@ All scripts run via `ts-node`. No separate build step needed.
 
 1. `scripts/sync.ts` — runs `git submodule update --remote`, compares content hashes with `translation.lock.json`, reports new/outdated/deleted files
 2. `scripts/translate.ts` — sends markdown files to the configured provider with system prompt from `prompts/translate.md`. Adds YAML frontmatter + translation banner. Updates lock file on completion
-3. `scripts/translate-openapi.ts` — translates OpenAPI spec (`original/open-api.json`). Extracts `description`/`summary`/`title` fields, splits into ~10K char chunks, translates each chunk, merges back into full spec. Saves to `translations/<lang>/open-api.json`
-4. `scripts/status.ts` — reads lock file and compares SHA256 hashes to show per-file status
-5. `scripts/lib.ts` — shared constants (`ROOT`, `ORIGINAL_DIR`, `TRANSLATIONS_DIR`), lock file I/O, hash functions, file discovery, `formatError()`
-6. `scripts/llm.ts` — provider abstraction: `Provider` type, `resolveModel()`, `resolveModelChain()` (primary + numbered fallbacks), `createClient()`, and `streamComplete()` (unified completion over Anthropic/Bedrock Messages API and OpenRouter Chat Completions API, with model fallback). Always **streams** (keeps the socket alive on long generations — avoids `read ETIMEDOUT`) and uses **temperature 0**. Used by both translate scripts and `check-provider.ts`
-7. `scripts/check-provider.ts` (`yarn check`) — sends a tiny request to verify the selected provider/key works; supports `--provider` / `--model`; honors the fallback chain
-8. `scripts/benchmark-free.ts` (`yarn benchmark:free`) — discovers free, translation-capable OpenRouter models live from the `/models` API and probes each (success/latency/sample); writes a table to `output/` (gitignored) with `--update-doc`
-9. `scripts/translate-compare.ts` (`yarn translate:compare`) — translates a fixture snippet (`scripts/fixtures/compare-snippet.md`) with several models × N runs into EN/RU/UK using the real translate prompt; dumps all outputs to `output/` for manual quality comparison
+3. `scripts/translate-openapi.ts` — translates OpenAPI spec (`original/open-api.json`). Extracts `description`/`summary`/`title` fields (~1387) and **dedups to ~702 unique texts**. Keeps a per-language translation memory (TM) sidecar `translations/<lang>/open-api.tm.json` keyed by `sha256(source text)`; on each run it translates **only the misses** (new/changed texts), re-packs just those into smaller ~3K char chunks (default concurrency 5), then applies the TM to every field and merges back into the full spec. Saves to `translations/<lang>/open-api.json`. The TM is content-addressed, so it survives reordering and provider/model/fallback swaps; `--force` bypasses the TM for a full re-translate (consistency refresh). **Selective re-translation** (compose, OR; bypasses the up-to-date gate): `--retranslate-model=<id>` (re-do entries a given model produced — e.g. a weak free model), `--retranslate-matching=<regex>` (re-do entries whose current translation matches — e.g. `[ąćęłńóśźż]` for leftover Polish), `--retranslate-key=<sha256[,…]>` (specific entries by key)
+4. `scripts/tm.ts` — translation-memory module behind the OpenAPI translator: `dedupeByText()` (first-seen order), `parseTM()`/`loadTM()` (lenient validation — corrupt file or `tmVersion` mismatch yields an empty TM → full re-translate; malformed entries dropped individually), `serializeTM()` (sorted keys + pinned `meta` key order for stable bytes / minimal diffs). The TM file holds `entries` (`sha256(text)` → translation) plus a parallel `models` map (`sha256(text)` → the model that produced that entry, **per-entry provenance** for selective re-translation), and `meta` (`tmVersion`, `lastRun.models` = distinct models used in the last run, `createdAt`, `updatedAt`). Smoke-tested by `scripts/test-tm.ts` (`yarn test:tm`)
+5. `scripts/status.ts` — reads lock file and compares SHA256 hashes to show per-file status
+6. `scripts/lib.ts` — shared constants (`ROOT`, `ORIGINAL_DIR`, `TRANSLATIONS_DIR`), lock file I/O, hash functions, file discovery, `formatError()`
+7. `scripts/llm.ts` — provider abstraction: `Provider` type, `resolveModel()`, `resolveModelChain()` (primary + numbered fallbacks), `createClient()`, and `streamComplete()` (unified completion over Anthropic/Bedrock Messages API and OpenRouter Chat Completions API, with model fallback). Always **streams** (keeps the socket alive on long generations — avoids `read ETIMEDOUT`) and uses **temperature 0**. Used by both translate scripts and `check-provider.ts`
+8. `scripts/check-provider.ts` (`yarn check`) — sends a tiny request to verify the selected provider/key works; supports `--provider` / `--model`; honors the fallback chain
+9. `scripts/benchmark-free.ts` (`yarn benchmark:free`) — discovers free, translation-capable OpenRouter models live from the `/models` API and probes each (success/latency/sample); writes a table to `output/` (gitignored) with `--update-doc`
+10. `scripts/translate-compare.ts` (`yarn translate:compare`) — translates a fixture snippet (`scripts/fixtures/compare-snippet.md`) with several models × N runs into EN/RU/UK using the real translate prompt; dumps all outputs to `output/` for manual quality comparison
 
 ### Site Build Pipeline
 
@@ -66,6 +68,7 @@ All scripts run via `ts-node`. No separate build step needed.
 - **Translation frontmatter**: Every translated file has YAML frontmatter (`original`, `source_repo`, `source_commit`, `last_translated`) and a `> **Translation.**` banner linking to the original. The build script strips these before site generation
 - **File names stay Polish**: Internal links keep original file names (e.g., `[Session Management](auth/sesje.md)`). Only link text is translated
 - **Lock file** (`translation.lock.json`): Tracks `sourceCommit` and per-file SHA256 hashes per language. Used to detect outdated translations
+- **OpenAPI TM sidecar** (`translations/<lang>/open-api.tm.json`): A **committed** per-language translation-memory file (NOT gitignored, ~150 KB/lang), keyed by `sha256(source text)`. Consumed only by `translate-openapi.ts` to skip already-translated texts; the site build ignores it
 - **Generated dirs in .gitignore**: `site/pl/`, `site/ru/`, `site/en/`, `site/uk/`, `site/.vitepress/dist/`, `site/.vitepress/cache/`, `site/.vitepress/sidebars.json` are all generated and not committed
 - **Secrets**: `.env` (API keys, gitignored) is the real config; `.env.example` is the committed template. A PreToolUse hook (`.claude/settings.json` → `.claude/hooks/deny-env-read.sh`) blocks reading `.env` from within Claude Code — read `.env.example` or run `yarn check` instead
 

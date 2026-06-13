@@ -122,10 +122,6 @@
         "sourceHash": "7b0748e69c3813592615fa636d4ba3277640c42698002fd0a9788aa06c017179",
         "translatedAt": "2026-06-13T14:22:57.228Z"
       },
-      "open-api.json": {
-        "sourceHash": "fd1cbdd356a2be38962a7623e7f1501e3b6fddecfb416dff19e90599230e212e",
-        "translatedAt": "2026-05-23T16:09:38.212Z"
-      },
       "faktury/sesje/sesja-sprawdzenie-stanu-i-pobranie-upo.md": {
         "sourceHash": "7c888c889b120d6922785c77c1691004654d8818d5d0b94c9bc5f531bb6e8be8",
         "translatedAt": "2026-05-23T15:44:38.594Z"
@@ -133,6 +129,10 @@
       "bezpieczenstwo/klucze-publiczne-do-szyfrowania.md": {
         "sourceHash": "02024e6ef459c5d6d7795ff4082d54a0386312f4ffa472a24c1f794c68333676",
         "translatedAt": "2026-05-23T15:44:45.102Z"
+      },
+      "open-api.json": {
+        "sourceHash": "f2b4e975ed5ae3a61d3816bfaa4b635f9e9db4652c53d160ef5a32c7329e36d5",
+        "translatedAt": "2026-06-13T18:06:40.512Z"
       }
     },
     "en": {
@@ -256,10 +256,6 @@
         "sourceHash": "7b0748e69c3813592615fa636d4ba3277640c42698002fd0a9788aa06c017179",
         "translatedAt": "2026-06-13T14:39:16.731Z"
       },
-      "open-api.json": {
-        "sourceHash": "fd1cbdd356a2be38962a7623e7f1501e3b6fddecfb416dff19e90599230e212e",
-        "translatedAt": "2026-05-23T16:32:42.658Z"
-      },
       "bezpieczenstwo/klucze-publiczne-do-szyfrowania.md": {
         "sourceHash": "02024e6ef459c5d6d7795ff4082d54a0386312f4ffa472a24c1f794c68333676",
         "translatedAt": "2026-05-23T16:24:56.130Z"
@@ -267,6 +263,10 @@
       "faktury/sesje/sesja-sprawdzenie-stanu-i-pobranie-upo.md": {
         "sourceHash": "7c888c889b120d6922785c77c1691004654d8818d5d0b94c9bc5f531bb6e8be8",
         "translatedAt": "2026-05-23T16:25:09.993Z"
+      },
+      "open-api.json": {
+        "sourceHash": "f2b4e975ed5ae3a61d3816bfaa4b635f9e9db4652c53d160ef5a32c7329e36d5",
+        "translatedAt": "2026-06-13T17:57:00.232Z"
       }
     },
     "uk": {
@@ -390,10 +390,6 @@
         "sourceHash": "e54588888d56d0ffc6e629f9a6e334a9fcd4a3adf5a5dde3d348e9574bf8a4f1",
         "translatedAt": "2026-04-04T18:29:39.772Z"
       },
-      "open-api.json": {
-        "sourceHash": "fd1cbdd356a2be38962a7623e7f1501e3b6fddecfb416dff19e90599230e212e",
-        "translatedAt": "2026-05-23T16:45:49.427Z"
-      },
       "bezpieczenstwo/klucze-publiczne-do-szyfrowania.md": {
         "sourceHash": "02024e6ef459c5d6d7795ff4082d54a0386312f4ffa472a24c1f794c68333676",
         "translatedAt": "2026-05-23T16:34:30.948Z"
@@ -401,6 +397,10 @@
       "faktury/sesje/sesja-sprawdzenie-stanu-i-pobranie-upo.md": {
         "sourceHash": "7c888c889b120d6922785c77c1691004654d8818d5d0b94c9bc5f531bb6e8be8",
         "translatedAt": "2026-05-23T16:34:49.929Z"
+      },
+      "open-api.json": {
+        "sourceHash": "f2b4e975ed5ae3a61d3816bfaa4b635f9e9db4652c53d160ef5a32c7329e36d5",
+        "translatedAt": "2026-06-13T18:06:57.419Z"
       }
     }
   }
