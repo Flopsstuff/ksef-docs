@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "KSeF API TE",
-    "description": "**Версия API:** 2.6.0 (build 2.5.0-te)<br>\n**Публичные ключи** Министерства финансов (для данной среды): [Скачать ключи](#tag/Certyfikaty-klucza-publicznego)<br>\n**История изменений:** [Changelog](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)<br>\n**Расширенная документация API:** [ksef-docs](https://github.com/CIRFMF/ksef-docs/tree/main)\n\n**Адрес сервера API:**\n- Среда TEST: `https://api-test.ksef.mf.gov.pl/v2`\n",
+    "description": "**Версия API:** 2.7.0 (build 2.7.0-te)<br>\n**Публичные ключи** Министерства финансов (для данного окружения): [Скачать ключи](#tag/Certyfikaty-klucza-publicznego)<br>\n**История изменений:** [Changelog](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)<br>\n**Расширенная документация API:** [ksef-docs](https://github.com/CIRFMF/ksef-docs/tree/main)\n\n**Адрес сервера API:**\n- Тестовое окружение: `https://api-test.ksef.mf.gov.pl/v2`",
     "version": "v2"
   },
   "servers": [
@@ -1225,6 +1225,126 @@
         ]
       }
     },
+    "/testdata/certificates/{serialNumber}": {
+      "put": {
+        "tags": [
+          "Сертификаты"
+        ],
+        "summary": "Обновление сертификата",
+        "description": "Обновляет данные указанного сертификата KSeF аутентифицированного субъекта. **Только для тестовых окружений.**\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).",
+        "parameters": [
+          {
+            "name": "serialNumber",
+            "in": "path",
+            "description": "Серийный номер сертификата (в шестнадцатеричном формате).",
+            "required": true,
+            "schema": {
+              "maxLength": 16,
+              "minLength": 16,
+              "pattern": "^[0-9A-F]{16}$",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "validTo"
+                ],
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/TestDataUpdateCertificateRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-System-Warning": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemWarning"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "| ExceptionCode       | ExceptionDescription                                       | Details |\n|---------------------|------------------------------------------------------------|---------|\n| 25008               | Сертификат с указанным серийным номером не существует.      |         |\n| 21405 | Ошибка валидации входных данных. | {текст ошибки от валидатора} |",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "| | req / s | req / min | req / h | группа\n| --- | --- | --- | --- | --- |\n| **Лимиты количества запросов** | 10 | 30 | 120 | other\n",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetryAfter"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Too Many Requests"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "x-rate-limits": {
+          "perSecond": 10,
+          "perMinute": 30,
+          "perHour": 120
+        }
+      }
+    },
     "/security/public-key-certificates": {
       "get": {
         "tags": [
@@ -2168,6 +2288,468 @@
         }
       }
     },
+    "/collective-identifiers": {
+      "post": {
+        "tags": [
+          "Коллективные идентификаторы"
+        ],
+        "summary": "Генерация коллективного идентификатора",
+        "description": "Генерирует коллективный идентификатор для переданного списка номеров KSeF счетов\nвыставленных одним и тем же продавцом.\n\nМаксимальное количество счетов, привязанных к одному коллективному идентификатору, составляет 500.\nОдин счет может быть привязан к максимум 132 коллективным идентификаторам\nв рамках одного контекста.\n            \nКоллективный идентификатор имеет формат:\n`9999999999-IZRRRRMM-FFFFFFFFFFFF-FF`, где:\n- `9999999999` – 10-значный NIP продавца,\n- `IZ` – постоянный префикс,\n- `RRRRMM` – год и месяц создания,\n- `FFFFFFFFFFFF` –  техническая часть, состоящая из 12 символов в шестнадцатеричном формате, только [0–9 A–F], заглавные буквы,\n- `FF` –  контрольная сумма CRC-8 - 2 символа в шестнадцатеричном формате, только [0–9 A–F], заглавные буквы.\n            \nДля вычисления контрольной суммы используется алгоритм CRC-8 с параметрами:\n- Полином: 0x07\n- Начальное значение: 0x00\n- Формат результата: 2-символьное шестнадцатеричное представление (HEX, заглавные буквы)\n\nПример:\n`1111111111-IZ202607-65ED02180000-E7`.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Требуется одно из разрешений**: `InvoiceRead`, `InvoiceWrite`, `CollectiveIdentifierManage`.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "invoices"
+                ],
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/GenerateCollectiveIdentifierRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "headers": {
+              "X-System-Warning": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemWarning"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateCollectiveIdentifierResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "| ExceptionCode | ExceptionDescription | Details |\n|---------------------|------------------------------------------------------------------------------|--------------------------------------------------------|\n| 71001 | Фактура не может быть назначена Коллективному идентификатору. | Фактура с номером KSeF {ksefNumber} не может быть назначена Коллективному идентификатору. |\n| 71002 | Фактура уже назначена максимальному числу Коллективных идентификаторов. | Фактура с номером KSeF {ksefNumber} уже назначена максимальному числу Коллективных идентификаторов. |\n| 21405 | Ошибка проверки входных данных. | {текст ошибки от валидатора} |",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "| | req / s | req / min | req / h | группа\n| --- | --- | --- | --- | --- |\n| **Лимиты количества запросов** | 10 | 60 | 120 | collectiveIdentifier",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetryAfter"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Too Many Requests"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "x-rate-limits": {
+          "perSecond": 10,
+          "perMinute": 60,
+          "perHour": 120
+        },
+        "x-required-permissions": [
+          "InvoiceRead",
+          "InvoiceWrite",
+          "CollectiveIdentifierManage"
+        ]
+      }
+    },
+    "/collective-identifiers/query": {
+      "post": {
+        "tags": [
+          "Коллективные идентификаторы"
+        ],
+        "summary": "Получение списка коллективных идентификаторов, связанных с контекстом",
+        "description": "Возвращает список коллективных идентификаторов, сгенерированных в контексте.\nДля контекста типа NIP также возвращаются коллективные идентификаторы, для которых субъект выступает в роли Субъекта 1 в фактуре.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возвращению ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Sorting:**\n\n- dateCreated (Desc)\n- collectiveIdentifierNumber (Desc)\n\n\n\n**Требуется одно из разрешений**: `InvoiceRead`, `InvoiceWrite`, `CollectiveIdentifierManage`.",
+        "parameters": [
+          {
+            "name": "x-continuation-token",
+            "in": "header",
+            "description": "Token для получения следующей страницы результатов.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "maximum": 200,
+              "minimum": 10,
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "dateCreatedFrom",
+                  "dateCreatedTo"
+                ],
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CollectiveIdentifiersQueryRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-System-Warning": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemWarning"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectiveIdentifiersQueryResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "| ExceptionCode | ExceptionDescription | Details |\n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21405 | Ошибка проверки входных данных. | {текст ошибки от валидатора} |",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "x-sort": [
+          {
+            "field": "dateCreated",
+            "direction": "Desc"
+          },
+          {
+            "field": "collectiveIdentifierNumber",
+            "direction": "Desc"
+          }
+        ],
+        "x-required-permissions": [
+          "InvoiceRead",
+          "InvoiceWrite",
+          "CollectiveIdentifierManage"
+        ]
+      }
+    },
+    "/collective-identifiers/{collectiveIdentifierNumber}/invoices": {
+      "get": {
+        "tags": [
+          "Коллективные идентификаторы"
+        ],
+        "summary": "Получение списка фактур, входящих в состав коллективного идентификатора",
+        "description": "Возвращает список номеров KSeF счетов, входящих в состав идентификатора коллективного.\n            \nИнформация о сумме и валюте платежа возвращается только субъекту, который создал идентификатор коллективный, или субъекту, выступающему в роли на данном счете.\n\nЕсли сумма и валюта платежа были определены при создании идентификатора коллективного, а субъект не имеет доступа к этой информации, поля, связанные с суммой и валютой платежа, не возвращаются, а поле <b>paymentDetailsHidden</b> принимает значение <b>true</b>.\n\nЕсли сумма и валюта платежа не были определены при создании идентификатора коллективного, их значения остаются пустыми, а поле <b>paymentDetailsHidden</b> принимает значение <b>false</b>.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возвращению ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Sortowanie:**\n\n- ksefNumber (Desc)\n\n\n\n**Требуется одно из разрешений**: `InvoiceRead`, `InvoiceWrite`, `CollectiveIdentifierManage`.",
+        "parameters": [
+          {
+            "name": "collectiveIdentifierNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-continuation-token",
+            "in": "header",
+            "description": "Token для получения следующей страницы результатов.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "maximum": 200,
+              "minimum": 10,
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-System-Warning": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemWarning"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectiveIdentifierInvoicesQueryResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "| ExceptionCode | ExceptionDescription | Details |\n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21405 | Ошибка проверки входных данных. | {текст ошибки от валидатора} |",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "x-sort": [
+          {
+            "field": "ksefNumber",
+            "direction": "Desc"
+          }
+        ],
+        "x-required-permissions": [
+          "InvoiceRead",
+          "InvoiceWrite",
+          "CollectiveIdentifierManage"
+        ]
+      }
+    },
+    "/collective-identifiers/ksef/{ksefNumber}": {
+      "get": {
+        "tags": [
+          "Коллективные идентификаторы"
+        ],
+        "summary": "Получение списка коллективных идентификаторов по номеру KSeF",
+        "description": "Возвращает список коллективных идентификаторов, связанных с указанным номером KSeF.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возвращению ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Sortowanie:**\n\n- dateCreated (Desc)\n- collectiveIdentifierNumber (Desc)\n\n\n\n**Требуется одно из разрешений**: `InvoiceRead`, `InvoiceWrite`, `CollectiveIdentifierManage`.",
+        "parameters": [
+          {
+            "name": "ksefNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/KsefNumber"
+            }
+          },
+          {
+            "name": "x-continuation-token",
+            "in": "header",
+            "description": "Token для получения следующей страницы результатов.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "maximum": 200,
+              "minimum": 10,
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-System-Warning": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemWarning"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectiveIdentifiersByKsefNumberQueryResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "| ExceptionCode | ExceptionDescription | Details |\n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21405 | Ошибка проверки входных данных. | {текст ошибки от валидатора} |",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "x-sort": [
+          {
+            "field": "dateCreated",
+            "direction": "Desc"
+          },
+          {
+            "field": "collectiveIdentifierNumber",
+            "direction": "Desc"
+          }
+        ],
+        "x-required-permissions": [
+          "InvoiceRead",
+          "InvoiceWrite",
+          "CollectiveIdentifierManage"
+        ]
+      }
+    },
     "/limits/context": {
       "get": {
         "tags": [
@@ -2459,6 +3041,11 @@
                     "perSecond": 8,
                     "perMinute": 16,
                     "perHour": 64
+                  },
+                  "collectiveIdentifier": {
+                    "perSecond": 10,
+                    "perMinute": 60,
+                    "perHour": 120
                   },
                   "other": {
                     "perSecond": 10,
@@ -3217,7 +3804,7 @@
           "Предоставление прав доступа"
         ],
         "summary": "Предоставление физическим лицам прав на работу в KSeF",
-        "description": "Метод позволяет предоставить лицу, указанному в запросе, права для работы в KSeF  \nв текущем контексте.\n            \nВ запросе указываются предоставляемые права из набора:  \n- **InvoiceWrite** – выставление счетов-фактур,  \n- **InvoiceRead** – просмотр счетов-фактур,  \n- **CredentialsManage** – управление правами,  \n- **CredentialsRead** – просмотр прав,  \n- **Introspection** – просмотр истории сессий и генерация UPO,  \n- **SubunitManage** – управление дочерними подразделениями,  \n- **EnforcementOperations** – выполнение исполнительных операций.\n            \nМетод позволяет выбрать любую комбинацию указанных прав.  \nПраво **EnforcementOperations** может быть предоставлено только в том случае,  \nесли субъект контекста имеет роль **EnforcementAuthority** (орган исполнения)  \nили **CourtBailiff** (судебный пристав).\n\n> Дополнительная информация:\n> - [Предоставление прав](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadawanie-uprawnie%C5%84-osobom-fizycznym-do-pracy-w-ksef)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Необходимые права**: `CredentialsManage`.",
+        "description": "Метод позволяет предоставить указанному в запросе лицу права на работу в KSeF  \nв текущем контексте.\n            \nВ запросе определяются предоставляемые права из набора:  \n- **InvoiceWrite** – выставление счетов,  \n- **InvoiceRead** – просмотр счетов,  \n- **CredentialsManage** – управление правами,  \n- **CredentialsRead** – просмотр прав,  \n- **Introspection** – просмотр истории сессий и генерация UPO,  \n- **SubunitManage** – управление дочерними единицами,  \n- **EnforcementOperations** – выполнение исполнительных операций.\n- **CollectiveIdentifierManage** – управление коллективными идентификаторами  \n            \nМетод позволяет выбрать любую комбинацию из указанных выше прав.  \nПраво **EnforcementOperations** может быть предоставлено только в том случае,  \nесли субъект контекста имеет роль **EnforcementAuthority** (исполнительный орган)  \nили **CourtBailiff** (судебный пристав).\n\n> Подробнее:\n> - [Предоставление прав](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadawanie-uprawnie%C5%84-osobom-fizycznym-do-pracy-w-ksef)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возвращению ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Требуемое право**: `CredentialsManage`.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -3359,7 +3946,7 @@
           "Предоставление прав доступа"
         ],
         "summary": "Предоставление субъектам прав на обработку счетов-фактур",
-        "description": "Метод позволяет предоставить субъекту, указанному в запросе, права на обработку счетов-фактур субъекта контекста.  \nВ запросе указываются предоставляемые права из набора:  \n- **InvoiceWrite** – выставление счетов-фактур  \n- **InvoiceRead** – просмотр счетов-фактур  \n            \nМетод позволяет выбрать любую комбинацию указанных прав.  \nДля каждого права может быть установлен флаг **canDelegate**, указывающий на возможность его дальнейшей передачи путём косвенного предоставления.\n\n> Дополнительная информация:\n> - [Предоставление прав](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadanie-podmiotom-uprawnie%C5%84-do-obs%C5%82ugi-faktur)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Необходимые права**: `CredentialsManage`.",
+        "description": "Метод позволяет предоставить субъекту, указанному в запросе, права на обработку счетов субъекта контекста.  \nВ запросе указываются предоставляемые права из набора:  \n- **InvoiceWrite** – выставление счетов  \n- **InvoiceRead** – просмотр счетов  \n            \nМетод позволяет выбрать любую комбинацию из указанных выше прав.  \nДля каждого права может быть установлена флага **canDelegate**, указывающая на возможность его дальнейшего передачи путем предоставления косвенно.\n\n> Подробнее:\n> - [Предоставление прав](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadanie-podmiotom-uprawnie%C5%84-do-obs%C5%82ugi-faktur)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Требуемое право**: `CredentialsManage`.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -3501,7 +4088,7 @@
           "Предоставление прав доступа"
         ],
         "summary": "Предоставление субъектных прав",
-        "description": "Метод позволяет предоставить субъекту, указанному в запросе, одно из субъектных прав на обслуживание субъекта контекста.\n\n> Дополнительная информация:\n> - [Предоставление прав](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadanie-uprawnie%C5%84-podmiotowych)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Необходимые права**: `CredentialsManage`.",
+        "description": "Метод позволяет предоставить одно из субъектных прав на обработку субъекта контекста субъекту, указанному в запросе.\n\n> Подробнее:\n> - [Предоставление прав](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadawanie-uprawnie%C5%84-podmiotowych)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Требуемое право**: `CredentialsManage`.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -3634,7 +4221,7 @@
           "Предоставление прав доступа"
         ],
         "summary": "Предоставление прав косвенным способом",
-        "description": "Метод позволяет косвенным образом предоставить лицу, указанному в запросе, права на обработку счетов-фактур другого субъекта — клиента.  \nВозможен один из следующих вариантов:  \n- предоставление общих прав — на обслуживание всех клиентов  \n- предоставление избирательных прав — на обслуживание указанного клиента  \n            \nИзбирательное право может быть предоставлено только в том случае, если клиент ранее предоставил субъекту текущего контекста любое право с возможностью его дальнейшей передачи (см. [POST /v2/permissions/entities/grants](/docs/v2/index.html#tag/Nadawanie-uprawnien/paths/~1permissions~1entities~1grants/post)).  \n            \nВ запросе указываются предоставляемые права из набора:  \n- **InvoiceWrite** — выставление счетов-фактур  \n- **InvoiceRead** — просмотр счетов-фактур  \n            \nМетод позволяет выбрать любую комбинацию указанных прав.\n\n> Дополнительная информация:\n> - [Предоставление прав](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadanie-uprawnie%C5%84-w-spos%C3%B3b-po%C5%9Bredni)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Необходимые права**: `CredentialsManage`.",
+        "description": "Метод позволяет предоставить косвенно указанному в запросе лицу права на обработку счетов другого субъекта – клиента.  \nЭто может быть одна из возможностей:  \n- предоставление общих прав – для обработки всех клиентов  \n- предоставление избирательных прав – для обработки указанного клиента  \n            \nИзбирательное право может быть предоставлено только в том случае, если клиент ранее предоставил субъекту текущего контекста любое право с правом на его дальнейшую передачу (см. [POST /v2/permissions/entities/grants](/docs/v2/index.html#tag/Nadawanie-uprawniezen/paths/~1permissions~1entities~1grants/post)).  \n            \nВ запросе указываются предоставляемые права из набора:  \n- **InvoiceWrite** – выставление счетов  \n- **InvoiceRead** – просмотр счетов  \n            \nМетод позволяет выбрать любую комбинацию из указанных выше прав.\n\n> Подробнее:\n> - [Предоставление прав](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadawanie-uprawnie%C5%84-w-spos%C3%B3b-po%C5%9Bredni)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Требуемое право**: `CredentialsManage`.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -3778,7 +4365,7 @@
           "Предоставление прав доступа"
         ],
         "summary": "Предоставление прав администратора дочернего субъекта",
-        "description": "Метод позволяет предоставить указанному в запросе субъекту или физическому лицу права администратора в контексте:  \n- указанного NIP подчинённого субъекта – исключительно если субъект текущего контекста входа имеет роль вышестоящего субъекта:\n  - **LocalGovernmentUnit** \n  - **VatGroupUnit**  \n- указанного или созданного внутреннего идентификатора  \n            \nВместе с созданием администратора подчинённой единицы создаётся внутренний идентификатор, состоящий из номера NIP субъекта контекста входа и 5 цифр, уникально идентифицирующих внутреннюю единицу.\nПоследняя цифра должна быть корректной контрольной суммой, которая вычисляется по следующему алгоритму.\n\nАлгоритм использует чередующиеся веса (1×, 3×, 1×, 3×, ...), суммирует результаты и возвращает остаток от деления на 10.\n\nПример:\n- Входные данные: \"6824515772-1234\" (без контрольной цифры)\n- Позиция 0 (1-я цифра): 6 × 1 = 6\n- Позиция 1 (2-я цифра): 8 × 3 = 24\n- Позиция 2 (3-я цифра): 2 × 1 = 2\n- Позиция 3 (4-я цифра): 4 × 3 = 12\n- Позиция 4 (5-я цифра): 5 × 1 = 5\n- Позиция 5 (6-я цифра): 1 × 3 = 3\n- Позиция 6 (7-я цифра): 5 × 1 = 5\n- Позиция 7 (8-я цифра): 7 × 3 = 21\n- Позиция 8 (9-я цифра): 7 × 1 = 7\n- Позиция 9 (10-я цифра): 2 × 3 = 6\n- Позиция 10 (11-я цифра): 1 × 1 = 1\n- Позиция 11 (12-я цифра): 2 × 3 = 6\n- Позиция 12 (13-я цифра): 3 × 1 = 3\n- Позиция 13 (14-я цифра): 4 × 3 = 12\n- Сумма: 6 + 24 + 2 + 12 + 5 + 3 + 5 + 21 + 7 + 6 + 1 + 6 + 3 + 12 = 113\n- Контрольная цифра (15-я цифра): 113 % 10 = 3\n\nВ запросе также указывается наименование данной единицы.  \n            \nПрава администратора подчинённой единицы включают:  \n- **CredentialsManage** – управление правами доступа  \n            \nМетод автоматически предоставляет указанное выше право без необходимости указывать его в запросе.\n            \n> Дополнительная информация:\n> - [Предоставление прав доступа](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadanie-uprawnie%C5%84-administratora-podmiotu-podrz%C4%99dnego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Необходимые права**: `SubunitManage`.",
+        "description": "Метод позволяет предоставить указанному в запросе субъекту или физическому лицу права администратора в контексте:  \n- указанного NIP дочернего субъекта – только если субъект текущего контекста входа имеет роль родительского субъекта:\n  - **LocalGovernmentUnit** \n  - **VatGroupUnit**  \n- указанного или созданного внутреннего идентификатора  \n            \nПри создании администратора дочерней единицы создается внутренний идентификатор, состоящий из номера NIP субъекта контекста входа и 5 цифр, уникально идентифицирующих внутреннюю единицу.\nПоследняя цифра должна быть правильной контрольной суммой, которая вычисляется по следующему алгоритму.\n\nАлгоритм использует чередующиеся веса (1×, 3×, 1×, 3×, ...), суммирует результаты и возвращает остаток от деления на 10.\n\nПример:\n- Вход: \"6824515772-1234\" (без контрольной цифры)\n- Позиция 0 (1-я цифра): 6 × 1 = 6\n- Позиция 1 (2-я цифра): 8 × 3 = 24\n- Позиция 2 (3-я цифра): 2 × 1 = 2\n- Позиция 3 (4-я цифра): 4 × 3 = 12\n- Позиция 4 (5-я цифра): 5 × 1 = 5\n- Позиция 5 (6-я цифра): 1 × 3 = 3\n- Позиция 6 (7-я цифра): 5 × 1 = 5\n- Позиция 7 (8-я цифра): 7 × 3 = 21\n- Позиция 8 (9-я цифра): 7 × 1 = 7\n- Позиция 9 (10-я цифра): 2 × 3 = 6\n- Позиция 10 (11-я цифра): 1 × 1 = 1\n- Позиция 11 (12-я цифра): 2 × 3 = 6\n- Позиция 12 (13-я цифра): 3 × 1 = 3\n- Позиция 13 (14-я цифра): 4 × 3 = 12\n- Сумма: 6 + 24 + 2 + 12 + 5 + 3 + 5 + 21 + 7 + 6 + 1 + 6 + 3 + 12 = 113\n- Контрольная цифра (15-я цифра): 113 % 10 = 3\n\nВ запросе также указывается название этой единицы.  \n            \nПрава администратора дочерней единицы включают:  \n- **CredentialsManage** – управление правами доступа\n            \nМетод автоматически предоставляет указанное выше разрешение без необходимости указывать его в запросе.\n            \n> Дополнительная информация:\n> - [Предоставление прав доступа](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadanie-uprawnie%C5%84-administratora-podmiotu-podrz%C4%99dnego)\n\n**Заголовки:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Необходимое разрешение**: `SubunitManage`.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -3919,7 +4506,7 @@
           "Предоставление прав доступа"
         ],
         "summary": "Предоставление прав администратора субъекта ЕС",
-        "description": "Метод позволяет предоставить указанному в запросе субъекту или физическому лицу прав администратора в контексте, составленном из идентификатора NIP субъекта текущего контекста и номера НДС ЕС субъекта ЕС, указанного в запросе.  \nВместе с созданием администратора субъекта ЕС создаётся составной контекст, состоящий из номера NIP субъекта контекста входа и указанного идентификационного номера НДС ЕС субъекта ЕС.  \nВ запросе также указываются наименование и адрес субъекта ЕС.  \n            \nЕдинственным способом идентификации наделяемого правами является отпечаток квалифицированного сертификата:  \n- сертификат электронной подписи для физических лиц  \n- сертификат электронной печати для субъектов  \n            \nПрава администратора субъекта ЕС включают:  \n- **VatEuManage** – управление правами в рамках субъекта ЕС  \n- **InvoiceWrite** – выставление счетов-фактур  \n- **InvoiceRead** – просмотр счетов-фактур  \n- **Introspection** – просмотр истории сессий  \n            \nМетод автоматически предоставляет все вышеуказанные права без необходимости их указания в запросе.\n            \n> Дополнительная информация:\n> - [Предоставление прав](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadanie-uprawnie%C5%84-administratora-podmiotu-unijnego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Необходимые права**: `CredentialsManage`.",
+        "description": "Метод позволяет предоставить указанному в запросе субъекту или физическому лицу права администратора в контексте, состоящем из идентификатора NIP текущего контекстного субъекта и номера НДС ЕС субъекта ЕС, указанного в запросе. \nПри создании администратора субъекта ЕС создается контекст, состоящий из номера NIP субъекта контекста входа и указанного номера идентификационного НДС ЕС субъекта ЕС. \nВ запросе также указывается название и адрес субъекта ЕС. \n            \nЕдинственным способом идентификации уполномоченного лица является отпечаток сертификата квалифицированного удостоверения: \n- сертификат электронной подписи для физических лиц \n- сертификат электронной печати для субъектов \n            \nПрава администратора субъекта ЕС включают: \n- **VatEuManage** – управление правами в рамках субъекта ЕС \n- **InvoiceWrite** – выставление счетов-фактур \n- **InvoiceRead** – просмотр счетов-фактур \n- **Introspection** – просмотр истории сессий \n            \nМетод автоматически предоставляет все указанные выше права без необходимости их указания в запросе.\n            \n> Подробнее:\n> - [Предоставление прав](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadawanie-uprawnie%C5%84-administratora-podmiotu-unijnego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Требуемое разрешение**: `CredentialsManage`.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -4070,7 +4657,7 @@
           "Предоставление прав доступа"
         ],
         "summary": "Предоставление прав представителя субъекта ЕС",
-        "description": "Метод позволяет предоставить указанному в запросе субъекту или физическому лицу права на выставление и/или просмотр счетов-фактур в составном контексте текущего контекста.  \n            \nЕдинственным способом идентификации наделяемого правами является отпечаток квалифицированного сертификата:  \n- сертификат электронной подписи для физических лиц  \n- сертификат электронной печати для субъектов  \n            \nВ запросе указываются предоставляемые права из набора:  \n- **InvoiceWrite** – выставление счетов-фактур  \n- **InvoiceRead** – просмотр счетов-фактур  \n            \nМетод позволяет выбрать любую комбинацию вышеуказанных прав.\n\n> Дополнительная информация:\n> - [Предоставление прав](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadanie-uprawnie%C5%84-reprezentanta-podmiotu-unijnego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Необходимые права**: `VatUeManage`.",
+        "description": "Метод позволяет предоставить указанному в запросе субъекту или физическому лицу права на выставление и/или просмотр счетов-фактур в контексте текущего контекста. \n            \nЕдинственным способом идентификации уполномоченного лица является отпечаток сертификата квалифицированного удостоверения: \n- сертификат электронной подписи для физических лиц \n- сертификат электронной печати для субъектов \n            \nВ запросе определяемые предоставляемые права из набора: \n- **InvoiceWrite** – выставление счетов-фактур \n- **InvoiceRead** – просмотр счетов-фактур \n            \nМетод позволяет выбрать любую комбинацию указанных выше прав.\n\n> Подробнее:\n> - [Предоставление прав](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadawanie-uprawnie%C5%84-reprezentanta-podmiotu-unijnego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Требуемое разрешение**: `VatUeManage`.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -4214,7 +4801,7 @@
           "Отзыв прав доступа"
         ],
         "summary": "Отзыв прав",
-        "description": "Метод позволяет отозвать разрешение с указанным идентификатором.  \nТребуется предварительное считывание разрешений для получения  \nидентификатора разрешения, которое должно быть отозвано.\n\n> Дополнительная информация:\n> - [Отзыв разрешений](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#odebranie-uprawnie%C5%84)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Необходимые разрешения**: `CredentialsManage`, `VatUeManage`, `SubunitManage`.",
+        "description": "Метод позволяет получить разрешение с указанным идентификатором.  \nТребуется предварительное чтение разрешений для получения  \nидентификатора разрешения, которое должно быть получено.\n\n> Подробнее:\n> - [Получение разрешений](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#odebranie-uprawnie%C5%84)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возвращению ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Требуется одно из разрешений**: `CredentialsManage`, `VatUeManage`, `SubunitManage`.",
         "parameters": [
           {
             "name": "permissionId",
@@ -4330,7 +4917,7 @@
           "Отзыв прав доступа"
         ],
         "summary": "Отзыв субъектных разрешений",
-        "description": "Метод позволяет отозвать субъектное разрешение с указанным идентификатором.  \nТребуется предварительное считывание разрешений для получения  \nидентификатора разрешения, которое должно быть отозвано.\n            \n> Дополнительная информация:\n> - [Отзыв разрешений](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#odebranie-uprawnie%C5%84-podmiotowych)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Необходимые разрешения**: `CredentialsManage`.",
+        "description": "Метод позволяет получить субъектное разрешение с указанным идентификатором.  \nТребуется предварительное чтение разрешений для получения  \nидентификатора разрешения, которое должно быть получено.\n            \n> Подробнее:\n> - [Получение разрешений](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#odebranie-uprawnie%C5%84-podmiotowych)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возвращению ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Требуемое разрешение**: `CredentialsManage`.",
         "parameters": [
           {
             "name": "permissionId",
@@ -4576,7 +5163,7 @@
           "Операции"
         ],
         "summary": "Проверка статуса согласия на выставление счетов с вложением",
-        "description": "Проверка наличия у текущего контекста согласия на выставление счетов с вложением.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Необходимые разрешения**: `CredentialsManage`, `CredentialsRead`.",
+        "description": "Проверка, имеет ли текущий контекст согласие на выставление счетов с приложением.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возвращению ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Требуется одно из разрешений**: `CredentialsManage`, `CredentialsRead`.",
         "responses": {
           "200": {
             "description": "OK",
@@ -4677,7 +5264,7 @@
           "Получение счетов-фактур"
         ],
         "summary": "Получение счёта по номеру KSeF",
-        "description": "Возвращает счёт с указанным номером KSeF.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Необходимые разрешения**: `InvoiceRead`.",
+        "description": "Возвращает счет по указанному номеру KSeF.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возвращению ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Требуемое разрешение**: `InvoiceRead`.",
         "parameters": [
           {
             "name": "ksefNumber",
@@ -4794,7 +5381,7 @@
           "Получение счетов-фактур"
         ],
         "summary": "Получение списка метаданных счетов-фактур",
-        "description": "Возвращает метаданные счетов-фактур, соответствующих фильтрам.\n\nТехнический лимит: ≤ 10 000 записей на набор фильтров; после его достижения <b>isTruncated = true</b> и необходимо повторно задать <b>dateRange</b>, используя последнюю дату из результатов (т.е. установить from/to — в зависимости от направления сортировки, начиная с даты последней возвращённой записи), а также сбросить <b>pageOffset</b>.\n\n`Для инкрементального сценария следует использовать дату PermanentStorage и порядок сортировки Asc`.\n            \n<b>Сценарий инкрементального получения данных (краткое описание):</b>\n* Когда <b>hasMore = false</b> — завершить,\n* Когда <b>hasMore = true</b> и <b>isTruncated = false</b> — увеличить <b>pageOffset</b>,\n* Когда <b>hasMore = true</b> и <b>isTruncated = true</b> — сузить <b>dateRange</b> (установить from от даты последней записи), сбросить <b>pageOffset</b> и продолжить\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Сортировка:**\n\n- permanentStorageDate | invoicingDate | issueDate (Asc | Desc) - поле выбирается на основе фильтров\n\n\n\n**Необходимые права**: `InvoiceRead`.",
+        "description": "Возвращает метаданные счетов, соответствующих фильтрам.\n\nТехническое ограничение: ≤ 10 000 записей на набор фильтров, после достижения которого <b>isTruncated = true</b> и необходимо повторно установить <b>dateRange</b>, используя последнюю дату из результатов (т.е. установить from/to - в зависимости от направления сортировки, от даты последней возвращенной записи) и обнулить <b>pageOffset</b>.\n\n`Для инкрементального сценария следует использовать дату PermanentStorage и порядок сортировки Asc`.\n            \n<b>Краткий сценарий инкрементального получения:</b>\n* Когда <b>hasMore = false</b>, следует завершить,\n* Когда <b>hasMore = true</b> и <b>isTruncated = false</b>, следует увеличить <b>pageOffset</b>,\n* Когда <b>hasMore = true</b> и <b>isTruncated = true</b>, следует сузить <b>dateRange</b> (установить from от даты последней записи), обнулить <b>pageOffset</b> и продолжить\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возвращению ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Сортировка:**\n\n- permanentStorageDate | invoicingDate | issueDate (Asc | Desc) - поле выбирается на основе фильтров\n\n\n\n**Требуемое разрешение**: `InvoiceRead`.",
         "parameters": [
           {
             "name": "sortOrder",
@@ -5071,7 +5658,7 @@
           "Получение счетов-фактур"
         ],
         "summary": "Экспорт пакета счетов-фактур",
-        "description": "Запускает асинхронный процесс поиска счетов-фактур в системе KSeF на основе переданных фильтров и подготовки их в виде зашифрованного пакета.\nНеобходимо передать информацию о шифровании в поле <b>Encryption</b>, которая используется для защиты подготовленного пакета со счетами-фактурами.\nМаксимально можно запустить 10 одновременных экспортов в рамках авторизованного контекста.\n            \nСистема извлекает счета-фактуры в порядке возрастания по дате, указанной в фильтре (Invoicing, Issue, PermanentStorage), и добавляет счета-фактуры (имя файла: <b>{ksefNumber}.xml</b>) в пакет до достижения одного из следующих лимитов:\n* Лимит количества счетов-фактур: 10 000 штук\n* Лимит размера данных (сжатых): 1 ГБ\n\nПакет экспорта содержит дополнительный файл с метаданными счетов-фактур в формате JSON (`_metadata.json`). Содержимое файла — это\nобъект с массивом <b>invoices</b>, где каждый элемент является объектом типа <b>InvoiceMetadata</b>\n(таким же, как возвращаемый endpoint'ом `POST /invoices/query/metadata`).\n\n<b>Файл с метаданными (_metadata.json) не учитывается в лимитах алгоритма формирования пакета</b>. \n\n`Для реализации инкрементальной загрузки следует использовать фильтрацию по дате PermanentStorage`.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Сортировка:**\n\n- permanentStorageDate | invoicingDate | issueDate (Asc) - поле выбирается на основе фильтров\n\n\n\n**Необходимые права**: `InvoiceRead`.",
+        "description": "Запускает асинхронный процесс поиска счетов-фактур в системе KSeF на основе переданных фильтров и подготовки их в виде зашифрованного пакета.\nНеобходимо передать информацию о шифровании в поле <b>Encryption</b>, которая используется для защиты подготовленного пакета счетов-фактур.\nМаксимально можно запустить 10 одновременных экспортов в авторизованном контексте.\n            \nСистема получает счета-фактуры в порядке возрастания по дате, указанной в фильтре (Invoicing, Issue, PermanentStorage), и добавляет счета-фактуры (имя файла: <b>{ksefNumber}.xml</b>) в пакет до достижения одного из следующих лимитов:\n* Лимит количества счетов-фактур: 10 000 штук\n* Лимит размера данных (сжатых): 1 ГБ\n\nЭкспортный пакет содержит дополнительный файл с метаданными счетов-фактур в формате JSON (`_metadata.json`). Содержимое файла - это\nобъект с массивом <b>invoices</b>, где каждый элемент является объектом типа <b>InvoiceMetadata</b>\n(такой, который возвращается конечной точкой `POST /invoices/query/metadata`).\n\n<b>Файл с метаданными (_metadata.json) не учитывается в лимитах алгоритма построения пакета</b>. \n\n`Для реализации инкрементального получения следует использовать фильтрацию по дате PermanentStorage`.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Sortowanie:**\n\n- permanentStorageDate | invoicingDate | issueDate (Asc) - поле выбирается на основе фильтров\n\n\n\n**Требуемое разрешение**: `InvoiceRead`.",
         "requestBody": {
           "description": "Входные данные, определяющие критерии и формат экспорта пакета счетов-фактур.",
           "content": {
@@ -5219,7 +5806,7 @@
           "Получение счетов-фактур"
         ],
         "summary": "Получение статуса экспорта пакета счетов-фактур",
-        "description": "Пакет счетов-фактур разделяется на части максимальным размером 50 МБ. Каждая часть зашифрована алгоритмом AES-256-CBC с дополнением PKCS#7 с использованием симметричного ключа, переданного при инициализации экспорта. \n\nВ случае усечения результата экспорта из-за превышения лимитов возвращается флаг <b>IsTruncated = true</b> и соответствующая дата, которую необходимо использовать для выполнения следующего экспорта, до тех пор пока флаг <b>IsTruncated = false</b>.\n\nСтатус экспорта пакета счетов-фактур доступен в течение 7 дней.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Сортировка:**\n\n- permanentStorageDate | invoicingDate | issueDate (Asc) - поле выбирается на основе фильтров\n\n\n\n**Необходимые права**: `InvoiceRead`.",
+        "description": "Пакет счетов-фактур делится на части максимальным размером 50 МБ. Каждая часть шифруется алгоритмом AES-256-CBC с дополнением PKCS#7 с использованием симметричного ключа, переданного при инициализации экспорта. \n\nВ случае усечения результата экспорта из-за превышения лимитов, возвращается флаг <b>IsTruncated = true</b> и соответствующая дата, которую следует использовать для выполнения следующего экспорта, до момента, когда флаг <b>IsTruncated = false</b>.\n\nСтатус экспорта пакета счетов-фактур доступен в течение 7 дней.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Sortowanie:**\n\n- permanentStorageDate | invoicingDate | issueDate (Asc) - поле выбирается на основе фильтров\n\n\n\n**Требуемое разрешение**: `InvoiceRead`.",
         "parameters": [
           {
             "name": "referenceNumber",
@@ -5385,7 +5972,7 @@
           "Статус отправки и UPO"
         ],
         "summary": "Получение списка сессий",
-        "description": "Возвращает список сессий, соответствующих заданным критериям поиска.\n\n\n\n**Сортировка:**\n\n- dateCreated (Desc)\n\n\n**Необходимые права**:\n- `Introspection`/`EnforcementOperations` – позволяет получить все сессии в текущем контексте аутентификации `(ContextIdentifier)`.\n- `InvoiceWrite` – позволяет получить только сессии, созданные аутентифицирующим субъектом, то есть субъектом, инициировавшим аутентификацию.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).",
+        "description": "Возвращает список сессий, соответствующих заданным критериям поиска.\n\n**Требуется одно из разрешений**:\n- `Introspection`/`EnforcementOperations` – позволяет получить все сессии в текущем контексте аутентификации `(ContextIdentifier)`.\n- `InvoiceWrite` – позволяет получить только сессии, созданные субъектом аутентификации, то есть субъектом, инициирующим аутентификацию.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Sortowanie:**\n\n- dateCreated (Desc)",
         "parameters": [
           {
             "name": "pageSize",
@@ -5632,7 +6219,7 @@
           "Статус отправки и UPO"
         ],
         "summary": "Получение статуса сессии",
-        "description": "Проверяет текущий статус сессии с указанным референсным номером.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Необходимые права**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
+        "description": "Проверяет текущий статус сеанса с указанным номером ссылки.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Required one of the permissions**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
         "parameters": [
           {
             "name": "referenceNumber",
@@ -5766,7 +6353,7 @@
           "Статус отправки и UPO"
         ],
         "summary": "Получение счетов-фактур сессии",
-        "description": "Возвращает список счетов-фактур, отправленных в сессии, вместе с их статусами, а также информацию о количестве корректно и некорректно обработанных счетов-фактур.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Необходимые разрешения**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
+        "description": "Возвращает список счетов, отправленных в сеансе вместе с их статусами, а также информацию о количестве правильно и неправильно обработанных счетов.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Required one of the permissions**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
         "parameters": [
           {
             "name": "x-continuation-token",
@@ -5938,7 +6525,7 @@
           "Статус отправки и UPO"
         ],
         "summary": "Получение статуса счёта-фактуры из сессии",
-        "description": "Возвращает счёт-фактуру, отправленный в сессии, вместе со статусом.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Необходимые разрешения**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
+        "description": "Возвращает счет, отправленный в сеансе вместе со статусом.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Required one of the permissions**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
         "parameters": [
           {
             "name": "referenceNumber",
@@ -6077,7 +6664,7 @@
           "Статус отправки и UPO"
         ],
         "summary": "Получение некорректно обработанных счетов-фактур сессии",
-        "description": "Возвращает список некорректно обработанных счетов-фактур, отправленных в сессии, вместе с их статусами.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Необходимые разрешения**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
+        "description": "Возвращает список неправильно обработанных счетов, отправленных в сеансе вместе с их статусами.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Required one of the permissions**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
         "parameters": [
           {
             "name": "x-continuation-token",
@@ -6234,7 +6821,7 @@
           "Статус отправки и UPO"
         ],
         "summary": "Получение UPO счёта-фактуры из сессии на основании номера KSeF",
-        "description": "Возвращает UPO счёта-фактуры, отправленного в сессии, на основании его номера KSeF.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Необходимые разрешения**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
+        "description": "Возвращает UPO счета, отправленного в сеансе на основе его номера KSeF.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Required one of the permissions**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
         "parameters": [
           {
             "name": "referenceNumber",
@@ -6363,7 +6950,7 @@
           "Статус отправки и UPO"
         ],
         "summary": "Получение UPO счёта-фактуры из сессии на основе референсного номера счёта-фактуры",
-        "description": "Возвращает UPO счёта-фактуры, отправленного в сессии, на основании его номера KSeF.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Необходимые разрешения**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
+        "description": "Возвращает UPO счета, отправленного в сеансе на основе его номера KSeF.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Required one of the permissions**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
         "parameters": [
           {
             "name": "referenceNumber",
@@ -6492,7 +7079,7 @@
           "Статус отправки и UPO"
         ],
         "summary": "Получение UPO для сессии",
-        "description": "Возвращает XML, содержащий сводное UPO для сессии.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Необходимые разрешения**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
+        "description": "Возвращает XML, содержащий совокупное UPO для сеанса.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Required one of the permissions**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
         "parameters": [
           {
             "name": "referenceNumber",
@@ -7981,7 +8568,7 @@
           "Интерактивная отправка"
         ],
         "summary": "Открытие интерактивной сессии",
-        "description": "Открывает сессию для отправки отдельных счетов-фактур. Необходимо передать схему отправляемых счетов-фактур и информацию о ключе, используемом для шифрования.\n\n> Дополнительная информация:\n> - [Открытие интерактивной сессии](https://github.com/CIRFMF/ksef-api/blob/main/sesja-interaktywna.md#1-otwarcie-sesji)\n> - [Открытый ключ Министерства финансов](/docs/v2/index.html#tag/Certyfikaty-klucza-publicznego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Необходимые разрешения**: `InvoiceWrite`, `PefInvoiceWrite`, `EnforcementOperations`.",
+        "description": "Открывает сеанс для отправки отдельных счетов. Необходимо передать схему отправляемых счетов и информацию о ключе, используемом для шифрования.\n\n> Дополнительная информация:\n> - [Открытие интерактивного сеанса](https://github.com/CIRFMF/ksef-api/blob/main/sesja-interaktywna.md#1-otwarcie-sesji)\n> - [Публичный ключ Министерства финансов](/docs/v2/index.html#tag/Certyfikaty-klucza-publicznego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Required one of the permissions**: `InvoiceWrite`, `PefInvoiceWrite`, `EnforcementOperations`.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -8116,7 +8703,7 @@
           "Интерактивная отправка"
         ],
         "summary": "Отправка счёта-фактуры",
-        "description": "Принимает зашифрованный счёт-фактуру и его метаданные и начинает его обработку.\n\n> Дополнительная информация:\n> - [Отправка счёта-фактуры](https://github.com/CIRFMF/ksef-api/blob/main/sesja-interaktywna.md#2-wys%C5%82anie-faktury)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Необходимые права**: `InvoiceWrite`, `PefInvoiceWrite`, `EnforcementOperations`.",
+        "description": "Принимает зашифрованный счет-фактуру и его метаданные и начинает его обработку.\n\n> Подробнее:\n> - [Отправка счета-фактуры](https://github.com/CIRFMF/ksef-api/blob/main/sesja-interaktywna.md#2-wys%C5%82anie-faktury)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Требуется одно из разрешений**: `InvoiceWrite`, `PefInvoiceWrite`, `EnforcementOperations`.",
         "parameters": [
           {
             "name": "referenceNumber",
@@ -8261,7 +8848,7 @@
           "Интерактивная отправка"
         ],
         "summary": "Закрытие интерактивной сессии",
-        "description": "Закрывает интерактивную сессию и начинает генерацию сводного UPO для сессии.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Необходимые разрешения**: `InvoiceWrite`, `PefInvoiceWrite`, `EnforcementOperations`.",
+        "description": "Закрывает интерактивную сессию и начинает генерацию коллективного UPO для сессии.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Требуется одно из разрешений**: `InvoiceWrite`, `PefInvoiceWrite`, `EnforcementOperations`.",
         "parameters": [
           {
             "name": "referenceNumber",
@@ -8367,7 +8954,7 @@
           "Пакетная отправка"
         ],
         "summary": "Открытие пакетной сессии",
-        "description": "Открывает сессию для пакетной отправки счетов-фактур. Необходимо передать схему отправляемых счетов-фактур, информацию о пакете счетов-фактур и информацию о ключе, используемом для шифрования.\n\n> Дополнительная информация:\n> - [Подготовка пакета счетов-фактур](https://github.com/CIRFMF/ksef-api/blob/main/sesja-wsadowa.md)\n> - [Публичный ключ Министерства финансов](/docs/v2/index.html#tag/Certyfikaty-klucza-publicznego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Необходимые разрешения**: `InvoiceWrite`, `EnforcementOperations`.",
+        "description": "Открывает сессию для отправки пакетов счетов-фактур. Необходимо передать схему отправляемых счетов-фактур, информацию о пакете счетов-фактур и информацию о ключе, используемом для шифрования.\n\n> Подробнее:\n> - [Подготовка пакета счетов-фактур](https://github.com/CIRFMF/ksef-api/blob/main/sesja-wsadowa.md)\n> - [Публичный ключ Министерства финансов](/docs/v2/index.html#tag/Certyfikaty-klucza-publicznego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Требуется одно из разрешений**: `InvoiceWrite`, `EnforcementOperations`.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -8523,7 +9110,7 @@
           "Пакетная отправка"
         ],
         "summary": "Закрытие пакетной сессии",
-        "description": "Закрывает пакетную сессию, запускает обработку пакета счетов-фактур и генерацию UPO для корректных счетов-фактур, а также сводного UPO для сессии.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Необходимые разрешения**: `InvoiceWrite`, `EnforcementOperations`.",
+        "description": "Закрывает пакетную сессию, начинает обработку пакета счетов-фактур и генерацию UPO для правильных счетов-фактур, а также коллективного UPO для сессии.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Требуется одно из разрешений**: `InvoiceWrite`, `EnforcementOperations`.",
         "parameters": [
           {
             "name": "referenceNumber",
@@ -8628,7 +9215,7 @@
           "Поиск предоставленных прав доступа"
         ],
         "summary": "Получение списка собственных разрешений",
-        "description": " Метод позволяет получить собственные права аутентифицированного клиента API в текущем контексте входа.  \n\n В ответе передаются следующие права:  \n - предоставленные напрямую в текущем контексте  \n - предоставленные вышестоящим субъектом  \n - предоставленные косвенно, если субъект контекста входа является в праве посредником или целевым субъектом  \n - предоставленные субъекту для обработки счетов-фактур другим субъектом, если аутентифицированный субъект имеет в текущем контексте права владельца  \n\n Права, возвращаемые операцией, включают:  \n - **CredentialsManage** – управление правами  \n - **CredentialsRead** – просмотр прав  \n - **InvoiceWrite** – выставление счетов-фактур  \n - **InvoiceRead** – просмотр счетов-фактур  \n - **Introspection** – просмотр истории сессий  \n - **SubunitManage** – управление дочерними субъектами  \n - **EnforcementOperations** – выполнение исполнительных операций  \n - **VatEuManage** – управление правами в рамках субъекта ЕС  \n\n Ответ может быть отфильтрован на основе следующих параметров:  \n - **contextIdentifier** – идентификатор субъекта, предоставившего право на обработку счетов-фактур  \n - **targetIdentifier** – идентификатор целевого субъекта для прав, предоставленных косвенно  \n - **permissionTypes** – список типов искомых прав  \n - **permissionState** – статус права  \n\n#### Постраничный вывод результатов\nЗапрос возвращает **одну страницу результатов** с номером и размером, указанными в пути.\n- При первом вызове необходимо установить параметр `pageOffset = 0`.  \n- Если доступна следующая страница результатов, в ответе появится флаг **`hasMore`**.  \n- В таком случае можно повторно выполнить запрос со следующим номером страницы.\n\n > Дополнительная информация:\n > - [Получение списка прав](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-w%C5%82asnych-uprawnie%C5%84)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Сортировка:**\n\n- startDate (Desc)\n- id (Asc)\n\n",
+        "description": " Метод позволяет прочитать собственные права аутентифицированного API-клиента в текущем контексте входа в систему.  \n\n В ответе передаются следующие права:  \n - назначенные напрямую в текущем контексте  \n - назначенные вышестоящим субъектом  \n - назначенные косвенно, если субъект контекста входа в систему является посредником или конечным субъектом в праве  \n - назначенные субъекту для обработки счетов другим субъектом, если аутентифицированный субъект имеет в текущем контексте права собственности  \n\n Права, возвращаемые операцией, включают:  \n - **CredentialsManage** – управление правами  \n - **CredentialsRead** – просмотр прав  \n - **InvoiceWrite** – выставление счетов  \n - **InvoiceRead** – просмотр счетов  \n - **Introspection** – просмотр истории сессий  \n - **SubunitManage** – управление подчиненными субъектами  \n - **EnforcementOperations** – выполнение принудительных операций  \n - **VatEuManage** – управление правами в рамках европейского субъекта  \n - **CollectiveIdentifierManage** – управление коллективными идентификаторами  \n\n Ответ может быть отфильтрован на основе следующих параметров:  \n - **contextIdentifier** – идентификатор субъекта, который предоставил право на обработку счетов  \n - **targetIdentifier** – идентификатор конечного субъекта для прав, назначенных косвенно  \n - **permissionTypes** – список типов запрашиваемых прав  \n - **permissionState** – статус права  \n\n#### Пагинация результатов\nЗапрос возвращает **одну страницу результатов** с номером и размером, указанными в пути.\n- При первом вызове следует установить параметр `pageOffset = 0`.  \n- Если доступна следующая страница результатов, в ответе появится флаг **`hasMore`**.  \n- В этом случае можно повторно вызвать запрос со следующим номером страницы.\n\n > Дополнительная информация:\n > - [Получение списка прав](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-w%C5%82asnych-uprawnie%C5%84)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Сортировка:**\n\n- startDate (По убыванию)\n- id (По возрастанию)",
         "parameters": [
           {
             "name": "pageOffset",
@@ -8804,7 +9391,7 @@
           "Поиск предоставленных прав доступа"
         ],
         "summary": "Получение списка прав на работу в KSeF, предоставленных физическим лицам или субъектам",
-        "description": " Метод позволяет считывать права, предоставленные физическому лицу или субъекту.  \n Список полученных прав может быть двух видов:  \n - Список всех прав, действующих в текущем контексте входа (используется, когда администратор хочет просмотреть права всех пользователей в текущем контексте)  \n - Список всех прав, предоставленных в текущем контексте аутентифицированным клиентом API (используется, когда администратор хочет просмотреть список предоставленных им прав в текущем контексте)  \n\n Для первого списка (действующих прав) в ответе передаются:  \n - лица и субъекты, имеющие возможность работать в текущем контексте, за исключением лиц, наделённых правами косвенным образом  \n - лица, наделённые правами косвенным образом через субъект текущего контекста  \n\n Для второго списка (предоставленных прав) в ответе передаются:  \n - права, предоставленные напрямую для работы в текущем контексте или в контексте дочерних единиц  \n - права, предоставленные косвенным образом для обслуживания клиентов субъекта текущего контекста  \n\n Права, возвращаемые операцией, включают:  \n - **CredentialsManage** – управление правами  \n - **CredentialsRead** – просмотр прав  \n - **InvoiceWrite** – выставление счетов-фактур  \n - **InvoiceRead** – просмотр счетов-фактур  \n - **Introspection** – просмотр истории сессий  \n - **SubunitManage** – управление дочерними субъектами  \n - **EnforcementOperations** – выполнение исполнительных операций  \n\n Ответ может быть отфильтрован на основе параметров:  \n - **authorIdentifier** – идентификатор лица, предоставившего право  \n - **authorizedIdentifier** – идентификатор лица или субъекта, наделённого правом  \n - **targetIdentifier** – идентификатор целевого субъекта для прав, предоставленных косвенным образом  \n - **permissionTypes** – список видов искомых прав  \n - **permissionState** – статус права  \n - **queryType** – тип запроса, определяющий, какой из двух списков должен быть возвращён  \n\n#### Разбивка результатов на страницы\nЗапрос возвращает **одну страницу результатов** с номером и размером, указанными в пути.\n- При первом вызове необходимо установить параметр `pageOffset = 0`.  \n- Если доступна следующая страница результатов, в ответе появится флаг **`hasMore`**.  \n- В таком случае можно повторно выполнить запрос со следующим номером страницы.\n\n > Дополнительная информация:\n > - [Получение списка прав](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-uprawnie%C5%84-do-pracy-w-ksef-nadanych-osobom-fizycznym-lub-podmiotom)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Сортировка:**\n\n- startDate (Desc)\n- id (Asc)\n\n\n\n**Необходимые права**: `CredentialsManage`, `CredentialsRead`, `SubunitManage`.",
+        "description": " Метод позволяет читать разрешения, выданные физическому лицу или субъекту.  \n Список полученных разрешений может быть двух типов:  \n - Список всех разрешений, действующих в текущем контексте входа в систему (используется, когда администратор хочет просмотреть разрешения всех пользователей в текущем контексте)  \n - Список всех разрешений, выданных в текущем контексте аутентифицированным API-клиентом (используется, когда администратор хочет просмотреть список разрешений, выданных им самим в текущем контексте)  \n\n Для первого списка (действующих разрешений) в ответе передаются:  \n - лица и субъекты, имеющие право работать в текущем контексте, за исключением лиц, имеющих косвенные разрешения  \n - лица, имеющие косвенные разрешения через субъект текущего контекста  \n\n Для второго списка (выданных разрешений) в ответе передаются:  \n - разрешения, выданные напрямую для работы в текущем контексте или в контексте дочерних единиц  \n - разрешения, выданные косвенно для обслуживания клиентов субъекта текущего контекста  \n\n Разрешения, возвращаемые операцией, включают:  \n - **CredentialsManage** – управление разрешениями  \n - **CredentialsRead** – просмотр разрешений  \n - **InvoiceWrite** – выставление счетов-фактур  \n - **InvoiceRead** – просмотр счетов-фактур  \n - **Introspection** – просмотр истории сессий  \n - **SubunitManage** – управление дочерними субъектами  \n - **EnforcementOperations** – выполнение принудительных операций  \n - **CollectiveIdentifierManage** – управление коллективными идентификаторами  \n\n Ответ может быть отфильтрован на основе параметров:  \n - **authorIdentifier** – идентификатор лица, выдавшего разрешение  \n - **authorizedIdentifier** – идентификатор лица или субъекта, имеющего разрешение  \n - **targetIdentifier** – идентификатор целевого субъекта для косвенно выданных разрешений  \n - **permissionTypes** – список типов запрашиваемых разрешений  \n - **permissionState** – статус разрешения  \n - **queryType** – тип запроса, определяющий, какой из двух списков должен быть возвращен  \n\n#### Пагинация результатов\nЗапрос возвращает **одну страницу результатов** с номером и размером, указанными в пути.\n- При первом вызове необходимо установить параметр `pageOffset = 0`.  \n- Если доступна следующая страница результатов, в ответе появится флаг **`hasMore`**.  \n- В этом случае можно повторно вызвать запрос с следующим номером страницы.\n\n > Больше информации:\n > - [Получение списка разрешений](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-uprawnie%C5%84-do-pracy-w-ksef-nadanych-osobom-fizycznym-lub-podmiotom)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Сортировка:**\n\n- startDate (Desc)\n- id (Asc)\n\n\n\n**Требуется одно из разрешений**: `CredentialsManage`, `CredentialsRead`, `SubunitManage`.",
         "parameters": [
           {
             "name": "pageOffset",
@@ -8995,7 +9582,7 @@
           "Поиск предоставленных прав доступа"
         ],
         "summary": "Получение списка прав администраторов подразделений и подчинённых субъектов",
-        "description": " Метод позволяет считывать права на управление полномочиями, предоставленные администраторам:  \n - подчинённых подразделений, идентифицируемых внутренним идентификатором  \n - подчинённых субъектов (подчинённых ЕСТ или членов группы НДС), идентифицируемых по NIP  \n\n Список возвращает исключительно права на управление полномочиями, предоставленные из текущего контекста (от вышестоящего субъекта).  \n Права, предоставленные администраторами подчинённых подразделений внутри этих подразделений, не считываются.  \n\n Ответ может быть отфильтрован на основе параметра:  \n - **subunitIdentifier** – идентификатор подразделения или подчинённого субъекта  \n\n#### Постраничный вывод результатов\nЗапрос возвращает **одну страницу результатов** с номером и размером, указанными в пути.\n- При первом вызове необходимо установить параметр `pageOffset = 0`.  \n- Если доступна следующая страница результатов, в ответе появится флаг **`hasMore`**.  \n- В таком случае можно повторно выполнить запрос со следующим номером страницы.\n\n > Дополнительная информация:\n > - [Получение списка прав](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-uprawnie%C5%84-administrator%C3%B3w-jednostek-i-podmiot%C3%B3w-podrz%C4%99dnych)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Сортировка:**\n\n- startDate (Desc)\n- id (Asc)\n\n\n\n**Необходимые права**: `CredentialsManage`, `CredentialsRead`, `SubunitManage`.",
+        "description": " Метод позволяет прочитать права на управление правами, предоставленные администраторам:  \n - дочерних единиц, идентифицируемых внутренним идентификатором  \n - дочерних субъектов (подчиненных местных органов власти или членов группы НДС), идентифицируемых по НИП  \n\n Список возвращает только права на управление правами, предоставленные из текущего контекста (от вышестоящего субъекта).  \n Не считываются права, предоставленные администраторами дочерних единиц внутри этих единиц.  \n\n Ответ может быть отфильтрован на основе параметра:  \n - **subunitIdentifier** – идентификатор дочерней единицы или субъекта  \n\n#### Пагинация результатов\nЗапрос возвращает **одну страницу результатов** с номером и размером, указанными в пути.\n- При первом вызове необходимо установить параметр `pageOffset = 0`.  \n- Если доступна следующая страница результатов, в ответе появится флаг **`hasMore`**.  \n- В таком случае можно повторно вызвать запрос с следующим номером страницы.\n\n > Подробнее:\n > - [Получение списка прав](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-uprawnie%C5%84-administrator%C3%B3w-jednostek-i-podmiot%C3%B3w-podrz%C4%99dnych)\n\n**Headers:**\n\n`X-Error-Format: problem-details` – установка этого заголовка приводит к возвращению ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Сортировка:**\n\n- startDate (Desc)\n- id (Asc)\n\n\n\n**Требуется одно из прав**: `CredentialsManage`, `CredentialsRead`, `SubunitManage`.",
         "parameters": [
           {
             "name": "pageOffset",
@@ -9174,7 +9761,7 @@
           "Поиск предоставленных прав доступа"
         ],
         "summary": "Получение списка прав на обработку счетов-фактур в текущем контексте",
-        "description": " Метод позволяет считать полученные права на обработку счетов-фактур в текущем контексте входа.  \n\n В ответе передаются следующие права:  \n - предоставленные субъекту для обработки счетов-фактур другим субъектом \n\n Права, возвращаемые операцией, включают:  \n - **InvoiceWrite** – выставление счетов-фактур  \n - **InvoiceRead** – просмотр счетов-фактур  \n\n Ответ может быть отфильтрован на основе следующих параметров:  \n - **contextIdentifier** – идентификатор субъекта, предоставившего право на обработку счетов-фактур  \n\n#### Постраничный вывод результатов\nЗапрос возвращает **одну страницу результатов** с номером и размером, указанными в пути.\n- При первом вызове необходимо установить параметр `pageOffset = 0`.  \n- Если доступна следующая страница результатов, в ответе появится флаг **`hasMore`**.  \n- В таком случае можно повторно выполнить запрос со следующим номером страницы.\n\n > Дополнительная информация:\n > - [Получение списка прав](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-uprawnie%C5%84-do-obs%C5%82ugi-faktur-w-bie%C5%BC%C4%85cym-kontek%C5%9Bcie)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Сортировка:**\n\n- startDate (Desc)\n- id (Asc)\n\n\n\n**Необходимые права**: `CredentialsManage`, `CredentialsRead`.",
+        "description": " Метод позволяет прочитать полученные права на обработку счетов в текущем контексте входа.  \n\n В ответе передаются следующие права:  \n - предоставленные субъекту для обработки счетов другим субъектом \n\n Права, возвращаемые операцией, включают:  \n - **InvoiceWrite** – выставление счетов  \n - **InvoiceRead** – просмотр счетов  \n\n Ответ может быть отфильтрован на основе следующих параметров:  \n - **contextIdentifier** – идентификатор субъекта, предоставившего право на обработку счетов  \n\n#### Пагинация результатов\nЗапрос возвращает **одну страницу результатов** с номером и размером, указанными в пути.\n- При первом вызове необходимо установить параметр `pageOffset = 0`.  \n- Если доступна следующая страница результатов, в ответе появится флаг **`hasMore`**.  \n- В таком случае можно повторно вызвать запрос с следующим номером страницы.\n\n > Подробнее:\n > - [Получение списка прав](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-uprawnie%C5%84-do-obs%C5%82ugi-faktur-w-bie%C5%BC%C4%85cym-kontek%C5%9Bcie)\n\n**Headers:**\n\n`X-Error-Format: problem-details` – установка этого заголовка приводит к возвращению ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Сортировка:**\n\n- startDate (Desc)\n- id (Asc)\n\n\n\n**Требуется одно из прав**: `CredentialsManage`, `CredentialsRead`.",
         "parameters": [
           {
             "name": "pageOffset",
@@ -9345,7 +9932,7 @@
           "Поиск предоставленных прав доступа"
         ],
         "summary": "Получение списка ролей субъекта",
-        "description": " Метод позволяет **считать список ролей субъекта текущего контекста входа**.\n\n#### Роли субъектов, возвращаемые операцией:\n- **CourtBailiff** – судебный пристав  \n- **EnforcementAuthority** – орган принудительного исполнения  \n- **LocalGovernmentUnit** – вышестоящая единица местного самоуправления  \n- **LocalGovernmentSubUnit** – подчинённая единица местного самоуправления  \n- **VatGroupUnit** – группа НДС  \n- **VatGroupSubUnit** – член группы НДС\n\n#### Постраничный вывод результатов\nЗапрос возвращает **одну страницу результатов** с номером и размером, указанными в пути.\n- При первом вызове необходимо установить параметр `pageOffset = 0`.  \n- Если доступна следующая страница результатов, в ответе появится флаг **`hasMore`**.  \n- В таком случае можно повторно выполнить запрос со следующим номером страницы.\n \n > Дополнительная информация:\n > - [Получение списка ролей](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-r%C3%B3l-podmiotu)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Сортировка:**\n\n- startDate (Desc)\n- id (Asc)\n\n\n\n**Необходимые права**: `CredentialsManage`, `CredentialsRead`.",
+        "description": " Метод позволяет **прочитать список ролей субъекта текущего контекста входа в систему**.\n\n#### Роли субъектов, возвращаемые операцией:\n- **CourtBailiff** – судебный пристав  \n- **EnforcementAuthority** – исполнительный орган  \n- **LocalGovernmentUnit** – вышестоящее местное самоуправление (МСУ)  \n- **LocalGovernmentSubUnit** – подчиненное МСУ  \n- **VatGroupUnit** – группа НДС  \n- **VatGroupSubUnit** – участник группы НДС\n\n#### Пагинация результатов\nЗапрос возвращает **одну страницу результатов** с номером и размером, указанными в пути.\n- При первом вызове необходимо установить параметр `pageOffset = 0`.  \n- Если доступна следующая страница результатов, в ответе появится флаг **`hasMore`**.  \n- В этом случае можно повторно вызвать запрос с следующим номером страницы.\n \n > Дополнительная информация:\n > - [Получение списка ролей](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-r%C3%B3l-podmiotu)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Сортировка:**\n\n- startDate (Desc)\n- id (Asc)\n\n\n\n**Требуется одно из разрешений**: `CredentialsManage`, `CredentialsRead`.",
         "parameters": [
           {
             "name": "pageOffset",
@@ -9491,7 +10078,7 @@
           "Поиск предоставленных прав доступа"
         ],
         "summary": "Получение списка подчинённых субъектов",
-        "description": " Метод позволяет получить список подчинённых субъектов,  \n если субъект текущего контекста имеет роль вышестоящего субъекта:\n - **вышестоящий ОМС** – считываются подчинённые ОМС,  \n - **группа НДС** – считываются субъекты, являющиеся членами группы НДС.\n\n Роли субъектов, возвращаемые операцией, включают:  \n - **LocalGovernmentSubUnit** – подчинённые ОМС,  \n - **VatGroupSubUnit** – член группы НДС.\n\n Ответ может быть отфильтрован по параметру:  \n - **subordinateEntityIdentifier** – идентификатор подчинённого субъекта.\n\n#### Постраничный вывод результатов\nЗапрос возвращает **одну страницу результатов** с номером и размером, указанными в пути.\n- При первом вызове необходимо установить параметр `pageOffset = 0`.  \n- Если доступна следующая страница результатов, в ответе появится флаг **`hasMore`**.  \n- В таком случае можно повторить запрос со следующим номером страницы.\n  \n > Дополнительная информация:\n > - [Получение списка подчинённых субъектов](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-podmiot%C3%B3w-podrz%C4%99dnych)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Сортировка:**\n\n- startDate (Desc)\n- id (Asc)\n\n\n\n**Необходимые права**: `CredentialsManage`, `CredentialsRead`, `SubunitManage`.",
+        "description": " Метод позволяет прочитать список подчиненных субъектов,  \n если субъект текущего контекста имеет роль вышестоящего субъекта:\n - **высшее МСУ** – считываются подчиненные МСУ,  \n - **группа НДС** – считываются субъекты, являющиеся участниками группы НДС.\n\n Роли субъектов, возвращаемые операцией, включают:  \n - **LocalGovernmentSubUnit** – подчиненное МСУ,  \n - **VatGroupSubUnit** – участник группы НДС.\n\n Ответ может быть отфильтрован по параметру:  \n - **subordinateEntityIdentifier** – идентификатор подчиненного субъекта.\n\n#### Пагинация результатов\nЗапрос возвращает **одну страницу результатов** с номером и размером, указанными в пути.\n- При первом вызове необходимо установить параметр `pageOffset = 0`.  \n- Если доступна следующая страница результатов, в ответе появится флаг **`hasMore`**.  \n- В этом случае можно повторно вызвать запрос с следующим номером страницы.\n  \n > Дополнительная информация:\n > - [Получение списка подчиненных субъектов](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-podmiot%C3%B3w-podrz%C4%99dnych)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Сортировка:**\n\n- startDate (Desc)\n- id (Asc)\n\n\n\n**Требуется одно из разрешений**: `CredentialsManage`, `CredentialsRead`, `SubunitManage`.",
         "parameters": [
           {
             "name": "pageOffset",
@@ -9661,7 +10248,7 @@
           "Поиск предоставленных прав доступа"
         ],
         "summary": "Получение списка субъектных прав на обработку счетов-фактур",
-        "description": " Метод позволяет считывать субъектные права:  \n - полученные субъектом текущего контекста  \n - предоставленные субъектом текущего контекста  \n\n Выбор списка предоставленных или полученных прав осуществляется с помощью параметра **queryType**.  \n\n Права, возвращаемые операцией, включают:  \n - **SelfInvoicing** – выставление счетов в режиме самовыставления счетов  \n - **TaxRepresentative** – выполнение операций налогового представителя  \n - **RRInvoicing** – выставление счетов-фактур VAT RR  \n - **PefInvoicing** – выставление счетов PEF  \n\n Ответ может быть отфильтрован на основе следующих параметров:  \n - **authorizingIdentifier** – идентификатор уполномочивающего субъекта (применяется при queryType = Received)  \n - **authorizedIdentifier** – идентификатор уполномоченного субъекта (применяется при queryType = Granted)  \n - **permissionTypes** – список типов искомых прав  \n\n#### Постраничный вывод результатов\nЗапрос возвращает **одну страницу результатов** с номером и размером, указанными в пути.\n- При первом вызове необходимо установить параметр `pageOffset = 0`.  \n- Если доступна следующая страница результатов, в ответе появится флаг **`hasMore`**.  \n- В таком случае можно повторно выполнить запрос со следующим номером страницы.\n\n > Дополнительная информация:\n > - [Получение списка прав](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-uprawnie%C5%84-podmiotowych-do-obs%C5%82ugi-faktur)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Сортировка:**\n\n- startDate (Desc)\n- id (Asc)\n\n\n\n**Необходимые права**: `CredentialsManage`, `CredentialsRead`, `PefInvoiceWrite`.",
+        "description": " Метод позволяет считывать субъектные разрешения:  \n - полученные субъектом текущего контекста  \n - выданные субъектом текущего контекста  \n\n Выбор списка выданных или полученных разрешений осуществляется с помощью параметра **queryType**.  \n\n Разрешения, возвращаемые операцией, включают:  \n - **SelfInvoicing** – выставление счетов в режиме самооформления  \n - **TaxRepresentative** – выполнение операций налогового представителя  \n - **RRInvoicing** – выставление счетов-фактур VAT RR  \n - **PefInvoicing** – выставление счетов PEF  \n\n Ответ может быть отфильтрован на основе следующих параметров:  \n - **authorizingIdentifier** – идентификатор субъекта, предоставляющего разрешение (применяется при queryType = Received)  \n - **authorizedIdentifier** – идентификатор субъекта, получающего разрешение (применяется при queryType = Granted)  \n - **permissionTypes** – список типов запрашиваемых разрешений  \n\n#### Пагинация результатов\nЗапрос возвращает **одну страницу результатов** с номером и размером, указанными в пути.\n- При первом вызове необходимо установить параметр `pageOffset = 0`.  \n- Если доступна следующая страница результатов, в ответе появится флаг **`hasMore`**.  \n- В этом случае можно повторно вызвать запрос со следующим номером страницы.\n\n > Дополнительная информация:\n > - [Получение списка разрешений](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-uprawnie%C5%84-podmiotowych-do-obs%C5%82ugi-faktur)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Sortowanie:**\n\n- startDate (Desc)\n- id (Asc)\n\n**Требуется одно из следующих разрешений**: `CredentialsManage`, `CredentialsRead`, `PefInvoiceWrite`.",
         "parameters": [
           {
             "name": "pageOffset",
@@ -9849,7 +10436,7 @@
           "Поиск предоставленных прав доступа"
         ],
         "summary": "Получение списка прав администраторов или представителей субъектов ЕС, уполномоченных на самовыставление счетов",
-        "description": " Метод позволяет считывать права администраторов или представителей субъектов ЕС:  \n - Если контекстом входа является NIP, возможно считывание прав администраторов субъектов ЕС, связанных с субъектом текущего контекста, то есть таких, для которых первая часть составного контекста равна NIP контекста входа.  \n - Если контекст входа является составным (NIP-VAT UE), возможно получение всех прав администраторов и представителей субъекта в текущем составном контексте.  \n\n Права, возвращаемые операцией, включают:  \n - **VatUeManage** – управление правами в рамках субъекта ЕС  \n - **InvoiceWrite** – выставление счетов-фактур  \n - **InvoiceRead** – просмотр счетов-фактур  \n - **Introspection** – просмотр истории сессий  \n\n Ответ может быть отфильтрован на основе следующих параметров:  \n - **vatUeIdentifier** – идентификатор субъекта ЕС  \n - **authorizedFingerprintIdentifier** – отпечаток сертификата уполномоченного лица или субъекта  \n - **permissionTypes** – список типов искомых прав  \n\n#### Постраничный вывод результатов\nЗапрос возвращает **одну страницу результатов** с номером и размером, указанными в пути.\n- При первом вызове необходимо установить параметр `pageOffset = 0`.  \n- Если доступна следующая страница результатов, в ответе появится флаг **`hasMore`**.  \n- В таком случае можно повторно вызвать запрос со следующим номером страницы.\n \n > Дополнительная информация:\n > - [Получение списка прав](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-uprawnie%C5%84-administrator%C3%B3w-lub-reprezentant%C3%B3w-podmiot%C3%B3w-unijnych-uprawnionych-do-samofakturowania)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Сортировка:**\n\n- startDate (Desc)\n- id (Asc)\n\n\n\n**Необходимые права**: `CredentialsManage`, `CredentialsRead`, `VatUeManage`.",
+        "description": "Метод позволяет прочитать права администраторов или представителей субъектов ЕС:\n- Если контекстом входа является NIP, можно прочитать права администраторов субъектов ЕС, связанных с субъектом текущего контекста, то есть таких, для которых первый составной части контекста равен NIP контекста входа.\n- Если контекст входа является составным (NIP-VAT ЕС), можно получить все права администраторов и представителей субъекта в текущем составном контексте.\n\nПрава, возвращаемые операцией, включают:\n- **VatUeManage** – управление правами в рамках субъекта ЕС\n- **InvoiceWrite** – выставление счетов-фактур\n- **InvoiceRead** – просмотр счетов-фактур\n- **Introspection** – просмотр истории сессий\n\nОтвет может быть отфильтрован на основе следующих параметров:\n- **vatUeIdentifier** – идентификатор субъекта ЕС\n- **authorizedFingerprintIdentifier** – отпечаток сертификата уполномоченного лица или субъекта\n- **permissionTypes** – список типов запрашиваемых прав\n\n#### Пагинация результатов\nЗапрос возвращает **одну страницу результатов** с номером и размером, указанными в пути.\n- При первом вызове следует установить параметр `pageOffset = 0`.\n- Если доступна следующая страница результатов, в ответе появится флаг **`hasMore`**.\n- В этом случае можно повторно вызвать запрос с следующим номером страницы.\n\n > Дополнительная информация:\n > - [Получение списка прав](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-uprawnie%C5%84-administrator%C3%B3w-lub-reprezentant%C3%B3w-podmiot%C3%B3w-unijnych-uprawnionych-do-samofakturowania)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Сортировка:**\n- startDate (Desc)\n- id (Asc)\n\n**Требуется одно из прав**: `CredentialsManage`, `CredentialsRead`, `VatUeManage`.",
         "parameters": [
           {
             "name": "pageOffset",
@@ -10121,6 +10708,7 @@
       "ApiRateLimitsOverride": {
         "required": [
           "batchSession",
+          "collectiveIdentifier",
           "invoiceDownload",
           "invoiceExport",
           "invoiceExportStatus",
@@ -10277,6 +10865,19 @@
               }
             ],
             "description": "Лимиты для получения счетов-фактур по номеру KSeF."
+          },
+          "collectiveIdentifier": {
+            "required": [
+              "perSecond",
+              "perMinute",
+              "perHour"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ApiRateLimitValuesOverride"
+              }
+            ],
+            "description": "Лимиты для коллективных идентификаторов."
           },
           "other": {
             "required": [
@@ -11235,6 +11836,282 @@
           }
         }
       },
+      "CollectiveIdentifierInvoice": {
+        "required": [
+          "ksefNumber"
+        ],
+        "type": "object",
+        "properties": {
+          "ksefNumber": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/KsefNumber"
+              }
+            ],
+            "description": "Номер счета-фактуры KSeF."
+          },
+          "payment": {
+            "required": [
+              "amount",
+              "currency"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CollectiveIdentifierInvoicePayment"
+              }
+            ],
+            "description": "Данные об оплате счета-фактуры.",
+            "nullable": true
+          },
+          "description": {
+            "maxLength": 512,
+            "type": "string",
+            "description": "Описание",
+            "nullable": true
+          }
+        }
+      },
+      "CollectiveIdentifierInvoicePayment": {
+        "required": [
+          "amount",
+          "currency"
+        ],
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number",
+            "description": "Сумма оплаты счета-фактуры.",
+            "format": "double"
+          },
+          "currency": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CurrencyCode"
+              }
+            ],
+            "description": "Код валюты."
+          }
+        }
+      },
+      "CollectiveIdentifierInvoicesQueryResponse": {
+        "required": [
+          "invoices"
+        ],
+        "type": "object",
+        "properties": {
+          "continuationToken": {
+            "type": "string",
+            "description": "Токен для получения следующей страницы результатов. Если пустой, следующих страниц нет.",
+            "nullable": true
+          },
+          "invoices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CollectiveIdentifierInvoicesQueryResponseItem"
+            },
+            "description": "Список счетов-фактур."
+          }
+        }
+      },
+      "CollectiveIdentifierInvoicesQueryResponseItem": {
+        "required": [
+          "detailsHidden",
+          "ksefNumber"
+        ],
+        "type": "object",
+        "properties": {
+          "ksefNumber": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/KsefNumber"
+              }
+            ],
+            "description": "Номер счета-фактуры KSeF."
+          },
+          "payment": {
+            "required": [
+              "amount",
+              "currency"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CollectiveIdentifierInvoicesQueryResponseItemPayment"
+              }
+            ],
+            "description": "Данные об оплате счета-фактуры.",
+            "nullable": true
+          },
+          "description": {
+            "maxLength": 512,
+            "type": "string",
+            "description": "Описание",
+            "nullable": true
+          },
+          "detailsHidden": {
+            "type": "boolean",
+            "description": "Определяет, были ли сведения о деталях скрыты из-за отсутствия доступа к счету-фактуре."
+          }
+        }
+      },
+      "CollectiveIdentifierInvoicesQueryResponseItemPayment": {
+        "required": [
+          "amount",
+          "currency"
+        ],
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number",
+            "description": "Сумма оплаты счета-фактуры.",
+            "format": "double"
+          },
+          "currency": {
+            "maxLength": 3,
+            "minLength": 3,
+            "type": "string",
+            "description": "Код валюты."
+          }
+        }
+      },
+      "CollectiveIdentifiersByKsefNumberQueryResponse": {
+        "required": [
+          "collectiveIdentifiers"
+        ],
+        "type": "object",
+        "properties": {
+          "continuationToken": {
+            "type": "string",
+            "description": "Токен для получения следующей страницы результатов. Если пустой, следующих страниц нет.",
+            "nullable": true
+          },
+          "collectiveIdentifiers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CollectiveIdentifiersByKsefNumberQueryResponseItem"
+            },
+            "description": "Список коллективных идентификаторов."
+          }
+        }
+      },
+      "CollectiveIdentifiersByKsefNumberQueryResponseItem": {
+        "required": [
+          "collectiveIdentifierNumber",
+          "createdInCurrentContext",
+          "dateCreated"
+        ],
+        "type": "object",
+        "properties": {
+          "collectiveIdentifierNumber": {
+            "maxLength": 35,
+            "minLength": 35,
+            "type": "string",
+            "description": "Номер коллективного идентификатора."
+          },
+          "createdInCurrentContext": {
+            "type": "boolean",
+            "description": "Определяет, был ли коллективный идентификатор сгенерирован в текущем контексте."
+          },
+          "dateCreated": {
+            "type": "string",
+            "description": "Дата создания коллективного идентификатора.",
+            "format": "date-time"
+          }
+        }
+      },
+      "CollectiveIdentifiersQueryRequest": {
+        "required": [
+          "dateCreatedFrom",
+          "dateCreatedTo"
+        ],
+        "type": "object",
+        "properties": {
+          "collectiveIdentifierNumber": {
+            "type": "string",
+            "description": "Номер коллективного идентификатора.",
+            "nullable": true
+          },
+          "dateCreatedFrom": {
+            "type": "string",
+            "description": "Дата создания коллективного идентификатора (с), максимальный временной интервал составляет 100 дней.",
+            "format": "date-time"
+          },
+          "dateCreatedTo": {
+            "type": "string",
+            "description": "Дата создания коллективного идентификатора (по).",
+            "format": "date-time"
+          },
+          "invoiceCountFrom": {
+            "type": "integer",
+            "description": "Количество счетов-фактур в коллективном идентификаторе (с).",
+            "format": "int32",
+            "nullable": true
+          },
+          "invoiceCountTo": {
+            "type": "integer",
+            "description": "Количество счетов-фактур в коллективном идентификаторе (по).",
+            "format": "int32",
+            "nullable": true
+          },
+          "createdInCurrentContext": {
+            "type": "boolean",
+            "description": "Определяет, был ли коллективный идентификатор сгенерирован в текущем контексте.",
+            "nullable": true
+          }
+        }
+      },
+      "CollectiveIdentifiersQueryResponse": {
+        "required": [
+          "collectiveIdentifiers"
+        ],
+        "type": "object",
+        "properties": {
+          "continuationToken": {
+            "type": "string",
+            "description": "Токен для получения следующей страницы результатов. Если пустой, следующих страниц нет.",
+            "nullable": true
+          },
+          "collectiveIdentifiers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CollectiveIdentifiersQueryResponseItem"
+            },
+            "description": "Список коллективных идентификаторов."
+          }
+        }
+      },
+      "CollectiveIdentifiersQueryResponseItem": {
+        "required": [
+          "collectiveIdentifierNumber",
+          "createdInCurrentContext",
+          "dateCreated",
+          "invoiceCount"
+        ],
+        "type": "object",
+        "properties": {
+          "collectiveIdentifierNumber": {
+            "maxLength": 35,
+            "minLength": 35,
+            "type": "string",
+            "description": "Номер коллективного идентификатора."
+          },
+          "dateCreated": {
+            "type": "string",
+            "description": "Дата создания коллективного идентификатора.",
+            "format": "date-time"
+          },
+          "invoiceCount": {
+            "minimum": 0,
+            "exclusiveMinimum": true,
+            "type": "integer",
+            "description": "Номер счета-фактуры, входящего в состав коллективного идентификатора.",
+            "format": "int32"
+          },
+          "createdInCurrentContext": {
+            "type": "boolean",
+            "description": "Определяет, был ли коллективный идентификатор сгенерирован в текущем контексте."
+          }
+        }
+      },
       "CommonSessionStatus": {
         "enum": [
           "InProgress",
@@ -11467,6 +12344,7 @@
       "EffectiveApiRateLimits": {
         "required": [
           "batchSession",
+          "collectiveIdentifier",
           "invoiceDownload",
           "invoiceExport",
           "invoiceExportStatus",
@@ -11623,6 +12501,19 @@
               }
             ],
             "description": "Лимиты для получения счетов-фактур по номеру KSeF."
+          },
+          "collectiveIdentifier": {
+            "required": [
+              "perSecond",
+              "perMinute",
+              "perHour"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EffectiveApiRateLimitValues"
+              }
+            ],
+            "description": "Лимиты для коллективных идентификаторов"
           },
           "other": {
             "required": [
@@ -13175,6 +14066,35 @@
           "value": {
             "type": "string",
             "description": "Значение"
+          }
+        }
+      },
+      "GenerateCollectiveIdentifierRequest": {
+        "required": [
+          "invoices"
+        ],
+        "type": "object",
+        "properties": {
+          "invoices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CollectiveIdentifierInvoice"
+            },
+            "description": "Список счетов-фактур, входящих в состав коллективного идентификатора. Лимит счетов-фактур составляет 500."
+          }
+        }
+      },
+      "GenerateCollectiveIdentifierResponse": {
+        "required": [
+          "collectiveIdentifierNumber"
+        ],
+        "type": "object",
+        "properties": {
+          "collectiveIdentifierNumber": {
+            "maxLength": 35,
+            "minLength": 35,
+            "type": "string",
+            "description": "Сгенерированный коллективный идентификатор"
           }
         }
       },
@@ -15172,7 +16092,8 @@
           "InvoiceRead",
           "Introspection",
           "SubunitManage",
-          "EnforcementOperations"
+          "EnforcementOperations",
+          "CollectiveIdentifierManage"
         ],
         "type": "string"
       },
@@ -15251,7 +16172,8 @@
           "InvoiceRead",
           "Introspection",
           "SubunitManage",
-          "EnforcementOperations"
+          "EnforcementOperations",
+          "CollectiveIdentifierManage"
         ],
         "type": "string"
       },
@@ -15706,7 +16628,8 @@
           "Introspection",
           "SubunitManage",
           "EnforcementOperations",
-          "VatUeManage"
+          "VatUeManage",
+          "CollectiveIdentifierManage"
         ],
         "type": "string"
       },
@@ -15719,7 +16642,8 @@
           "Introspection",
           "SubunitManage",
           "EnforcementOperations",
-          "VatUeManage"
+          "VatUeManage",
+          "CollectiveIdentifierManage"
         ],
         "type": "string"
       },
@@ -16782,6 +17706,7 @@
               "invoiceExport",
               "invoiceExportStatus",
               "invoiceDownload",
+              "collectiveIdentifier",
               "other"
             ],
             "allOf": [
@@ -17410,7 +18335,7 @@
       },
       "SystemWarning": {
         "type": "string",
-        "description": "Техническое предупреждение для системы интегратора. Предупреждение не влияет на текущий результат операции. Значение заголовка нормализуется с использованием ASCII folding.\n\nФормат:\n`[code]: message | [code]: message`\n\nRegex одиночного предупреждения: `\\[(?<code>[^\\]]+)\\]: (?<message>[^|]+)`<br/><br/>\nГенерацию предупреждений можно принудительно вызвать, передав заголовок:\n    `X-Test-System-Warning`, содержимое которого будет возвращено в ответе."
+        "description": "Техническое предупреждение для системы интегратора. Предупреждение не влияет на текущий результат операции. Значение заголовка нормализуется с использованием ASCII folding.\n\nФормат:\n`[code]: сообщение | [code]: сообщение`\n\nРегулярное выражение для отдельного предупреждения: `\\[(?<code>[^\\]]+)\\]: (?<message>[^|]+)`"
       },
       "TestDataAuthenticationContextIdentifier": {
         "required": [
@@ -17525,7 +18450,8 @@
           "CredentialsRead",
           "CredentialsManage",
           "EnforcementOperations",
-          "SubunitManage"
+          "SubunitManage",
+          "CollectiveIdentifierManage"
         ],
         "type": "string"
       },
@@ -17595,6 +18521,19 @@
                 "$ref": "#/components/schemas/TestDataAuthorizedIdentifier"
               }
             ]
+          }
+        }
+      },
+      "TestDataUpdateCertificateRequest": {
+        "required": [
+          "validTo"
+        ],
+        "type": "object",
+        "properties": {
+          "validTo": {
+            "type": "string",
+            "description": "Новая дата окончания срока действия сертификата, не может быть позже текущей.",
+            "format": "date-time"
           }
         }
       },
@@ -17696,7 +18635,8 @@
           "CredentialsManage",
           "SubunitManage",
           "EnforcementOperations",
-          "Introspection"
+          "Introspection",
+          "CollectiveIdentifierManage"
         ],
         "type": "string"
       },
@@ -18010,6 +18950,9 @@
       "description": "API предназначен для создания и управления тестовыми данными, такими как субъекты, физические лица и права доступа. Среди субъектов, которые можно создать: исполнительный орган, группа НДС и органы местного самоуправления. Для физических лиц можно указать, является ли данное лицо судебным исполнителем. Функциональность предоставления и отзыва прав доступа предназначена для воспроизведения работы формы ZAW-FA в тестовой среде.\n\nДополнительная информация:\n- [Тестовые сценарии](https://github.com/CIRFMF/ksef-api/blob/main/dane-testowe-scenariusze.md)"
     },
     {
+      "name": "Коллективные идентификаторы"
+    },
+    {
       "name": "Лимиты и ограничения"
     },
     {
@@ -18098,6 +19041,12 @@
       "name": "Токены KSeF",
       "tags": [
         "Токены KSeF"
+      ]
+    },
+    {
+      "name": "Коллективные идентификаторы",
+      "tags": [
+        "Коллективные идентификаторы"
       ]
     },
     {

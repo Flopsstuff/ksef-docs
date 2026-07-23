@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "KSeF API TE",
-    "description": "**API Version:** 2.6.0 (build 2.5.0-te)<br>\n**Public keys** of the Ministry of Finance (for a given environment): [Download keys](#tag/Certyfikaty-klucza-publicznego)<br>\n**Changelog:** [Changelog](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)<br>\n**Extended API documentation:** [ksef-docs](https://github.com/CIRFMF/ksef-docs/tree/main)\n\n**API server address:**\n- TEST environment: `https://api-test.ksef.mf.gov.pl/v2`\n",
+    "description": "**API Version:** 2.7.0 (build 2.7.0-te)<br>\n**Public Keys** of the Ministry of Finance (for the given environment): [Download keys](#tag/Certyfikaty-klucza-publicznego)<br>\n**Changelog:** [Changelog](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)<br>\n**Extended API documentation:** [ksef-docs](https://github.com/CIRFMF/ksef-docs/tree/main)\n\n**API Server Address:**\n- TEST Environment: `https://api-test.ksef.mf.gov.pl/v2`",
     "version": "v2"
   },
   "servers": [
@@ -1225,6 +1225,126 @@
         ]
       }
     },
+    "/testdata/certificates/{serialNumber}": {
+      "put": {
+        "tags": [
+          "Certificates"
+        ],
+        "summary": "Certificate update",
+        "description": "Updates the data of the specified KSeF certificate of an authenticated entity. **Only on test environments.**\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).",
+        "parameters": [
+          {
+            "name": "serialNumber",
+            "in": "path",
+            "description": "Certificate serial number (in hexadecimal format).",
+            "required": true,
+            "schema": {
+              "maxLength": 16,
+              "minLength": 16,
+              "pattern": "^[0-9A-F]{16}$",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "validTo"
+                ],
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/TestDataUpdateCertificateRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-System-Warning": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemWarning"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "| ExceptionCode       | ExceptionDescription                                       | Details |\n|---------------------|------------------------------------------------------------|---------|\n| 25008               | A certificate with the given serial number does not exist. |         |\n| 21405 | Input data validation error. | {error content from validator} |",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetryAfter"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Too Many Requests"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "x-rate-limits": {
+          "perSecond": 10,
+          "perMinute": 30,
+          "perHour": 120
+        }
+      }
+    },
     "/security/public-key-certificates": {
       "get": {
         "tags": [
@@ -2168,6 +2288,468 @@
         }
       }
     },
+    "/collective-identifiers": {
+      "post": {
+        "tags": [
+          "Collective identifiers"
+        ],
+        "summary": "Collective identifier generation",
+        "description": "Generates a collective identifier for a list of KSeF invoice numbers\nissued by the same seller.\n\nThe maximum number of invoices assigned to one collective identifier is 500.\nOne invoice can be assigned to a maximum of 132 collective identifiers\nwithin one context.\n            \nThe collective identifier has the format:\n`9999999999-IZRRRRMM-FFFFFFFFFFFF-FF`, where:\n- `9999999999` – 10-digit NIP of the seller,\n- `IZ` – fixed prefix,\n- `RRRRMM` – year and month of creation,\n- `FFFFFFFFFFFF` – technical part consisting of 12 characters in hexadecimal notation, only [0–9 A–F], uppercase letters,\n- `FF` – CRC-8 checksum - 2 characters in hexadecimal notation, only [0–9 A–F], uppercase letters.\n            \nThe CRC-8 algorithm with the following parameters is used to calculate the checksum:\n- Polynomial: 0x07\n- Initial value: 0x00\n- Result format: 2-character hexadecimal notation (HEX, uppercase letters)\n\nExample:\n`1111111111-IZ202607-65ED02180000-E7`.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**One of the following permissions is required**: `InvoiceRead`, `InvoiceWrite`, `CollectiveIdentifierManage`.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "invoices"
+                ],
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/GenerateCollectiveIdentifierRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "headers": {
+              "X-System-Warning": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemWarning"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateCollectiveIdentifierResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "| ExceptionCode       | ExceptionDescription                                                         | Details                                                | \n|---------------------|------------------------------------------------------------------------------|--------------------------------------------------------|\n| 71001               | Invoice cannot be assigned to a Collective Identifier.                        | Invoice with KSeF number {ksefNumber} cannot be assigned to a Collective Identifier. |\n| 71002               | Invoice is already assigned to the maximum number of Collective Identifiers.            | Invoice with KSeF number {ksefNumber} is already assigned to the maximum number of Collective Identifiers. |\n| 21405 | Input data validation error. | {error text from validator} |",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "| | req / s | req / min | req / h | grupa\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 60 | 120 | collectiveIdentifier",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetryAfter"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Too Many Requests"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "x-rate-limits": {
+          "perSecond": 10,
+          "perMinute": 60,
+          "perHour": 120
+        },
+        "x-required-permissions": [
+          "InvoiceRead",
+          "InvoiceWrite",
+          "CollectiveIdentifierManage"
+        ]
+      }
+    },
+    "/collective-identifiers/query": {
+      "post": {
+        "tags": [
+          "Collective identifiers"
+        ],
+        "summary": "Retrieval of a list of collective identifiers related to the context",
+        "description": "Returns a list of collective identifiers generated in the context.\nFor a NIP context, collective identifiers are also returned for which the entity appears in the role of Entity 1 on the invoice.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- dateCreated (Desc)\n- collectiveIdentifierNumber (Desc)\n\n\n\n**One of the following permissions is required**: `InvoiceRead`, `InvoiceWrite`, `CollectiveIdentifierManage`.",
+        "parameters": [
+          {
+            "name": "x-continuation-token",
+            "in": "header",
+            "description": "Token used to retrieve the next page of results.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "maximum": 200,
+              "minimum": 10,
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "dateCreatedFrom",
+                  "dateCreatedTo"
+                ],
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CollectiveIdentifiersQueryRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-System-Warning": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemWarning"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectiveIdentifiersQueryResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21405 | Input data validation error. | {error text from validator} |",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "x-sort": [
+          {
+            "field": "dateCreated",
+            "direction": "Desc"
+          },
+          {
+            "field": "collectiveIdentifierNumber",
+            "direction": "Desc"
+          }
+        ],
+        "x-required-permissions": [
+          "InvoiceRead",
+          "InvoiceWrite",
+          "CollectiveIdentifierManage"
+        ]
+      }
+    },
+    "/collective-identifiers/{collectiveIdentifierNumber}/invoices": {
+      "get": {
+        "tags": [
+          "Collective identifiers"
+        ],
+        "summary": "Retrieval of a list of invoices that make up a collective identifier",
+        "description": "Returns a list of KSeF invoice numbers that make up the collective identifier.\n            \nInformation about the payment amount and currency is returned only to the entity that created the collective identifier or to the entity appearing in the role on the given invoice.\n\nIf the payment amount and currency were specified during the creation of the collective identifier and the entity does not have access to this information, the fields related to the payment amount and currency are not returned, and the <b>paymentDetailsHidden</b> field takes the value <b>true</b>.\n\nIf the payment amount and currency were not specified during the creation of the collective identifier, their values remain empty, and the <b>paymentDetailsHidden</b> field takes the value <b>false</b>.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- ksefNumber (Desc)\n\n\n\n**Required one of the permissions**: `InvoiceRead`, `InvoiceWrite`, `CollectiveIdentifierManage`.",
+        "parameters": [
+          {
+            "name": "collectiveIdentifierNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-continuation-token",
+            "in": "header",
+            "description": "Token used to retrieve the next page of results.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "maximum": 200,
+              "minimum": 10,
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-System-Warning": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemWarning"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectiveIdentifierInvoicesQueryResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21405 | Input data validation error. | {error text from validator} |",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "x-sort": [
+          {
+            "field": "ksefNumber",
+            "direction": "Desc"
+          }
+        ],
+        "x-required-permissions": [
+          "InvoiceRead",
+          "InvoiceWrite",
+          "CollectiveIdentifierManage"
+        ]
+      }
+    },
+    "/collective-identifiers/ksef/{ksefNumber}": {
+      "get": {
+        "tags": [
+          "Collective identifiers"
+        ],
+        "summary": "Get a list of collective identifiers by KSeF number",
+        "description": "Returns a list of collective identifiers related to the given KSeF number.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- dateCreated (Desc)\n- collectiveIdentifierNumber (Desc)\n\n\n\n**Required one of the permissions**: `InvoiceRead`, `InvoiceWrite`, `CollectiveIdentifierManage`.",
+        "parameters": [
+          {
+            "name": "ksefNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/KsefNumber"
+            }
+          },
+          {
+            "name": "x-continuation-token",
+            "in": "header",
+            "description": "Token used to retrieve the next page of results.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "maximum": 200,
+              "minimum": 10,
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-System-Warning": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemWarning"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectiveIdentifiersByKsefNumberQueryResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21405 | Input data validation error. | {error text from validator} |",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "x-sort": [
+          {
+            "field": "dateCreated",
+            "direction": "Desc"
+          },
+          {
+            "field": "collectiveIdentifierNumber",
+            "direction": "Desc"
+          }
+        ],
+        "x-required-permissions": [
+          "InvoiceRead",
+          "InvoiceWrite",
+          "CollectiveIdentifierManage"
+        ]
+      }
+    },
     "/limits/context": {
       "get": {
         "tags": [
@@ -2459,6 +3041,11 @@
                     "perSecond": 8,
                     "perMinute": 16,
                     "perHour": 64
+                  },
+                  "collectiveIdentifier": {
+                    "perSecond": 10,
+                    "perMinute": 60,
+                    "perHour": 120
                   },
                   "other": {
                     "perSecond": 10,
@@ -3217,7 +3804,7 @@
           "Granting permissions"
         ],
         "summary": "Granting natural persons permissions to work in KSeF",
-        "description": "The method allows granting permissions to the person indicated in the request to work in KSeF in the current context.\n            \nThe request specifies the permissions to be granted from the following set:  \n- **InvoiceWrite** – issuing invoices,  \n- **InvoiceRead** – viewing invoices,  \n- **CredentialsManage** – managing permissions,  \n- **CredentialsRead** – viewing permissions,  \n- **Introspection** – viewing session history and generating UPO,  \n- **SubunitManage** – managing subordinate units,  \n- **EnforcementOperations** – performing enforcement operations.\n            \nThe method allows selecting any combination of the above permissions.  \nThe **EnforcementOperations** permission can only be granted when the context entity has the role of **EnforcementAuthority** (enforcement authority)  \nor **CourtBailiff** (court bailiff).\n\n> More information:\n> - [Granting permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadawanie-uprawnie%C5%84-osobom-fizycznym-do-pracy-w-ksef)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permissions**: `CredentialsManage`.",
+        "description": "The method allows granting to the person indicated in the request permissions to work in KSeF  \nin the current context.\n            \nThe request specifies the permissions granted from the set:  \n- **InvoiceWrite** – issuing invoices,  \n- **InvoiceRead** – viewing invoices,  \n- **CredentialsManage** – managing permissions,  \n- **CredentialsRead** – viewing permissions,  \n- **Introspection** – viewing session history and generating UPO,  \n- **SubunitManage** – managing subunits,  \n- **EnforcementOperations** – performing enforcement operations.\n- **CollectiveIdentifierManage** – managing collective identifiers  \n            \nThe method allows selecting any combination of the above permissions.  \nThe **EnforcementOperations** permission can be granted only when  \nthe context entity has the role **EnforcementAuthority** (enforcement authority)  \nor **CourtBailiff** (court bailiff).\n\n> More information:\n> - [Granting permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadawanie-uprawnie%C5%84-osobom-fizycznym-do-pracy-w-ksef)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permission**: `CredentialsManage`.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -3359,7 +3946,7 @@
           "Granting permissions"
         ],
         "summary": "Granting entities permissions to handle invoices",
-        "description": "The method allows granting the entity indicated in the request permissions to handle invoices of the context entity.  \nThe request specifies the permissions to be granted from the following set:  \n- **InvoiceWrite** – issuing invoices  \n- **InvoiceRead** – viewing invoices  \n            \nThe method allows selecting any combination of the above permissions.  \nFor each permission, a **canDelegate** flag can be set, indicating the possibility of further delegation by granting it indirectly.\n\n> More information:\n> - [Granting permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadanie-podmiotom-uprawnie%C5%84-do-obs%C5%82ugi-faktur)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permissions**: `CredentialsManage`.",
+        "description": "The method allows granting the entity specified in the request permissions to handle the context entity's invoices.  \nThe request specifies the permissions being granted from the set:  \n- **InvoiceWrite** – issuing invoices  \n- **InvoiceRead** – viewing invoices  \n            \nThe method allows selecting any combination of the above permissions.  \nFor each permission, a **canDelegate** flag can be set, indicating whether it can be further delegated through indirect granting.\n\n> More information:\n> - [Granting permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadanie-podmiotom-uprawnie%C5%84-do-obs%C5%82ugi-faktur)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permission**: `CredentialsManage`.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -3501,7 +4088,7 @@
           "Granting permissions"
         ],
         "summary": "Granting entity-level permissions",
-        "description": "The method allows granting one of the entity-level permissions for managing the context entity to the entity indicated in the request.\n\n> More information:\n> - [Granting permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadanie-uprawnie%C5%84-podmiotowych)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permissions**: `CredentialsManage`.",
+        "description": "The method allows granting one of the entity permissions to handle the context entity to the entity specified in the request.\n\n> More information:\n> - [Granting permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadanie-uprawnie%C5%84-podmiotowych)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permission**: `CredentialsManage`.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -3634,7 +4221,7 @@
           "Granting permissions"
         ],
         "summary": "Granting permissions indirectly",
-        "description": "The method allows indirectly granting permissions to the person indicated in the request to handle invoices of another entity – a client.  \nThis can be one of the following options:  \n- granting general permissions – to handle all clients  \n- granting selective permissions – to handle a specified client  \n            \nA selective permission can only be granted if the client has previously granted the current context entity any permission with the right to further delegate it (see [POST /v2/permissions/entities/grants](/docs/v2/index.html#tag/Nadawanie-uprawnien/paths/~1permissions~1entities~1grants/post)).  \n            \nThe request specifies the permissions to be granted from the following set:  \n- **InvoiceWrite** – issuing invoices  \n- **InvoiceRead** – viewing invoices  \n            \nThe method allows selecting any combination of the above permissions.\n\n> More information:\n> - [Granting permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadanie-uprawnie%C5%84-w-spos%C3%B3b-po%C5%9Bredni)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permissions**: `CredentialsManage`.",
+        "description": "The method allows indirectly granting the person specified in the request permissions to handle invoices of another entity – the client.  \nThis can be one of the options:  \n- granting general permissions – to handle all clients  \n- granting selective permissions – to handle the specified client  \n            \nA selective permission can only be granted if the client has previously granted the current context entity any permission with the right to delegate it (see [POST /v2/permissions/entities/grants](/docs/v2/index.html#tag/Nadawanie-uprawnien/paths/~1permissions~1entities~1grants/post)).  \n            \nThe request specifies the permissions being granted from the set:  \n- **InvoiceWrite** – issuing invoices  \n- **InvoiceRead** – viewing invoices  \n            \nThe method allows selecting any combination of the above permissions.\n\n> More information:\n> - [Granting permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadanie-uprawnie%C5%84-w-spos%C3%B3b-po%C5%9Bredni)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permission**: `CredentialsManage`.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -3778,7 +4365,7 @@
           "Granting permissions"
         ],
         "summary": "Granting subordinate entity administrator permissions",
-        "description": "The method allows granting administrator permissions to the entity or natural person indicated in the request, in the context of:  \n- the indicated NIP of a subordinate entity – exclusively if the entity of the current login context has the role of a parent entity:\n  - **LocalGovernmentUnit** \n  - **VatGroupUnit**  \n- the indicated or created internal identifier  \n            \nAlong with the creation of the subordinate unit administrator, an internal identifier is created consisting of the NIP of the login context entity and 5 digits uniquely identifying the internal unit.\nThe last digit must be a valid check digit, which is calculated according to the algorithm below.\n\nThe algorithm uses alternating weights (1×, 3×, 1×, 3×, ...), sums the results and returns the remainder of division by 10.\n\nExample:\n- Input: \"6824515772-1234\" (without check digit)\n- Position 0 (1st digit): 6 × 1 = 6\n- Position 1 (2nd digit): 8 × 3 = 24\n- Position 2 (3rd digit): 2 × 1 = 2\n- Position 3 (4th digit): 4 × 3 = 12\n- Position 4 (5th digit): 5 × 1 = 5\n- Position 5 (6th digit): 1 × 3 = 3\n- Position 6 (7th digit): 5 × 1 = 5\n- Position 7 (8th digit): 7 × 3 = 21\n- Position 8 (9th digit): 7 × 1 = 7\n- Position 9 (10th digit): 2 × 3 = 6\n- Position 10 (11th digit): 1 × 1 = 1\n- Position 11 (12th digit): 2 × 3 = 6\n- Position 12 (13th digit): 3 × 1 = 3\n- Position 13 (14th digit): 4 × 3 = 12\n- Sum: 6 + 24 + 2 + 12 + 5 + 3 + 5 + 21 + 7 + 6 + 1 + 6 + 3 + 12 = 113\n- Check digit (15th digit): 113 % 10 = 3\n\nThe request also includes the name of this unit.  \n            \nAdministrator permissions for the subordinate unit include:  \n- **CredentialsManage** – credentials management  \n            \nThe method automatically grants the above permission, without the need to specify it in the request.\n            \n> More information:\n> - [Granting permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadanie-uprawnie%C5%84-administratora-podmiotu-podrz%C4%99dnego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permissions**: `SubunitManage`.",
+        "description": "The method allows granting administrator permissions to the entity or natural person specified in the request in the context of:\n- the specified NIP of the subunit – only if the entity of the current login context has the role of a parent entity:\n  - **LocalGovernmentUnit** \n  - **VatGroupUnit**  \n- the specified or created internal identifier\n            \nWhen creating a subunit administrator, an internal identifier is created, consisting of the NIP number of the login context entity and 5 digits uniquely identifying the internal unit.\nThe last digit must be a valid checksum, which is calculated according to the following algorithm.\n\nThe algorithm uses alternating weights (1×, 3×, 1×, 3×, ...), sums the results, and returns the remainder of division by 10.\n\nExample:\n- Input: \"6824515772-1234\" (without the checksum digit)\n- Position 0 (1st digit): 6 × 1 = 6\n- Position 1 (2nd digit): 8 × 3 = 24\n- Position 2 (3rd digit): 2 × 1 = 2\n- Position 3 (4th digit): 4 × 3 = 12\n- Position 4 (5th digit): 5 × 1 = 5\n- Position 5 (6th digit): 1 × 3 = 3\n- Position 6 (7th digit): 5 × 1 = 5\n- Position 7 (8th digit): 7 × 3 = 21\n- Position 8 (9th digit): 7 × 1 = 7\n- Position 9 (10th digit): 2 × 3 = 6\n- Position 10 (11th digit): 1 × 1 = 1\n- Position 11 (12th digit): 2 × 3 = 6\n- Position 12 (13th digit): 3 × 1 = 3\n- Position 13 (14th digit): 4 × 3 = 12\n- Sum: 6 + 24 + 2 + 12 + 5 + 3 + 5 + 21 + 7 + 6 + 1 + 6 + 3 + 12 = 113\n- Checksum digit (15th digit): 113 % 10 = 3\n\nThe request must also include the name of this unit.\n            \nSubunit administrator permissions include:\n- **CredentialsManage** – permission management\n            \nThe method automatically grants the above permission without the need to specify it in the request.\n            \n> More information:\n> - [Granting permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadanie-uprawnie%C5%84-administratora-podmiotu-podrz%C4%99dnego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permission**: `SubunitManage`.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -3919,7 +4506,7 @@
           "Granting permissions"
         ],
         "summary": "Granting administrator permissions for a EU entity",
-        "description": "The method allows granting administrator permissions to the entity or natural person indicated in the request, within a context composed of the NIP identifier of the current context entity and the EU VAT number of the EU entity indicated in the request.  \nAlong with the creation of the EU entity administrator, a composite context is created consisting of the NIP number of the login context entity and the indicated EU VAT identification number of the EU entity.  \nThe request also includes the name and address of the EU entity.  \n            \nThe only way to identify the person being granted permissions is via the fingerprint of a qualified certificate:  \n- electronic signature certificate for natural persons  \n- electronic seal certificate for entities  \n            \nEU entity administrator permissions include:  \n- **VatEuManage** – managing permissions within the EU entity  \n- **InvoiceWrite** – issuing invoices  \n- **InvoiceRead** – viewing invoices  \n- **Introspection** – viewing session history  \n            \nThe method automatically grants all of the above permissions without the need to specify them in the request.\n            \n> More information:\n> - [Granting permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadanie-uprawnie%C5%84-administratora-podmiotu-unijnego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permissions**: `CredentialsManage`.",
+        "description": "The method allows granting administrator rights to the entity or natural person specified in the request, in the context composed of the NIP identifier of the current context entity and the EU VAT number of the EU entity specified in the request.  \nAlong with the creation of the EU entity administrator, a context is created composed of the NIP number of the login context entity and the specified EU VAT identification number of the EU entity.  \nThe request also includes the name and address of the EU entity.  \n            \nThe only way to identify the authorized person is the fingerprint of the qualified certificate:  \n- electronic signature certificate for natural persons  \n- electronic seal certificate for entities  \n            \nEU entity administrator rights include:  \n- **VatEuManage** – managing rights within the EU entity  \n- **InvoiceWrite** – issuing invoices  \n- **InvoiceRead** – viewing invoices  \n- **Introspection** – viewing session history  \n            \nThe method automatically grants all of the above rights, without the need to specify them in the request.            \n> More information:\n> - [Granting permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadanie-uprawnie%C5%84-administratora-podmiotu-unijnego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permission**: `CredentialsManage`.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -4070,7 +4657,7 @@
           "Granting permissions"
         ],
         "summary": "Granting permissions to an EU entity representative",
-        "description": "The method allows granting the entity or natural person indicated in the request permissions to issue and/or view invoices within the composite context of the current context.  \n            \nThe only way to identify the person being granted permissions is via the fingerprint of a qualified certificate:  \n- electronic signature certificate for natural persons  \n- electronic seal certificate for entities  \n            \nThe request specifies the permissions to be granted from the following set:  \n- **InvoiceWrite** – issuing invoices  \n- **InvoiceRead** – viewing invoices  \n            \nThe method allows selecting any combination of the above permissions.\n\n> More information:\n> - [Granting permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadanie-uprawnie%C5%84-reprezentanta-podmiotu-unijnego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permissions**: `VatUeManage`.",
+        "description": "The method allows granting the entity or natural person specified in the request rights to issue and/or view invoices in the context of the current context.  \n            \nThe only way to identify the authorized person is the fingerprint of the qualified certificate:  \n- electronic signature certificate for natural persons  \n- electronic seal certificate for entities  \n            \nThe rights to be granted are specified in the request from the set:  \n- **InvoiceWrite** – issuing invoices  \n- **InvoiceRead** – viewing invoices  \n            \nThe method allows for any combination of the above rights to be selected.\n\n> More information:\n> - [Granting permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadanie-uprawnie%C5%84-reprezentanta-podmiotu-unijnego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permission**: `VatUeManage`.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -4214,7 +4801,7 @@
           "Revoking permissions"
         ],
         "summary": "Revoking permissions",
-        "description": "The method allows revoking a permission with the specified identifier.  \nIt is required to first read the permissions in order to obtain  \nthe identifier of the permission to be revoked.\n\n> More information:\n> - [Revoking permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#odebranie-uprawnie%C5%84)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in the **Problem Details** format (`application/problem+json`).\n\n**Required permissions**: `CredentialsManage`, `VatUeManage`, `SubunitManage`.",
+        "description": "The method allows to receive a permission with the specified identifier.  \nReading permissions beforehand is required to obtain  \nthe identifier of the permission to be received.\n\n> More information:\n> - [Receiving permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#odebranie-uprawnie%C5%84)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required one of the permissions**: `CredentialsManage`, `VatUeManage`, `SubunitManage`.",
         "parameters": [
           {
             "name": "permissionId",
@@ -4330,7 +4917,7 @@
           "Revoking permissions"
         ],
         "summary": "Revoking entity permissions",
-        "description": "The method allows revoking an entity permission with the specified identifier.  \nIt is required to first read the permissions in order to obtain  \nthe identifier of the permission to be revoked.\n            \n> More information:\n> - [Revoking permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#odebranie-uprawnie%C5%84-podmiotowych)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in the **Problem Details** format (`application/problem+json`).\n\n**Required permissions**: `CredentialsManage`.",
+        "description": "The method allows to receive a subject permission with the specified identifier.  \nReading permissions beforehand is required to obtain  \nthe identifier of the permission to be received.\n            \n> More information:\n> - [Receiving permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#odebranie-uprawnie%C5%84-podmiotowych)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permission**: `CredentialsManage`.",
         "parameters": [
           {
             "name": "permissionId",
@@ -4576,7 +5163,7 @@
           "Operations"
         ],
         "summary": "Checking the status of consent for issuing invoices with an attachment",
-        "description": "Checks whether the current context has consent for issuing invoices with an attachment.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in the **Problem Details** format (`application/problem+json`).\n\n**Required permissions**: `CredentialsManage`, `CredentialsRead`.",
+        "description": "Checks if the current context has consent to issue invoices with an attachment.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required one of the permissions**: `CredentialsManage`, `CredentialsRead`.",
         "responses": {
           "200": {
             "description": "OK",
@@ -4677,7 +5264,7 @@
           "Downloading invoices"
         ],
         "summary": "Retrieving an invoice by KSeF number",
-        "description": "Returns the invoice with the specified KSeF number.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in the **Problem Details** format (`application/problem+json`).\n\n**Required permissions**: `InvoiceRead`.",
+        "description": "Returns an invoice with the given KSeF number.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permission**: `InvoiceRead`.",
         "parameters": [
           {
             "name": "ksefNumber",
@@ -4794,7 +5381,7 @@
           "Downloading invoices"
         ],
         "summary": "Retrieve invoice metadata list",
-        "description": "Returns metadata of invoices matching the filters.\n\nTechnical limit: ≤ 10,000 records per filter set; once reached, <b>isTruncated = true</b> and you must reset <b>dateRange</b> using the last date from the results (i.e. set from/to — depending on the sort direction — from the date of the last returned record) and reset <b>pageOffset</b> to zero.\n\n`For the incremental scenario, use the PermanentStorage date and Asc sort order`.\n            \n<b>Incremental download scenario (summary):</b>\n* When <b>hasMore = false</b>, stop,\n* When <b>hasMore = true</b> and <b>isTruncated = false</b>, increment <b>pageOffset</b>,\n* When <b>hasMore = true</b> and <b>isTruncated = true</b>, narrow <b>dateRange</b> (set from to the date of the last record), reset <b>pageOffset</b> to zero, and continue\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- permanentStorageDate | invoicingDate | issueDate (Asc | Desc) - field selected based on filters\n\n\n\n**Required permissions**: `InvoiceRead`.",
+        "description": "Returns metadata of invoices that match the filters.\n\nTechnical limit: ≤ 10,000 records per filter set, upon reaching it <b>isTruncated = true</b> and you need to reset <b>dateRange</b>, using the last date from the results (i.e. set from/to - depending on the sorting direction, from the date of the last returned record) and reset <b>pageOffset</b>.\n\n`For incremental scenarios, use the PermanentStorage date and Asc sorting order`.\n            \n<b>Incremental retrieval scenario (short form):</b>\n* When <b>hasMore = false</b>, you should finish,\n* When <b>hasMore = true</b> and <b>isTruncated = false</b>, you should increase <b>pageOffset</b>,\n* When <b>hasMore = true</b> and <b>isTruncated = true</b>, you should narrow down <b>dateRange</b> (set from from the last record's date), reset <b>pageOffset</b> and continue\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- permanentStorageDate | invoicingDate | issueDate (Asc | Desc) - field selected based on filters\n\n\n\n**Required permission**: `InvoiceRead`.",
         "parameters": [
           {
             "name": "sortOrder",
@@ -5071,7 +5658,7 @@
           "Downloading invoices"
         ],
         "summary": "Invoice package export",
-        "description": "Starts an asynchronous process of searching for invoices in the KSeF system based on the provided filters and preparing them in the form of an encrypted package.\nIt is required to provide encryption information in the <b>Encryption</b> field, which is used to secure the prepared invoice package.\nA maximum of 10 simultaneous exports can be started within a logged-in context.\n            \nThe system retrieves invoices in ascending order by the date specified in the filter (Invoicing, Issue, PermanentStorage) and adds invoices (file name: <b>{ksefNumber}.xml</b>) to the package until one of the following limits is reached:\n* Invoice count limit: 10,000 items\n* Data size limit (compressed): 1GB\n\nThe export package contains an additional file with invoice metadata in JSON format (`_metadata.json`). The file content is\nan object with an <b>invoices</b> array, where each element is an object of type <b>InvoiceMetadata</b>\n(as returned by the endpoint `POST /invoices/query/metadata`).\n\n<b>The metadata file (_metadata.json) is not counted towards the package building algorithm limits</b>. \n\n`To implement incremental downloading, filtering by PermanentStorage date should be used`.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- permanentStorageDate | invoicingDate | issueDate (Asc) - field selected based on filters\n\n\n\n**Required permissions**: `InvoiceRead`.",
+        "description": "Starts an asynchronous process of searching for invoices in the KSeF system based on the provided filters and prepares them in the form of an encrypted package.\nIt is required to pass encryption information in the <b>Encryption</b> field, which is used to secure the prepared package with invoices.\nA maximum of 10 concurrent exports can be started in the logged-in context.\n            \nThe system retrieves invoices in ascending order according to the date specified in the filter (Invoicing, Issue, PermanentStorage) and adds invoices (filename: <b>{ksefNumber}.xml</b>) to the package until one of the following limits is reached:\n* Invoice count limit: 10,000 pieces\n* Data size limit (compressed): 1GB\n\nThe export package contains an additional file with invoice metadata in JSON format (`_metadata.json`). The file content is\nan object with an <b>invoices</b> array, where each element is an object of type <b>InvoiceMetadata</b>\n(such as returned by the `POST /invoices/query/metadata` endpoint).\n\n<b>The metadata file (_metadata.json) is not included in the package building algorithm limits</b>. \n\n`For incremental retrieval, filtering by PermanentStorage date should be used`.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- permanentStorageDate | invoicingDate | issueDate (Asc) - field selected based on filters\n\n\n\n**Required permission**: `InvoiceRead`.",
         "requestBody": {
           "description": "Input data specifying the criteria and format for the invoice package export.",
           "content": {
@@ -5219,7 +5806,7 @@
           "Downloading invoices"
         ],
         "summary": "Retrieve the export status of an invoice package",
-        "description": "The invoice package is divided into parts with a maximum size of 50 MB. Each part is encrypted using the AES-256-CBC algorithm with PKCS#7 padding, using the symmetric key provided during export initialization. \n\nIf the export result is truncated due to limit exceeded, the flag <b>IsTruncated = true</b> is returned along with the appropriate date, which should be used to perform the next export, until the flag <b>IsTruncated = false</b>.\n\nThe invoice package export status is available for 7 days.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- permanentStorageDate | invoicingDate | issueDate (Asc) - field selected based on filters\n\n\n\n**Required permissions**: `InvoiceRead`.",
+        "description": "The invoice package is divided into parts with a maximum size of 50 MB. Each part is encrypted with the AES-256-CBC algorithm with PKCS#7 padding, using a symmetric key passed during export initialization.\n\nIf the export result is truncated due to exceeding limits, a flag <b>IsTruncated = true</b> and the appropriate date are returned, which should be used to perform the next export until the <b>IsTruncated = false</b> flag is set.\n\nThe status of the invoice package export is available for 7 days.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- permanentStorageDate | invoicingDate | issueDate (Asc) - field selected based on filters\n\n\n\n**Required permission**: `InvoiceRead`.",
         "parameters": [
           {
             "name": "referenceNumber",
@@ -5385,7 +5972,7 @@
           "Submission status and UPO"
         ],
         "summary": "Retrieve the session list",
-        "description": "Returns a list of sessions matching the specified search criteria.\n\n\n\n**Sorting:**\n\n- dateCreated (Desc)\n\n\n**Required permissions**:\n- `Introspection`/`EnforcementOperations` – allows retrieving all sessions in the current authentication context `(ContextIdentifier)`.\n- `InvoiceWrite` – allows retrieving only sessions created by the authenticating entity, i.e., the entity initiating the authentication.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).",
+        "description": "Returns a list of sessions meeting the specified search criteria.\n\n**One of the following permissions is required**:\n- `Introspection`/`EnforcementOperations` – allows to retrieve all sessions in the current authentication context `(ContextIdentifier)`.\n- `InvoiceWrite` – allows to retrieve only sessions created by the authenticating entity, i.e., the entity initiating the authentication.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- dateCreated (Desc)",
         "parameters": [
           {
             "name": "pageSize",
@@ -5632,7 +6219,7 @@
           "Submission status and UPO"
         ],
         "summary": "Retrieve session status",
-        "description": "Checks the current status of the session with the specified reference number.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permissions**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
+        "description": "Checks the current status of a session with the given reference number.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required one of the permissions**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
         "parameters": [
           {
             "name": "referenceNumber",
@@ -5766,7 +6353,7 @@
           "Submission status and UPO"
         ],
         "summary": "Retrieve session invoices",
-        "description": "Returns a list of invoices sent in the session along with their statuses, and information about the number of correctly and incorrectly processed invoices.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permissions**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
+        "description": "Returns a list of invoices submitted in the session along with their statuses, and information about the number of correctly and incorrectly processed invoices.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required one of the permissions**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
         "parameters": [
           {
             "name": "x-continuation-token",
@@ -5938,7 +6525,7 @@
           "Submission status and UPO"
         ],
         "summary": "Retrieve invoice status from session",
-        "description": "Returns an invoice sent in the session along with its status.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permissions**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
+        "description": "Returns the invoice submitted in the session along with its status.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required one of the permissions**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
         "parameters": [
           {
             "name": "referenceNumber",
@@ -6077,7 +6664,7 @@
           "Submission status and UPO"
         ],
         "summary": "Retrieve incorrectly processed invoices from session",
-        "description": "Returns a list of incorrectly processed invoices sent in the session along with their statuses.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permissions**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
+        "description": "Returns a list of incorrectly processed invoices submitted in the session along with their statuses.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required one of the permissions**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
         "parameters": [
           {
             "name": "x-continuation-token",
@@ -6234,7 +6821,7 @@
           "Submission status and UPO"
         ],
         "summary": "Retrieve UPO for a session invoice based on KSeF number",
-        "description": "Returns the UPO for an invoice sent in the session based on its KSeF number.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permissions**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
+        "description": "Returns the UPO of the invoice submitted in the session based on its KSeF number.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required one of the permissions**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
         "parameters": [
           {
             "name": "referenceNumber",
@@ -6363,7 +6950,7 @@
           "Submission status and UPO"
         ],
         "summary": "Retrieving invoice UPO from session based on invoice reference number",
-        "description": "Returns the UPO for an invoice sent in the session based on its KSeF number.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permissions**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
+        "description": "Returns the UPO of the invoice submitted in the session based on its KSeF number.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required one of the permissions**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
         "parameters": [
           {
             "name": "referenceNumber",
@@ -6492,7 +7079,7 @@
           "Submission status and UPO"
         ],
         "summary": "Retrieving UPO for session",
-        "description": "Returns XML containing the collective UPO for the session.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permissions**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
+        "description": "Returns XML containing collective UPO for the session.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required one of the permissions**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
         "parameters": [
           {
             "name": "referenceNumber",
@@ -7981,7 +8568,7 @@
           "Interactive submission"
         ],
         "summary": "Opening an interactive session",
-        "description": "Opens a session for sending individual invoices. The schema of the invoices being sent and information about the key used for encryption must be provided.\n\n> More information:\n> - [Opening an interactive session](https://github.com/CIRFMF/ksef-api/blob/main/sesja-interaktywna.md#1-otwarcie-sesji)\n> - [Ministry of Finance public key](/docs/v2/index.html#tag/Certyfikaty-klucza-publicznego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permissions**: `InvoiceWrite`, `PefInvoiceWrite`, `EnforcementOperations`.",
+        "description": "Opens a session for sending individual invoices. The schema of the invoices to be sent and information about the key used for encryption must be provided.\n\n> More information:\n> - [Opening an interactive session](https://github.com/CIRFMF/ksef-api/blob/main/sesja-interaktywna.md#1-otwarcie-sesji)\n> - [Public key of the Ministry of Finance](/docs/v2/index.html#tag/Certyfikaty-klucza-publicznego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required one of the permissions**: `InvoiceWrite`, `PefInvoiceWrite`, `EnforcementOperations`.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -8116,7 +8703,7 @@
           "Interactive submission"
         ],
         "summary": "Send invoice",
-        "description": "Accepts an encrypted invoice along with its metadata and initiates its processing.\n\n> More information:\n> - [Send invoice](https://github.com/CIRFMF/ksef-api/blob/main/sesja-interaktywna.md#2-wys%C5%82anie-faktury)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permissions**: `InvoiceWrite`, `PefInvoiceWrite`, `EnforcementOperations`.",
+        "description": "Accepts an encrypted invoice and its metadata and begins its processing.\n\n> More information:\n> - [Sending an invoice](https://github.com/CIRFMF/ksef-api/blob/main/sesja-interaktywna.md#2-wys%C5%82anie-faktury)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required one of the permissions**: `InvoiceWrite`, `PefInvoiceWrite`, `EnforcementOperations`.",
         "parameters": [
           {
             "name": "referenceNumber",
@@ -8261,7 +8848,7 @@
           "Interactive submission"
         ],
         "summary": "Closing an interactive session",
-        "description": "Closes an interactive session and starts generating a cumulative UPO for the session.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permissions**: `InvoiceWrite`, `PefInvoiceWrite`, `EnforcementOperations`.",
+        "description": "Closes the interactive session and begins generating collective UPO for the session.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required one of the permissions**: `InvoiceWrite`, `PefInvoiceWrite`, `EnforcementOperations`.",
         "parameters": [
           {
             "name": "referenceNumber",
@@ -8367,7 +8954,7 @@
           "Batch submission"
         ],
         "summary": "Opening a batch session",
-        "description": "Opens a session for batch invoice submission. You must provide the schema of the invoices being sent, information about the invoice package, and information about the key used for encryption.\n\n> More information:\n> - [Preparing an invoice package](https://github.com/CIRFMF/ksef-api/blob/main/sesja-wsadowa.md)\n> - [Ministry of Finance public key](/docs/v2/index.html#tag/Certyfikaty-klucza-publicznego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permissions**: `InvoiceWrite`, `EnforcementOperations`.",
+        "description": "Opens a session for batch sending of invoices. The schema of the invoices being sent, information about the invoice package, and information about the key used for encryption must be provided.\n\n> More information:\n> - [Preparing an invoice package](https://github.com/CIRFMF/ksef-api/blob/main/sesja-wsadowa.md)\n> - [Ministry of Finance public key](/docs/v2/index.html#tag/Certyfikaty-klucza-publicznego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required one of the permissions**: `InvoiceWrite`, `EnforcementOperations`.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -8523,7 +9110,7 @@
           "Batch submission"
         ],
         "summary": "Closing a batch session",
-        "description": "Closes the batch session, starts processing the invoice package and generating UPO for valid invoices and a collective UPO for the session.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permissions**: `InvoiceWrite`, `EnforcementOperations`.",
+        "description": "Closes the batch session, begins processing the invoice package and generating UPO for valid invoices and collective UPO for the session.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required one of the permissions**: `InvoiceWrite`, `EnforcementOperations`.",
         "parameters": [
           {
             "name": "referenceNumber",
@@ -8628,7 +9215,7 @@
           "Searching granted permissions"
         ],
         "summary": "Retrieve the list of own permissions",
-        "description": "The method allows reading the own permissions of the authenticated API client in the current login context.  \n\n The response includes the following permissions:  \n - granted directly in the current context  \n - granted by a parent entity  \n - granted indirectly, if the entity of the login context is an intermediary or target entity in the permission  \n - granted to an entity for invoice handling by another entity, if the authenticated entity has ownership permissions in the current context  \n\n Permissions returned by the operation include:  \n - **CredentialsManage** – credentials management  \n - **CredentialsRead** – credentials browsing  \n - **InvoiceWrite** – invoice issuance  \n - **InvoiceRead** – invoice browsing  \n - **Introspection** – session history browsing  \n - **SubunitManage** – subunit management  \n - **EnforcementOperations** – performing enforcement operations  \n - **VatEuManage** – permissions management within a EU entity  \n\n The response can be filtered based on the following parameters:  \n - **contextIdentifier** – identifier of the entity that granted the invoice handling permission  \n - **targetIdentifier** – identifier of the target entity for indirectly granted permissions  \n - **permissionTypes** – list of permission types to search for  \n - **permissionState** – permission status  \n\n#### Result pagination\nThe query returns **one page of results** with the number and size specified in the path.\n- On the first call, set the parameter `pageOffset = 0`.  \n- If a next page of results is available, the **`hasMore`** flag will appear in the response.  \n- In that case, the query can be called again with the next page number.\n\n > More information:\n > - [Retrieving the list of permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-w%C5%82asnych-uprawnie%C5%84)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in the **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- startDate (Desc)\n- id (Asc)\n\n",
+        "description": " The method allows reading the permissions of an authenticated API client in the current login context.  \n\n The following permissions are returned:  \n - granted directly in the current context  \n - granted by the parent entity  \n - granted indirectly, if the login context entity is an intermediary or target entity for the permission  \n - granted to an entity for invoice handling by another entity, if the authenticated entity has ownership permissions in the current context  \n\n Permissions returned by the operation include:  \n - **CredentialsManage** – manage permissions  \n - **CredentialsRead** – view permissions  \n - **InvoiceWrite** – issue invoices  \n - **InvoiceRead** – view invoices  \n - **Introspection** – view session history  \n - **SubunitManage** – manage sub-entities  \n - **EnforcementOperations** – perform enforcement operations  \n - **VatEuManage** – manage permissions within a EU entity  \n - **CollectiveIdentifierManage** – manage collective identifiers  \n\n The response can be filtered based on the following parameters:  \n - **contextIdentifier** – identifier of the entity that granted the permission for invoice handling  \n - **targetIdentifier** – identifier of the target entity for indirectly granted permissions  \n - **permissionTypes** – list of types of permissions being searched for  \n - **permissionState** – permission status  \n\n#### Pagination\nThe query returns **one page of results** with the number and size provided in the path.\n- On the first call, set the parameter `pageOffset = 0`.  \n- If there is another page of results available, a **`hasMore`** flag will appear in the response.  \n- In such a case, the query can be called again with the next page number.\n\n > For more information:\n > - [Retrieving a list of permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-w%C5%82asnych-uprawnie%C5%84)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- startDate (Desc)\n- id (Asc)",
         "parameters": [
           {
             "name": "pageOffset",
@@ -8804,7 +9391,7 @@
           "Searching granted permissions"
         ],
         "summary": "Retrieving the list of permissions to work in KSeF granted to natural persons or entities",
-        "description": " The method allows reading permissions granted to a natural person or entity.  \n The list of retrieved permissions can be of two types:  \n - A list of all permissions applicable in the current login context (used when an administrator wants to review the permissions of all users in the current context)  \n - A list of all permissions granted in the current context by the authenticated API client (used when an administrator wants to review the list of permissions they have granted in the current context)  \n\n For the first list (applicable permissions), the response includes:  \n - persons and entities able to work in the current context, except for persons authorized indirectly  \n - persons authorized indirectly by the entity of the current context  \n\n For the second list (granted permissions), the response includes:  \n - permissions granted directly to work in the current context or in the context of subordinate units  \n - permissions granted indirectly to serve clients of the entity of the current context  \n\n Permissions returned by the operation include:  \n - **CredentialsManage** – managing permissions  \n - **CredentialsRead** – viewing permissions  \n - **InvoiceWrite** – issuing invoices  \n - **InvoiceRead** – viewing invoices  \n - **Introspection** – viewing session history  \n - **SubunitManage** – managing subordinate entities  \n - **EnforcementOperations** – performing enforcement operations  \n\n The response can be filtered based on the following parameters:  \n - **authorIdentifier** – identifier of the person who granted the permission  \n - **authorizedIdentifier** – identifier of the authorized person or entity  \n - **targetIdentifier** – identifier of the target entity for indirectly granted permissions  \n - **permissionTypes** – list of permission types to search for  \n - **permissionState** – permission status  \n - **queryType** – query type specifying which of the two lists is to be returned  \n\n#### Result Pagination\nThe query returns **one page of results** with the number and size specified in the path.\n- On the first call, set the parameter `pageOffset = 0`.  \n- If another page of results is available, the **`hasMore`** flag will appear in the response.  \n- In that case, the query can be called again with the next page number.\n\n > More information:\n > - [Retrieving the list of permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-uprawnie%C5%84-do-pracy-w-ksef-nadanych-osobom-fizycznym-lub-podmiotom)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- startDate (Desc)\n- id (Asc)\n\n\n\n**Required permissions**: `CredentialsManage`, `CredentialsRead`, `SubunitManage`.",
+        "description": "The method allows reading permissions granted to an individual or entity.  \nThe retrieved permissions list can be of two types:  \n- A list of all permissions valid in the current login context (used when an administrator wants to review permissions of all users in the current context)  \n- A list of all permissions granted in the current context by the authenticated API client (used when an administrator wants to review the list of permissions they granted in the current context)  \n\nFor the first list (valid permissions), the response includes:  \n- individuals and entities that can work in the current context except for persons authorized indirectly  \n- persons authorized indirectly by the entity of the current context  \n\nFor the second list (granted permissions), the response includes:  \n- permissions granted directly to work in the current context or in subordinate unit contexts  \n- permissions granted indirectly to serve the clients of the current context entity  \n\nPermissions returned by the operation include:  \n- **CredentialsManage** – permission management  \n- **CredentialsRead** – viewing permissions  \n- **InvoiceWrite** – issuing invoices  \n- **InvoiceRead** – viewing invoices  \n- **Introspection** – viewing session history  \n- **SubunitManage** – managing subordinate entities  \n- **EnforcementOperations** – performing enforcement operations  \n- **CollectiveIdentifierManage** – managing collective identifiers  \n\nThe response can be filtered based on parameters:  \n- **authorIdentifier** – identifier of the person who granted the permission  \n- **authorizedIdentifier** – identifier of the authorized person or entity  \n- **targetIdentifier** – identifier of the target entity for indirectly granted permissions  \n- **permissionTypes** – list of types of permissions being searched for  \n- **permissionState** – permission status  \n- **queryType** – query type specifying which of the two lists should be returned  \n\n#### Result Pagination\nThe query returns **one page of results** with the number and size provided in the path.\n- On the first call, set the parameter `pageOffset = 0`.  \n- If there is another page of results available, a **`hasMore`** flag will appear in the response.  \n- In such case, the query can be called again with the next page number.  \n\n > More information:\n > - [Retrieving a list of permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-uprawnie%C5%84-do-pracy-w-ksef-nadanych-osobom-fizycznym-lub-podmiotom)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- startDate (Desc)\n- id (Asc)\n\n\n\n**Required one of the permissions**: `CredentialsManage`, `CredentialsRead`, `SubunitManage`.",
         "parameters": [
           {
             "name": "pageOffset",
@@ -8995,7 +9582,7 @@
           "Searching granted permissions"
         ],
         "summary": "Retrieving the list of permissions for administrators of sub-units and subordinate entities",
-        "description": " This method allows reading permissions for managing credentials granted to administrators of:  \n - sub-units identified by an internal identifier  \n - subordinate entities (subordinate local government units or VAT group members) identified by NIP  \n\n The list returns only permissions for managing credentials granted from the current context (from the parent entity).  \n Permissions granted by administrators of sub-units within those units are not retrieved.  \n\n The response can be filtered based on the parameter:  \n - **subunitIdentifier** – identifier of the sub-unit or subordinate entity  \n\n#### Result pagination\nThe query returns **one page of results** with the number and size specified in the path.\n- On the first call, set the parameter `pageOffset = 0`.  \n- If another page of results is available, the **`hasMore`** flag will appear in the response.  \n- In that case, the query can be called again with the next page number.\n\n > More information:\n > - [Retrieving the list of permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-uprawnie%C5%84-administrator%C3%B3w-jednostek-i-podmiot%C3%B3w-podrz%C4%99dnych)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- startDate (Desc)\n- id (Asc)\n\n\n\n**Required permissions**: `CredentialsManage`, `CredentialsRead`, `SubunitManage`.",
+        "description": "The method allows reading permissions for managing permissions granted to administrators:  \n - of subunits identified by internal identifier  \n - of sub-entities (subordinate JST or VAT group members) identified by NIP  \n\n The list returns only permissions for managing permissions granted from the current context (from the parent entity).  \n Permissions granted by administrators of subunits within those units are not read.  \n\n The response can be filtered based on the parameter:  \n - **subunitIdentifier** – identifier of the subunit or sub-entity  \n\n#### Result Pagination\nThe query returns **one page of results** with the number and size given in the path.\n- On the first call, set the parameter `pageOffset = 0`.  \n- If there is another page of results available, a **`hasMore`** flag will appear in the response.  \n- In such a case, the query can be called again with the next page number.\n\n > More information:\n > - [Retrieving permissions list](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-uprawnie%C5%84-administrator%C3%B3w-jednostek-i-podmiot%C3%B3w-podrz%C4%99dnych)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- startDate (Desc)\n- id (Asc)\n\n\n\n**Required one of the permissions**: `CredentialsManage`, `CredentialsRead`, `SubunitManage`.",
         "parameters": [
           {
             "name": "pageOffset",
@@ -9174,7 +9761,7 @@
           "Searching granted permissions"
         ],
         "summary": "Retrieving the list of permissions for invoice handling in the current context",
-        "description": " The method allows reading the received permissions for invoice handling in the current login context.  \n\n The response includes the following permissions:  \n - granted to the entity for invoice handling by another entity \n\n Permissions returned by the operation include:  \n - **InvoiceWrite** – issuing invoices  \n - **InvoiceRead** – viewing invoices  \n\n The response can be filtered based on the following parameters:  \n - **contextIdentifier** – identifier of the entity that granted the invoice handling permission  \n\n#### Result pagination\nThe query returns **one page of results** with the number and size specified in the path.\n- On the first call, set the parameter `pageOffset = 0`.  \n- If another page of results is available, the **`hasMore`** flag will appear in the response.  \n- In that case, the query can be called again with the next page number.\n\n > More information:\n > - [Retrieving the list of permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-uprawnie%C5%84-do-obs%C5%82ugi-faktur-w-bie%C5%BC%C4%85cym-kontek%C5%9Bcie)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- startDate (Desc)\n- id (Asc)\n\n\n\n**Required permissions**: `CredentialsManage`, `CredentialsRead`.",
+        "description": "The method allows reading received permissions for handling invoices in the current login context.  \n\n The following permissions are passed in the response:  \n - granted to the entity for handling invoices by another entity \n\n Permissions returned by the operation include:  \n - **InvoiceWrite** – issuing invoices  \n - **InvoiceRead** – viewing invoices  \n\n The response can be filtered based on the following parameters:  \n - **contextIdentifier** – identifier of the entity that granted the permission to handle invoices  \n\n#### Result Pagination\nThe query returns **one page of results** with the number and size given in the path.\n- On the first call, set the parameter `pageOffset = 0`.  \n- If there is another page of results available, a **`hasMore`** flag will appear in the response.  \n- In such a case, the query can be called again with the next page number.\n\n > More information:\n > - [Retrieving permissions list](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-uprawnie%C5%84-do-obs%C5%82ugi-faktur-w-bie%C5%BC%C4%85cym-kontek%C5%9Bcie)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- startDate (Desc)\n- id (Asc)\n\n\n\n**Required one of the permissions**: `CredentialsManage`, `CredentialsRead`.",
         "parameters": [
           {
             "name": "pageOffset",
@@ -9345,7 +9932,7 @@
           "Searching granted permissions"
         ],
         "summary": "Retrieve the list of entity roles",
-        "description": " The method allows **reading the list of roles of the entity in the current login context**.\n\n#### Entity roles returned by the operation:\n- **CourtBailiff** – court bailiff  \n- **EnforcementAuthority** – enforcement authority  \n- **LocalGovernmentUnit** – parent local government unit  \n- **LocalGovernmentSubUnit** – subordinate local government unit  \n- **VatGroupUnit** – VAT group  \n- **VatGroupSubUnit** – VAT group member\n\n#### Result pagination\nThe query returns **one page of results** with the number and size specified in the path.\n- On the first call, set the parameter `pageOffset = 0`.  \n- If another page of results is available, the **`hasMore`** flag will appear in the response.  \n- In that case, the query can be called again with the next page number.\n \n > More information:\n > - [Retrieving the list of roles](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-r%C3%B3l-podmiotu)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- startDate (Desc)\n- id (Asc)\n\n\n\n**Required permissions**: `CredentialsManage`, `CredentialsRead`.",
+        "description": " The method allows to **read the list of roles of the current login context subject**.\n\n#### Subject roles returned by the operation:\n- **CourtBailiff** – court bailiff  \n- **EnforcementAuthority** – enforcement authority  \n- **LocalGovernmentUnit** – superior LGU  \n- **LocalGovernmentSubUnit** – subordinate LGU  \n- **VatGroupUnit** – VAT group  \n- **VatGroupSubUnit** – VAT group member\n\n#### Result pagination\nThe query returns **one page of results** with the number and size given in the path.\n- On the first call, set the parameter `pageOffset = 0`.  \n- If there is another page of results available, a **`hasMore`** flag will appear in the response.  \n- In such a case, the query can be called again with the next page number.\n \n > More information:\n > - [Getting the list of roles](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-r%C3%B3l-podmiotu)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- startDate (Desc)\n- id (Asc)\n\n\n\n**Required one of the permissions**: `CredentialsManage`, `CredentialsRead`.",
         "parameters": [
           {
             "name": "pageOffset",
@@ -9491,7 +10078,7 @@
           "Searching granted permissions"
         ],
         "summary": "Retrieve the list of subordinate entities",
-        "description": "The method allows reading the list of subordinate entities, if the entity of the current context has the role of a parent entity:\n - **parent local government unit (JST)** – subordinate JSTs are retrieved,\n - **VAT group** – entities that are members of the VAT group are retrieved.\n\nRoles of entities returned by the operation include:\n - **LocalGovernmentSubUnit** – subordinate JST,\n - **VatGroupSubUnit** – VAT group member.\n\nThe response can be filtered by the parameter:\n - **subordinateEntityIdentifier** – identifier of the subordinate entity.\n\n#### Result Pagination\nThe query returns **one page of results** with the number and size specified in the path.\n- On the first call, set the parameter `pageOffset = 0`.\n- If the next page of results is available, the **`hasMore`** flag will appear in the response.\n- In that case, the query can be called again with the next page number.\n\n > More information:\n > - [Retrieving the list of subordinate entities](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-podmiot%C3%B3w-podrz%C4%99dnych)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- startDate (Desc)\n- id (Asc)\n\n\n\n**Required permissions**: `CredentialsManage`, `CredentialsRead`, `SubunitManage`.",
+        "description": " The method allows to read the list of subordinate entities,  \n if the current context subject has a parent entity role:\n - **superior LGU** – subordinate LGUs are read,  \n - **VAT group** – entities that are members of the VAT group are read.\n\n Subject roles returned by the operation include:  \n - **LocalGovernmentSubUnit** – subordinate LGU,  \n - **VatGroupSubUnit** – VAT group member.\n\n The response can be filtered by the parameter:  \n - **subordinateEntityIdentifier** – identifier of the subordinate entity.\n\n#### Result pagination\nThe query returns **one page of results** with the number and size given in the path.\n- On the first call, set the parameter `pageOffset = 0`.  \n- If there is another page of results available, a **`hasMore`** flag will appear in the response.  \n- In such a case, the query can be called again with the next page number.\n  \n > More information:\n > - [Getting the list of subordinate entities](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-podmiot%C3%B3w-podrz%C4%99dnych)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- startDate (Desc)\n- id (Asc)\n\n\n\n**Required one of the permissions**: `CredentialsManage`, `CredentialsRead`, `SubunitManage`.",
         "parameters": [
           {
             "name": "pageOffset",
@@ -9661,7 +10248,7 @@
           "Searching granted permissions"
         ],
         "summary": "Retrieving the list of entity-level permissions for invoice handling",
-        "description": " The method allows reading entity-level permissions:  \n - received by the entity of the current context  \n - granted by the entity of the current context  \n\n The selection of the list of granted or received permissions is made using the **queryType** parameter.  \n\n Permissions returned by the operation include:  \n - **SelfInvoicing** – issuing invoices in self-invoicing mode  \n - **TaxRepresentative** – performing tax representative operations  \n - **RRInvoicing** – issuing VAT RR invoices  \n - **PefInvoicing** – issuing PEF invoices  \n\n The response can be filtered based on the following parameters:  \n - **authorizingIdentifier** – identifier of the authorizing entity (used when queryType = Received)  \n - **authorizedIdentifier** – identifier of the authorized entity (used when queryType = Granted)  \n - **permissionTypes** – list of permission types to search for  \n\n#### Result pagination\nThe query returns **one page of results** with the number and size specified in the path.\n- On the first call, set the parameter `pageOffset = 0`.  \n- If a next page of results is available, the **`hasMore`** flag will appear in the response.  \n- In that case, the query can be called again with the next page number.\n\n > More information:\n > - [Retrieving the list of permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-uprawnie%C5%84-podmiotowych-do-obs%C5%82ugi-faktur)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- startDate (Desc)\n- id (Asc)\n\n\n\n**Required permissions**: `CredentialsManage`, `CredentialsRead`, `PefInvoiceWrite`.",
+        "description": " Method allows reading entity permissions:  \n - received by the entity of the current context  \n - granted by the entity of the current context  \n\n Selection of the list of granted or received permissions is done using the **queryType** parameter.  \n\n Permissions returned by the operation include:  \n - **SelfInvoicing** - issuing invoices in self-invoicing mode  \n - **TaxRepresentative** - performing tax representative operations  \n - **RRInvoicing** - issuing VAT RR invoices  \n - **PefInvoicing** - issuing PEF invoices  \n\n Response can be filtered based on the following parameters:  \n - **authorizingIdentifier** - identifier of the authorizing entity (used when queryType = Received)  \n - **authorizedIdentifier** - identifier of the authorized entity (used when queryType = Granted)  \n - **permissionTypes** - list of types of permissions being searched  \n\n#### Pagination\nThe query returns **one page of results** with the number and size specified in the path.\n- For the first call, set the parameter `pageOffset = 0`.  \n- If there is another page of results available, a **`hasMore`** flag will appear in the response.  \n- In such a case, the query can be called again with the next page number.\n\n > More information:\n > - [Retrieving permissions list](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-uprawnie%C5%84-podmiotowych-do-obs%C5%82ugi-faktur)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- startDate (Desc)\n- id (Asc)\n\n**Required one of the following permissions**: `CredentialsManage`, `CredentialsRead`, `PefInvoiceWrite`.",
         "parameters": [
           {
             "name": "pageOffset",
@@ -9849,7 +10436,7 @@
           "Searching granted permissions"
         ],
         "summary": "Retrieving the list of permissions for administrators or representatives of EU entities authorized for self-invoicing",
-        "description": "The method allows reading the permissions of administrators or representatives of EU entities: \n - If the login context is a NIP, it is possible to read the permissions of administrators of EU entities associated with the current context entity, i.e. those for which the first part of the composite context equals the NIP of the login context. \n - If the login context is composite (NIP-VAT UE), it is possible to retrieve all permissions of administrators and representatives of the entity in the current composite context. \n\n Permissions returned by the operation include: \n - **VatUeManage** – managing permissions within the EU entity \n - **InvoiceWrite** – issuing invoices \n - **InvoiceRead** – browsing invoices \n - **Introspection** – browsing session history \n\n The response can be filtered based on the following parameters: \n - **vatUeIdentifier** – EU entity identifier \n - **authorizedFingerprintIdentifier** – certificate fingerprint of the authorized person or entity \n - **permissionTypes** – list of permission types to search for \n\n#### Result pagination\nThe query returns **one page of results** with the number and size specified in the path.\n- On the first call, set the parameter `pageOffset = 0`. \n- If a next page of results is available, the **`hasMore`** flag will appear in the response. \n- In that case, the query can be called again with the next page number.\n \n > More information:\n > - [Retrieving the list of permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-uprawnie%C5%84-administrator%C3%B3w-lub-reprezentant%C3%B3w-podmiot%C3%B3w-unijnych-uprawnionych-do-samofakturowania)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- startDate (Desc)\n- id (Asc)\n\n\n\n**Required permissions**: `CredentialsManage`, `CredentialsRead`, `VatUeManage`.",
+        "description": " The method allows reading permissions of administrators or representatives of EU entities:  \n - If the login context is NIP, it is possible to read the permissions of EU entities related to the current context entity, i.e., those for which the first part of the composite context is equal to the NIP of the login context.  \n - If the login context is composite (NIP-VAT UE), it is possible to retrieve all permissions of administrators and representatives of the entity in the current composite context.  \n\n Permissions returned by the operation include:  \n - **VatUeManage** – managing permissions within the EU entity  \n - **InvoiceWrite** – issuing invoices  \n - **InvoiceRead** – viewing invoices  \n - **Introspection** – viewing session history  \n\n The response can be filtered based on the following parameters:  \n - **vatUeIdentifier** – EU entity identifier  \n - **authorizedFingerprintIdentifier** – fingerprint of the authorized person's or entity's certificate  \n - **permissionTypes** – list of types of permissions being searched  \n\n#### Pagination of results\nThe query returns **one page of results** with the number and size given in the path.\n- On the first call, set the parameter `pageOffset = 0`.  \n- If there is another page of results available, a **`hasMore`** flag will appear in the response.  \n- In such a case, the query can be called again with the next page number.\n \n > More information:\n > - [Retrieving a list of permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-uprawnie%C5%84-administrator%C3%B3w-lub-reprezentant%C3%B3w-podmiot%C3%B3w-unijnych-uprawnionych-do-samofakturowania)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- startDate (Desc)\n- id (Asc)\n\n\n\n**One of the following permissions required**: `CredentialsManage`, `CredentialsRead`, `VatUeManage`.",
         "parameters": [
           {
             "name": "pageOffset",
@@ -10121,6 +10708,7 @@
       "ApiRateLimitsOverride": {
         "required": [
           "batchSession",
+          "collectiveIdentifier",
           "invoiceDownload",
           "invoiceExport",
           "invoiceExportStatus",
@@ -10277,6 +10865,19 @@
               }
             ],
             "description": "Limits for retrieving invoices by KSeF number."
+          },
+          "collectiveIdentifier": {
+            "required": [
+              "perSecond",
+              "perMinute",
+              "perHour"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ApiRateLimitValuesOverride"
+              }
+            ],
+            "description": "Limits for collective identifiers."
           },
           "other": {
             "required": [
@@ -11235,6 +11836,282 @@
           }
         }
       },
+      "CollectiveIdentifierInvoice": {
+        "required": [
+          "ksefNumber"
+        ],
+        "type": "object",
+        "properties": {
+          "ksefNumber": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/KsefNumber"
+              }
+            ],
+            "description": "KSeF invoice number."
+          },
+          "payment": {
+            "required": [
+              "amount",
+              "currency"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CollectiveIdentifierInvoicePayment"
+              }
+            ],
+            "description": "Payment data for the invoice",
+            "nullable": true
+          },
+          "description": {
+            "maxLength": 512,
+            "type": "string",
+            "description": "Description",
+            "nullable": true
+          }
+        }
+      },
+      "CollectiveIdentifierInvoicePayment": {
+        "required": [
+          "amount",
+          "currency"
+        ],
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number",
+            "description": "Payment amount for the invoice.",
+            "format": "double"
+          },
+          "currency": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CurrencyCode"
+              }
+            ],
+            "description": "Currency code."
+          }
+        }
+      },
+      "CollectiveIdentifierInvoicesQueryResponse": {
+        "required": [
+          "invoices"
+        ],
+        "type": "object",
+        "properties": {
+          "continuationToken": {
+            "type": "string",
+            "description": "Token used to retrieve the next page of results. If empty, there are no more pages.",
+            "nullable": true
+          },
+          "invoices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CollectiveIdentifierInvoicesQueryResponseItem"
+            },
+            "description": "List of invoices."
+          }
+        }
+      },
+      "CollectiveIdentifierInvoicesQueryResponseItem": {
+        "required": [
+          "detailsHidden",
+          "ksefNumber"
+        ],
+        "type": "object",
+        "properties": {
+          "ksefNumber": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/KsefNumber"
+              }
+            ],
+            "description": "KSeF invoice number."
+          },
+          "payment": {
+            "required": [
+              "amount",
+              "currency"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CollectiveIdentifierInvoicesQueryResponseItemPayment"
+              }
+            ],
+            "description": "Payment data for the invoice",
+            "nullable": true
+          },
+          "description": {
+            "maxLength": 512,
+            "type": "string",
+            "description": "Description",
+            "nullable": true
+          },
+          "detailsHidden": {
+            "type": "boolean",
+            "description": "Determines whether details information has been hidden due to lack of access to the invoice."
+          }
+        }
+      },
+      "CollectiveIdentifierInvoicesQueryResponseItemPayment": {
+        "required": [
+          "amount",
+          "currency"
+        ],
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number",
+            "description": "Payment amount for the invoice.",
+            "format": "double"
+          },
+          "currency": {
+            "maxLength": 3,
+            "minLength": 3,
+            "type": "string",
+            "description": "Currency code."
+          }
+        }
+      },
+      "CollectiveIdentifiersByKsefNumberQueryResponse": {
+        "required": [
+          "collectiveIdentifiers"
+        ],
+        "type": "object",
+        "properties": {
+          "continuationToken": {
+            "type": "string",
+            "description": "Token used to retrieve the next page of results. If empty, there are no more pages.",
+            "nullable": true
+          },
+          "collectiveIdentifiers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CollectiveIdentifiersByKsefNumberQueryResponseItem"
+            },
+            "description": "List of collective identifiers."
+          }
+        }
+      },
+      "CollectiveIdentifiersByKsefNumberQueryResponseItem": {
+        "required": [
+          "collectiveIdentifierNumber",
+          "createdInCurrentContext",
+          "dateCreated"
+        ],
+        "type": "object",
+        "properties": {
+          "collectiveIdentifierNumber": {
+            "maxLength": 35,
+            "minLength": 35,
+            "type": "string",
+            "description": "Collective identifier number."
+          },
+          "createdInCurrentContext": {
+            "type": "boolean",
+            "description": "Determines whether the collective identifier was generated in the current context."
+          },
+          "dateCreated": {
+            "type": "string",
+            "description": "Date of creation of the collective identifier.",
+            "format": "date-time"
+          }
+        }
+      },
+      "CollectiveIdentifiersQueryRequest": {
+        "required": [
+          "dateCreatedFrom",
+          "dateCreatedTo"
+        ],
+        "type": "object",
+        "properties": {
+          "collectiveIdentifierNumber": {
+            "type": "string",
+            "description": "Collective identifier number.",
+            "nullable": true
+          },
+          "dateCreatedFrom": {
+            "type": "string",
+            "description": "Date of creation of the collective identifier (from), maximum time range is 100 days.",
+            "format": "date-time"
+          },
+          "dateCreatedTo": {
+            "type": "string",
+            "description": "Date of creation of the collective identifier (to).",
+            "format": "date-time"
+          },
+          "invoiceCountFrom": {
+            "type": "integer",
+            "description": "Number of invoices in the collective identifier (from).",
+            "format": "int32",
+            "nullable": true
+          },
+          "invoiceCountTo": {
+            "type": "integer",
+            "description": "Number of invoices in the collective identifier (to).",
+            "format": "int32",
+            "nullable": true
+          },
+          "createdInCurrentContext": {
+            "type": "boolean",
+            "description": "Determines whether the collective identifier was generated in the current context.",
+            "nullable": true
+          }
+        }
+      },
+      "CollectiveIdentifiersQueryResponse": {
+        "required": [
+          "collectiveIdentifiers"
+        ],
+        "type": "object",
+        "properties": {
+          "continuationToken": {
+            "type": "string",
+            "description": "Token used to retrieve the next page of results. If empty, there are no more pages.",
+            "nullable": true
+          },
+          "collectiveIdentifiers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CollectiveIdentifiersQueryResponseItem"
+            },
+            "description": "List of collective identifiers."
+          }
+        }
+      },
+      "CollectiveIdentifiersQueryResponseItem": {
+        "required": [
+          "collectiveIdentifierNumber",
+          "createdInCurrentContext",
+          "dateCreated",
+          "invoiceCount"
+        ],
+        "type": "object",
+        "properties": {
+          "collectiveIdentifierNumber": {
+            "maxLength": 35,
+            "minLength": 35,
+            "type": "string",
+            "description": "Collective identifier number."
+          },
+          "dateCreated": {
+            "type": "string",
+            "description": "Date of creation of the collective identifier.",
+            "format": "date-time"
+          },
+          "invoiceCount": {
+            "minimum": 0,
+            "exclusiveMinimum": true,
+            "type": "integer",
+            "description": "Invoice number making up the collective identifier.",
+            "format": "int32"
+          },
+          "createdInCurrentContext": {
+            "type": "boolean",
+            "description": "Determines whether the collective identifier was generated in the current context."
+          }
+        }
+      },
       "CommonSessionStatus": {
         "enum": [
           "InProgress",
@@ -11467,6 +12344,7 @@
       "EffectiveApiRateLimits": {
         "required": [
           "batchSession",
+          "collectiveIdentifier",
           "invoiceDownload",
           "invoiceExport",
           "invoiceExportStatus",
@@ -11623,6 +12501,19 @@
               }
             ],
             "description": "Limits for retrieving invoices by KSeF number."
+          },
+          "collectiveIdentifier": {
+            "required": [
+              "perSecond",
+              "perMinute",
+              "perHour"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EffectiveApiRateLimitValues"
+              }
+            ],
+            "description": "Limits for collective identifiers"
           },
           "other": {
             "required": [
@@ -13178,6 +14069,35 @@
           }
         }
       },
+      "GenerateCollectiveIdentifierRequest": {
+        "required": [
+          "invoices"
+        ],
+        "type": "object",
+        "properties": {
+          "invoices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CollectiveIdentifierInvoice"
+            },
+            "description": "List of invoices making up the collective identifier. The invoice limit is 500."
+          }
+        }
+      },
+      "GenerateCollectiveIdentifierResponse": {
+        "required": [
+          "collectiveIdentifierNumber"
+        ],
+        "type": "object",
+        "properties": {
+          "collectiveIdentifierNumber": {
+            "maxLength": 35,
+            "minLength": 35,
+            "type": "string",
+            "description": "Generated collective identifier"
+          }
+        }
+      },
       "GenerateTokenRequest": {
         "required": [
           "description",
@@ -14331,7 +15251,7 @@
         "minLength": 35,
         "pattern": "^([1-9](\\d[1-9]|[1-9]\\d)\\d{7})-(20[2-9][0-9]|2[1-9]\\d{2}|[3-9]\\d{3})(0[1-9]|1[0-2])(0[1-9]|[12]\\d|3[01])-([0-9A-F]{6})-?([0-9A-F]{6})-([0-9A-F]{2})$",
         "type": "string",
-        "description": "A KSeF number of 36 characters is accepted to maintain backward compatibility with KSeF 1.0. In KSeF 2.0, numbers are generated exclusively in 35-character format."
+        "description": "A 36-character KSeF number is accepted to maintain backward compatibility with KSeF 1.0. In KSeF 2.0, numbers are generated exclusively in a 35-character format."
       },
       "Nip": {
         "maxLength": 10,
@@ -15172,7 +16092,8 @@
           "InvoiceRead",
           "Introspection",
           "SubunitManage",
-          "EnforcementOperations"
+          "EnforcementOperations",
+          "CollectiveIdentifierManage"
         ],
         "type": "string"
       },
@@ -15251,7 +16172,8 @@
           "InvoiceRead",
           "Introspection",
           "SubunitManage",
-          "EnforcementOperations"
+          "EnforcementOperations",
+          "CollectiveIdentifierManage"
         ],
         "type": "string"
       },
@@ -15706,7 +16628,8 @@
           "Introspection",
           "SubunitManage",
           "EnforcementOperations",
-          "VatUeManage"
+          "VatUeManage",
+          "CollectiveIdentifierManage"
         ],
         "type": "string"
       },
@@ -15719,7 +16642,8 @@
           "Introspection",
           "SubunitManage",
           "EnforcementOperations",
-          "VatUeManage"
+          "VatUeManage",
+          "CollectiveIdentifierManage"
         ],
         "type": "string"
       },
@@ -16782,6 +17706,7 @@
               "invoiceExport",
               "invoiceExportStatus",
               "invoiceDownload",
+              "collectiveIdentifier",
               "other"
             ],
             "allOf": [
@@ -17410,7 +18335,7 @@
       },
       "SystemWarning": {
         "type": "string",
-        "description": "Technical warning for the integrator system. The warning does not affect the current operation result. The header value is normalized using ASCII folding.\n\nFormat:\n`[code]: message | [code]: message`\n\nSingle warning regex: `\\[(?<code>[^\\]]+)\\]: (?<message>[^|]+)`<br/><br/>\nWarning generation can be forced by passing the header:\n    `X-Test-System-Warning`, whose content will be returned in the response."
+        "description": "Technical warning for the integrator system. The warning does not affect the current operation result. The header value is normalized using ASCII folding.\n\nFormat:\n`[code]: message | [code]: message`\n\nRegex for a single warning: `\\[(?<code>[^\\]]+)\\]: (?<message>[^|]+)`"
       },
       "TestDataAuthenticationContextIdentifier": {
         "required": [
@@ -17525,7 +18450,8 @@
           "CredentialsRead",
           "CredentialsManage",
           "EnforcementOperations",
-          "SubunitManage"
+          "SubunitManage",
+          "CollectiveIdentifierManage"
         ],
         "type": "string"
       },
@@ -17595,6 +18521,19 @@
                 "$ref": "#/components/schemas/TestDataAuthorizedIdentifier"
               }
             ]
+          }
+        }
+      },
+      "TestDataUpdateCertificateRequest": {
+        "required": [
+          "validTo"
+        ],
+        "type": "object",
+        "properties": {
+          "validTo": {
+            "type": "string",
+            "description": "New certificate expiration date, cannot be later than the current one.",
+            "format": "date-time"
           }
         }
       },
@@ -17696,7 +18635,8 @@
           "CredentialsManage",
           "SubunitManage",
           "EnforcementOperations",
-          "Introspection"
+          "Introspection",
+          "CollectiveIdentifierManage"
         ],
         "type": "string"
       },
@@ -18010,6 +18950,9 @@
       "description": "The API is used to create and manage test data, such as entities, natural persons, and permissions. The types of entities that can be created include: enforcement authority, VAT group, and local government units. For natural persons, it is possible to specify whether a given person is a bailiff. The functionality for granting and revoking permissions is intended to replicate the behavior of the ZAW-FA form in the test environment.\n\nMore information:\n- [Test scenarios](https://github.com/CIRFMF/ksef-api/blob/main/dane-testowe-scenariusze.md)"
     },
     {
+      "name": "Collective identifiers"
+    },
+    {
       "name": "Limits and restrictions"
     },
     {
@@ -18098,6 +19041,12 @@
       "name": "KSeF tokens",
       "tags": [
         "KSeF tokens"
+      ]
+    },
+    {
+      "name": "Collective identifiers",
+      "tags": [
+        "Collective identifiers"
       ]
     },
     {
