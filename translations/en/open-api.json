@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "KSeF API TE",
-    "description": "**API Version:** 2.7.0 (build 2.7.0-te)<br>\n**Public Keys** of the Ministry of Finance (for the given environment): [Download keys](#tag/Certyfikaty-klucza-publicznego)<br>\n**Changelog:** [Changelog](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)<br>\n**Extended API documentation:** [ksef-docs](https://github.com/CIRFMF/ksef-docs/tree/main)\n\n**API Server Address:**\n- TEST Environment: `https://api-test.ksef.mf.gov.pl/v2`",
+    "description": "**API Version:** 2.7.1 (build 2.7.1-te)<br>\n**Public Keys** of the Ministry of Finance (for the given environment): [Download keys](#tag/Certyfikaty-klucza-publicznego)<br>\n**Changelog:** [Changelog](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)<br>\n**Extended API documentation:** [ksef-docs](https://github.com/CIRFMF/ksef-docs/tree/main)\n\n**API Server Address:**\n- TEST Environment: `https://api-test.ksef.mf.gov.pl/v2`",
     "version": "v2"
   },
   "servers": [
@@ -2294,7 +2294,7 @@
           "Collective identifiers"
         ],
         "summary": "Collective identifier generation",
-        "description": "Generates a collective identifier for a list of KSeF invoice numbers\nissued by the same seller.\n\nThe maximum number of invoices assigned to one collective identifier is 500.\nOne invoice can be assigned to a maximum of 132 collective identifiers\nwithin one context.\n            \nThe collective identifier has the format:\n`9999999999-IZRRRRMM-FFFFFFFFFFFF-FF`, where:\n- `9999999999` – 10-digit NIP of the seller,\n- `IZ` – fixed prefix,\n- `RRRRMM` – year and month of creation,\n- `FFFFFFFFFFFF` – technical part consisting of 12 characters in hexadecimal notation, only [0–9 A–F], uppercase letters,\n- `FF` – CRC-8 checksum - 2 characters in hexadecimal notation, only [0–9 A–F], uppercase letters.\n            \nThe CRC-8 algorithm with the following parameters is used to calculate the checksum:\n- Polynomial: 0x07\n- Initial value: 0x00\n- Result format: 2-character hexadecimal notation (HEX, uppercase letters)\n\nExample:\n`1111111111-IZ202607-65ED02180000-E7`.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**One of the following permissions is required**: `InvoiceRead`, `InvoiceWrite`, `CollectiveIdentifierManage`.",
+        "description": "Generates a collective identifier for the provided list of KSeF invoice numbers\nissued by the same seller.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required one of the permissions**: `InvoiceRead`, `InvoiceWrite`, `CollectiveIdentifierManage`.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2305,6 +2305,26 @@
                 "allOf": [
                   {
                     "$ref": "#/components/schemas/GenerateCollectiveIdentifierRequest"
+                  }
+                ]
+              },
+              "example": {
+                "invoices": [
+                  {
+                    "ksefNumber": "1111111111-20260612-6310EC800000-DA",
+                    "payment": {
+                      "amount": 100,
+                      "currency": "PLN"
+                    },
+                    "description": "Invoice description 1"
+                  },
+                  {
+                    "ksefNumber": "1111111111-20260612-62EAFD400000-B3",
+                    "payment": {
+                      "amount": 45,
+                      "currency": "PLN"
+                    },
+                    "description": "Invoice description 2"
                   }
                 ]
               }
@@ -2325,6 +2345,9 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/GenerateCollectiveIdentifierResponse"
+                },
+                "example": {
+                  "collectiveIdentifierNumber": "1111111111-IZ202607-65ED02180000-E7"
                 }
               }
             }
@@ -2366,7 +2389,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | grupa\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 60 | 120 | collectiveIdentifier",
+            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request limits** | 20 | 120 | 240 | collectiveIdentifier",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -2395,9 +2418,9 @@
           }
         ],
         "x-rate-limits": {
-          "perSecond": 10,
-          "perMinute": 60,
-          "perHour": 120
+          "perSecond": 20,
+          "perMinute": 120,
+          "perHour": 240
         },
         "x-required-permissions": [
           "InvoiceRead",
@@ -2447,6 +2470,13 @@
                     "$ref": "#/components/schemas/CollectiveIdentifiersQueryRequest"
                   }
                 ]
+              },
+              "example": {
+                "collectiveIdentifierNumber": "1111111111-IZ202607-65ED02180000-E7",
+                "dateCreatedFrom": "2026-07-10T12:00:00+02:00",
+                "dateCreatedTo": "2026-08-10T12:00:00+02:00",
+                "invoiceCountFrom": 10,
+                "invoiceCountTo": 100
               }
             }
           }
@@ -2465,6 +2495,17 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CollectiveIdentifiersQueryResponse"
+                },
+                "example": {
+                  "continuationToken": "eyJEYXRlQ3JlYXRlZCI6IjIwMjYtMDctMjBUMDE6MTM6MTMuMTYzOTQ3KzAwOjAwIiwiQ29sbGVjdGl2ZUlkZW50aWZpZXJOdW1iZXIiOiI4NjMxOTQxNTc4LUlaMjAyNjA3LTMyM0I1MjE4NDAwMC1DRCJ9",
+                  "collectiveIdentifiers": [
+                    {
+                      "collectiveIdentifierNumber": "1111111111-IZ202607-65ED02180000-E7",
+                      "dateCreated": "2026-07-10T12:00:00+02:00",
+                      "invoiceCount": 16,
+                      "createdInCurrentContext": true
+                    }
+                  ]
                 }
               }
             }
@@ -2504,6 +2545,29 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request limits** | 20 | 120 | 240 | collectiveIdentifier",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetryAfter"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Too Many Requests"
           }
         },
         "security": [
@@ -2511,6 +2575,11 @@
             "Bearer": []
           }
         ],
+        "x-rate-limits": {
+          "perSecond": 20,
+          "perMinute": 120,
+          "perHour": 240
+        },
         "x-sort": [
           {
             "field": "dateCreated",
@@ -2528,22 +2597,14 @@
         ]
       }
     },
-    "/collective-identifiers/{collectiveIdentifierNumber}/invoices": {
-      "get": {
+    "/collective-identifiers/invoices": {
+      "post": {
         "tags": [
           "Collective identifiers"
         ],
         "summary": "Retrieval of a list of invoices that make up a collective identifier",
-        "description": "Returns a list of KSeF invoice numbers that make up the collective identifier.\n            \nInformation about the payment amount and currency is returned only to the entity that created the collective identifier or to the entity appearing in the role on the given invoice.\n\nIf the payment amount and currency were specified during the creation of the collective identifier and the entity does not have access to this information, the fields related to the payment amount and currency are not returned, and the <b>paymentDetailsHidden</b> field takes the value <b>true</b>.\n\nIf the payment amount and currency were not specified during the creation of the collective identifier, their values remain empty, and the <b>paymentDetailsHidden</b> field takes the value <b>false</b>.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- ksefNumber (Desc)\n\n\n\n**Required one of the permissions**: `InvoiceRead`, `InvoiceWrite`, `CollectiveIdentifierManage`.",
+        "description": "Returns a list of KSeF invoice numbers that make up the collective identifier.\n            \nInformation about the payment amount and currency is returned only to the entity that created the collective identifier, or to the entity acting in the role on the given invoice.\n\nIf the payment amount and currency were specified when creating the collective identifier, and the entity does not have access to this information, the fields related to the payment amount and currency are not returned, and the <b>detailsHidden</b> field takes the value <b>true</b>.\n\nIf the payment amount and currency were not specified when creating the collective identifier, their values remain empty, and the <b>detailsHidden</b> field takes the value <b>false</b>.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- ksefNumber (Desc)\n\n\n\n**Required one of the permissions**: `InvoiceRead`, `InvoiceWrite`, `CollectiveIdentifierManage`.",
         "parameters": [
-          {
-            "name": "collectiveIdentifierNumber",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "x-continuation-token",
             "in": "header",
@@ -2556,7 +2617,7 @@
             "name": "pageSize",
             "in": "query",
             "schema": {
-              "maximum": 200,
+              "maximum": 500,
               "minimum": 10,
               "type": "integer",
               "format": "int32",
@@ -2564,6 +2625,22 @@
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "collectiveIdentifierNumbers"
+                ],
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CollectiveIdentifierInvoicesQueryRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK",
@@ -2578,6 +2655,29 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CollectiveIdentifierInvoicesQueryResponse"
+                },
+                "example": {
+                  "continuationToken": "eyJEYXRlQ3JlYXRlZCI6IjIwMjYtMDctMjBUMDE6MTM6MTMuMTYzOTQ3KzAwOjAwIiwiQ29sbGVjdGl2ZUlkZW50aWZpZXJOdW1iZXIiOiI4NjMxOTQxNTc4LUlaMjAyNjA3LTMyM0I1MjE4NDAwMC1DRCJ9",
+                  "invoices": [
+                    {
+                      "ksefNumber": "1111111111-20260612-6310EC800000-DA",
+                      "payment": {
+                        "amount": 100,
+                        "currency": "PLN"
+                      },
+                      "description": "Invoice description 1",
+                      "detailsHidden": false
+                    },
+                    {
+                      "ksefNumber": "1111111111-20260612-62EAFD400000-B3",
+                      "payment": {
+                        "amount": 45,
+                        "currency": "PLN"
+                      },
+                      "description": "Invoice description 2",
+                      "detailsHidden": false
+                    }
+                  ]
                 }
               }
             }
@@ -2617,6 +2717,29 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request limits** | 20 | 120 | 240 | collectiveIdentifier",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetryAfter"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Too Many Requests"
           }
         },
         "security": [
@@ -2624,6 +2747,11 @@
             "Bearer": []
           }
         ],
+        "x-rate-limits": {
+          "perSecond": 20,
+          "perMinute": 120,
+          "perHour": 240
+        },
         "x-sort": [
           {
             "field": "ksefNumber",
@@ -2687,6 +2815,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CollectiveIdentifiersByKsefNumberQueryResponse"
+                },
+                "example": {
+                  "continuationToken": "eyJEYXRlQ3JlYXRlZCI6IjIwMjYtMDctMjBUMDE6MTM6MTMuMTYzOTQ3KzAwOjAwIiwiQ29sbGVjdGl2ZUlkZW50aWZpZXJOdW1iZXIiOiI4NjMxOTQxNTc4LUlaMjAyNjA3LTMyM0I1MjE4NDAwMC1DRCJ9",
+                  "collectiveIdentifiers": [
+                    {
+                      "collectiveIdentifierNumber": "1111111111-IZ202607-65ED02180000-E7",
+                      "createdInCurrentContext": false,
+                      "dateCreated": "2026-07-10T12:00:00+02:00"
+                    }
+                  ]
                 }
               }
             }
@@ -2726,6 +2864,29 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request limits** | 20 | 120 | 240 | collectiveIdentifier",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetryAfter"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Too Many Requests"
           }
         },
         "security": [
@@ -2733,6 +2894,11 @@
             "Bearer": []
           }
         ],
+        "x-rate-limits": {
+          "perSecond": 20,
+          "perMinute": 120,
+          "perHour": 240
+        },
         "x-sort": [
           {
             "field": "dateCreated",
@@ -2782,6 +2948,9 @@
                     "maxInvoiceSizeInMB": 1,
                     "maxInvoiceWithAttachmentSizeInMB": 3,
                     "maxInvoices": 10000
+                  },
+                  "collectiveIdentifier": {
+                    "maxInvoices": 500
                   }
                 }
               }
@@ -3043,9 +3212,9 @@
                     "perHour": 64
                   },
                   "collectiveIdentifier": {
-                    "perSecond": 10,
-                    "perMinute": 60,
-                    "perHour": 120
+                    "perSecond": 20,
+                    "perMinute": 120,
+                    "perHour": 240
                   },
                   "other": {
                     "perSecond": 10,
@@ -3141,7 +3310,8 @@
               "schema": {
                 "required": [
                   "onlineSession",
-                  "batchSession"
+                  "batchSession",
+                  "collectiveIdentifier"
                 ],
                 "allOf": [
                   {
@@ -5857,7 +6027,8 @@
                     ],
                     "isTruncated": true,
                     "lastPermanentStorageDate": "2025-09-11T11:40:40.266578+00:00",
-                    "permanentStorageHwmDate": "2025-09-11T12:00:40.266578+00:00"
+                    "permanentStorageHwmDate": "2025-09-11T12:00:40.266578+00:00",
+                    "compressionType": "Zip"
                   }
                 }
               }
@@ -11836,6 +12007,35 @@
           }
         }
       },
+      "CollectiveIdentifierContextLimitsOverride": {
+        "required": [
+          "maxInvoices"
+        ],
+        "type": "object",
+        "properties": {
+          "maxInvoices": {
+            "maximum": 5000,
+            "minimum": 2,
+            "type": "integer",
+            "description": "Maximum number of invoices that can be sent in a single collective identifier.",
+            "format": "int32"
+          }
+        }
+      },
+      "CollectiveIdentifierEffectiveContextLimits": {
+        "required": [
+          "maxInvoices"
+        ],
+        "type": "object",
+        "properties": {
+          "maxInvoices": {
+            "minimum": 2,
+            "type": "integer",
+            "description": "Maximum number of invoices that can be sent in a single collective identifier.",
+            "format": "int32"
+          }
+        }
+      },
       "CollectiveIdentifierInvoice": {
         "required": [
           "ksefNumber"
@@ -11848,7 +12048,7 @@
                 "$ref": "#/components/schemas/KsefNumber"
               }
             ],
-            "description": "KSeF invoice number."
+            "description": "KSeF invoice number.\n\nOne invoice can be assigned to a maximum of 132 collective identifiers within one context."
           },
           "payment": {
             "required": [
@@ -11893,6 +12093,21 @@
           }
         }
       },
+      "CollectiveIdentifierInvoicesQueryRequest": {
+        "required": [
+          "collectiveIdentifierNumbers"
+        ],
+        "type": "object",
+        "properties": {
+          "collectiveIdentifierNumbers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Collective identifier numbers. Maximum number is 10."
+          }
+        }
+      },
       "CollectiveIdentifierInvoicesQueryResponse": {
         "required": [
           "invoices"
@@ -11915,6 +12130,7 @@
       },
       "CollectiveIdentifierInvoicesQueryResponseItem": {
         "required": [
+          "collectiveIdentifierNumber",
           "detailsHidden",
           "ksefNumber"
         ],
@@ -11927,6 +12143,10 @@
               }
             ],
             "description": "KSeF invoice number."
+          },
+          "collectiveIdentifierNumber": {
+            "type": "string",
+            "description": "Collective identifier number."
           },
           "payment": {
             "required": [
@@ -12533,6 +12753,7 @@
       "EffectiveContextLimits": {
         "required": [
           "batchSession",
+          "collectiveIdentifier",
           "onlineSession"
         ],
         "type": "object",
@@ -12562,6 +12783,17 @@
               }
             ],
             "description": "Limits for batch sessions."
+          },
+          "collectiveIdentifier": {
+            "required": [
+              "maxInvoices"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CollectiveIdentifierEffectiveContextLimits"
+              }
+            ],
+            "description": "Limits for collective identifiers."
           }
         }
       },
@@ -14076,11 +14308,12 @@
         "type": "object",
         "properties": {
           "invoices": {
+            "minItems": 2,
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/CollectiveIdentifierInvoice"
             },
-            "description": "List of invoices making up the collective identifier. The invoice limit is 500."
+            "description": "List of invoices that make up the collective identifier. The default [limit](https://github.com/CIRFMF/ksef-api/blob/main/limity/limity.md) for invoices is 500."
           }
         }
       },
@@ -14094,7 +14327,7 @@
             "maxLength": 35,
             "minLength": 35,
             "type": "string",
-            "description": "Generated collective identifier"
+            "description": "Generated collective identifier\n\nThe collective identifier has the format:\n`9999999999-IZRRRRMM-FFFFFFFFFFFF-FF`, where:\n- `9999999999` – 10-digit NIP of the seller,\n- `IZ` – constant prefix,\n- `RRRRMM` – year and month of creation,\n- `FFFFFFFFFFFF` – technical part consisting of 12 characters in hexadecimal notation, only [0–9 A–F], uppercase,\n- `FF` – CRC-8 checksum - 2 characters in hexadecimal notation, only [0–9 A–F], uppercase.\n            \nThe CRC-8 algorithm is used to calculate the checksum with the following parameters:\n- Polynomial: 0x07\n- Initial value: 0x00\n- Result format: 2-character hexadecimal notation (HEX, uppercase)\n\nExample:\n`1111111111-IZ202607-65ED02180000-E7`."
           }
         }
       },
@@ -14475,7 +14708,8 @@
               "invoiceCount",
               "size",
               "parts",
-              "isTruncated"
+              "isTruncated",
+              "compressionType"
             ],
             "allOf": [
               {
@@ -14813,6 +15047,7 @@
       },
       "InvoicePackage": {
         "required": [
+          "compressionType",
           "invoiceCount",
           "isTruncated",
           "parts",
@@ -14867,6 +15102,13 @@
             "description": "Applies only to queries filtered by date type <b>PermanentStorage</b>.\nIf the query concerned the most recent period, this value may be slightly adjusted relative to the upper bound specified in the query conditions.\nFor older periods, it will match the query conditions.\n\nThe system guarantees that data below this value is consistent and complete.\nRepeated queries covering data below this rolling timestamp will not return different results in the future (e.g. additional invoices).\n\nFor dateType = Issue or Invoicing – null.",
             "format": "date-time",
             "nullable": true
+          },
+          "compressionType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CompressionType"
+              }
+            ]
           }
         }
       },
@@ -15062,7 +15304,7 @@
                 "$ref": "#/components/schemas/InvoiceQueryDateRange"
               }
             ],
-            "description": "Type and date range by which invoices are filtered.\nThe maximum allowed period is 3 months in the UTC zone or in the Europe/Warsaw (WAW) zone.\n            \nDate format:\n * Dates must be provided in ISO 8601 format, e.g. `yyyy-MM-ddTHH:mm:ss`.\n * The following variants are accepted:\n   - with the `Z` suffix (UTC time),\n   - with an explicit offset, e.g. `+01:00`, `+03:00`,\n   - without an offset (interpreted as local time in the Europe/Warsaw zone)."
+            "description": "Type and date range used to filter invoices.\nThe maximum allowed period is 100 days in the UTC zone.\n            \nDate format:\n * Dates must be provided in ISO 8601 format, e.g., `yyyy-MM-ddTHH:mm:ss`.\n * The following variants are acceptable:\n   - with the `Z` suffix (UTC time),\n   - with an explicit offset, e.g., `+01:00`, `+03:00`"
           },
           "ksefNumber": {
             "allOf": [
@@ -17721,6 +17963,7 @@
       "SetSessionLimitsRequest": {
         "required": [
           "batchSession",
+          "collectiveIdentifier",
           "onlineSession"
         ],
         "type": "object",
@@ -17750,6 +17993,17 @@
               }
             ],
             "description": "Limits for batch sessions."
+          },
+          "collectiveIdentifier": {
+            "required": [
+              "maxInvoices"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CollectiveIdentifierContextLimitsOverride"
+              }
+            ],
+            "description": "Limits for collective identifiers."
           }
         }
       },
@@ -18335,7 +18589,7 @@
       },
       "SystemWarning": {
         "type": "string",
-        "description": "Technical warning for the integrator system. The warning does not affect the current operation result. The header value is normalized using ASCII folding.\n\nFormat:\n`[code]: message | [code]: message`\n\nRegex for a single warning: `\\[(?<code>[^\\]]+)\\]: (?<message>[^|]+)`"
+        "description": "Technical warning for the integrator system. The warning does not affect the current result of the operation. The header value is normalized using ASCII folding.\n\nFormat:\n`[code]: message | [code]: message`\n\nSingle warning regex: `\\[(?<code>[^\\]]+)\\]: (?<message>[^|]+)`<br/><br/>\nTo test warning handling, you can provide the `X-Test-System-Warning` header. Its content will be returned in the response as `X-System-Warning`."
       },
       "TestDataAuthenticationContextIdentifier": {
         "required": [

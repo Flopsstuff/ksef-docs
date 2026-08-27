@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "KSeF API TE",
-    "description": "**Версія API:** 2.7.0 (build 2.7.0-te)<br>\n**Публічні ключі** Міністерства фінансів (для даного середовища): [Завантажити ключі](#tag/Certyfikaty-klucza-publicznego)<br>\n**Історія змін:** [Changelog](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)<br>\n**Розширена документація API:** [ksef-docs](https://github.com/CIRFMF/ksef-docs/tree/main)\n\n**Адреса сервера API:**\n- Тестове середовище: `https://api-test.ksef.mf.gov.pl/v2`",
+    "description": "**Версія API:** 2.7.1 (build 2.7.1-te)<br>\n**Публічні ключі** Міністерства фінансів (для даного середовища): [Завантажити ключі](#tag/Certyfikaty-klucza-publicznego)<br>\n**Історія змін:** [Changelog](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)<br>\n**Розширена документація API:** [ksef-docs](https://github.com/CIRFMF/ksef-docs/tree/main)\n\n**Адреса сервера API:**\n- Тестове середовище: `https://api-test.ksef.mf.gov.pl/v2`",
     "version": "v2"
   },
   "servers": [
@@ -2294,7 +2294,7 @@
           "Збірні ідентифікатори"
         ],
         "summary": "Генерація колективного ідентифікатора",
-        "description": "Генерує колективний ідентифікатор для переданого списку номерів KSeF рахунків-фактур\nвиставлених тим самим продавцем.\n\nМаксимальна кількість рахунків-фактур, призначених одному колективному ідентифікатору, становить 500.\nОдин рахунок-фактура може бути призначений максимум 132 колективним ідентифікаторам\nв межах одного контексту.\n            \nКолективний ідентифікатор має формат:\n`9999999999-IZRRRRMM-FFFFFFFFFFFF-FF`, де:\n- `9999999999` – 10-значний NIP продавця,\n- `IZ` – фіксований префікс,\n- `RRRRMM` – рік і місяць створення,\n- `FFFFFFFFFFFF` – технічна частина, що складається з 12 символів у шістнадцятковому записі, тільки [0–9 A–F], великі літери,\n- `FF` – контрольна сума CRC-8 - 2 символи у шістнадцятковому записі, тільки [0–9 A–F], великі літери.\n            \nДля розрахунку контрольної суми використовується алгоритм CRC-8 з параметрами:\n- Поліном: 0x07\n- Початкове значення: 0x00\n- Формат результату: 2-символьний шістнадцятковий запис(HEX, великі літери)\n\nПриклад:\n`1111111111-IZ202607-65ED02180000-E7`.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - встановлення цього заголовка призводить до повернення помилок у форматі **Problem Details** (`application/problem+json`).\n\n**Потрібне одне з дозволів**: `InvoiceRead`, `InvoiceWrite`, `CollectiveIdentifierManage`.",
+        "description": "Генерує збірний ідентифікатор для переданого списку номерів KSeF рахунків-фактур\nвиставлених тим самим продавцем.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - встановлення цього заголовка призводить до повернення помилок у форматі **Problem Details** (`application/problem+json`).\n\n**Потрібне одне з дозволів**: `InvoiceRead`, `InvoiceWrite`, `CollectiveIdentifierManage`.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2305,6 +2305,26 @@
                 "allOf": [
                   {
                     "$ref": "#/components/schemas/GenerateCollectiveIdentifierRequest"
+                  }
+                ]
+              },
+              "example": {
+                "invoices": [
+                  {
+                    "ksefNumber": "1111111111-20260612-6310EC800000-DA",
+                    "payment": {
+                      "amount": 100,
+                      "currency": "PLN"
+                    },
+                    "description": "Опис рахунка-фактури 1"
+                  },
+                  {
+                    "ksefNumber": "1111111111-20260612-62EAFD400000-B3",
+                    "payment": {
+                      "amount": 45,
+                      "currency": "PLN"
+                    },
+                    "description": "Опис рахунка-фактури 2"
                   }
                 ]
               }
@@ -2325,6 +2345,9 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/GenerateCollectiveIdentifierResponse"
+                },
+                "example": {
+                  "collectiveIdentifierNumber": "1111111111-IZ202607-65ED02180000-E7"
                 }
               }
             }
@@ -2366,7 +2389,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | grupa\n| --- | --- | --- | --- | --- |\n| **Ліміти кількості запитів** | 10 | 60 | 120 | collectiveIdentifier",
+            "description": "| | запитів/с | запитів/хв | запитів/год | група\n| --- | --- | --- | --- | --- |\n| **Ліміти кількості запитів** | 20 | 120 | 240 | collectiveIdentifier",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -2395,9 +2418,9 @@
           }
         ],
         "x-rate-limits": {
-          "perSecond": 10,
-          "perMinute": 60,
-          "perHour": 120
+          "perSecond": 20,
+          "perMinute": 120,
+          "perHour": 240
         },
         "x-required-permissions": [
           "InvoiceRead",
@@ -2447,6 +2470,13 @@
                     "$ref": "#/components/schemas/CollectiveIdentifiersQueryRequest"
                   }
                 ]
+              },
+              "example": {
+                "collectiveIdentifierNumber": "1111111111-IZ202607-65ED02180000-E7",
+                "dateCreatedFrom": "2026-07-10T12:00:00+02:00",
+                "dateCreatedTo": "2026-08-10T12:00:00+02:00",
+                "invoiceCountFrom": 10,
+                "invoiceCountTo": 100
               }
             }
           }
@@ -2465,6 +2495,17 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CollectiveIdentifiersQueryResponse"
+                },
+                "example": {
+                  "continuationToken": "eyJEYXRlQ3JlYXRlZCI6IjIwMjYtMDctMjBUMDE6MTM6MTMuMTYzOTQ3KzAwOjAwIiwiQ29sbGVjdGl2ZUlkZW50aWZpZXJOdW1iZXIiOiI4NjMxOTQxNTc4LUlaMjAyNjA3LTMyM0I1MjE4NDAwMC1DRCJ9",
+                  "collectiveIdentifiers": [
+                    {
+                      "collectiveIdentifierNumber": "1111111111-IZ202607-65ED02180000-E7",
+                      "dateCreated": "2026-07-10T12:00:00+02:00",
+                      "invoiceCount": 16,
+                      "createdInCurrentContext": true
+                    }
+                  ]
                 }
               }
             }
@@ -2504,6 +2545,29 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "| | запитів/с | запитів/хв | запитів/год | група\n| --- | --- | --- | --- | --- |\n| **Ліміти кількості запитів** | 20 | 120 | 240 | collectiveIdentifier",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetryAfter"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Too Many Requests"
           }
         },
         "security": [
@@ -2511,6 +2575,11 @@
             "Bearer": []
           }
         ],
+        "x-rate-limits": {
+          "perSecond": 20,
+          "perMinute": 120,
+          "perHour": 240
+        },
         "x-sort": [
           {
             "field": "dateCreated",
@@ -2528,22 +2597,14 @@
         ]
       }
     },
-    "/collective-identifiers/{collectiveIdentifierNumber}/invoices": {
-      "get": {
+    "/collective-identifiers/invoices": {
+      "post": {
         "tags": [
           "Збірні ідентифікатори"
         ],
         "summary": "Отримання списку рахунків-фактур, що входять до складу збірного ідентифікатора",
-        "description": "Повертає список номерів KSeF рахунків-фактур, що входять до складу збірного ідентифікатора.\n            \nІнформація про суму та валюту платежу повертається лише суб'єкту, який створив збірний ідентифікатор, або суб'єкту, який виступає в ролі на даному рахунку-фактурі.\n\nЯкщо сума та валюта платежа були визначені під час створення збірного ідентифікатора, а суб'єкт не має доступу до цієї інформації, поля, що стосуються суми та валюти платежу, не повертаються, а поле <b>paymentDetailsHidden</b> приймає значення <b>true</b>.\n\nЯкщо сума та валюта платежа не були визначені під час створення збірного ідентифікатора, їх значення залишаються порожніми, а поле <b>paymentDetailsHidden</b> приймає значення <b>false</b>.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - встановлення цього заголовка призводить до повернення помилок у форматі **Problem Details** (`application/problem+json`).\n\n**Sortowanie:**\n\n- ksefNumber (Desc)\n\n\n\n**Необхідне одне з дозволів**: `InvoiceRead`, `InvoiceWrite`, `CollectiveIdentifierManage`.",
+        "description": "Повертає список номерів KSeF рахунків-фактур, що входять до складу збірного ідентифікатора.\n            \nІнформація про суму та валюту платежу повертається лише суб'єкту, який створив збірний ідентифікатор, або суб'єкту, що виступає в ролі на даному рахунку-фактурі.\n\nЯкщо сума та валюта платежу були визначені під час створення збірного ідентифікатора, а суб'єкт не має доступу до цієї інформації, поля, що стосуються суми та валюти платежу, не повертаються, а поле <b>detailsHidden</b> приймає значення <b>true</b>.\n\nЯкщо сума та валюта платежу не були визначені під час створення збірного ідентифікатора, їх значення залишаються порожніми, а поле <b>detailsHidden</b> приймає значення <b>false</b>.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - встановлення цього заголовка призводить до повернення помилок у форматі **Problem Details** (`application/problem+json`).\n\n**Сортування:**\n\n- ksefNumber (Desc)\n\n\n\n**Потрібне одне з дозволів**: `InvoiceRead`, `InvoiceWrite`, `CollectiveIdentifierManage`.",
         "parameters": [
-          {
-            "name": "collectiveIdentifierNumber",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "x-continuation-token",
             "in": "header",
@@ -2556,7 +2617,7 @@
             "name": "pageSize",
             "in": "query",
             "schema": {
-              "maximum": 200,
+              "maximum": 500,
               "minimum": 10,
               "type": "integer",
               "format": "int32",
@@ -2564,6 +2625,22 @@
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "collectiveIdentifierNumbers"
+                ],
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CollectiveIdentifierInvoicesQueryRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK",
@@ -2578,6 +2655,29 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CollectiveIdentifierInvoicesQueryResponse"
+                },
+                "example": {
+                  "continuationToken": "eyJEYXRlQ3JlYXRlZCI6IjIwMjYtMDctMjBUMDE6MTM6MTMuMTYzOTQ3KzAwOjAwIiwiQ29sbGVjdGl2ZUlkZW50aWZpZXJOdW1iZXIiOiI4NjMxOTQxNTc4LUlaMjAyNjA3LTMyM0I1MjE4NDAwMC1DRCJ9",
+                  "invoices": [
+                    {
+                      "ksefNumber": "1111111111-20260612-6310EC800000-DA",
+                      "payment": {
+                        "amount": 100,
+                        "currency": "PLN"
+                      },
+                      "description": "Опис рахунка-фактури 1",
+                      "detailsHidden": false
+                    },
+                    {
+                      "ksefNumber": "1111111111-20260612-62EAFD400000-B3",
+                      "payment": {
+                        "amount": 45,
+                        "currency": "PLN"
+                      },
+                      "description": "Опис рахунка-фактури 2",
+                      "detailsHidden": false
+                    }
+                  ]
                 }
               }
             }
@@ -2617,6 +2717,29 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "| | запитів/с | запитів/хв | запитів/год | група\n| --- | --- | --- | --- | --- |\n| **Ліміти кількості запитів** | 20 | 120 | 240 | collectiveIdentifier",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetryAfter"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Too Many Requests"
           }
         },
         "security": [
@@ -2624,6 +2747,11 @@
             "Bearer": []
           }
         ],
+        "x-rate-limits": {
+          "perSecond": 20,
+          "perMinute": 120,
+          "perHour": 240
+        },
         "x-sort": [
           {
             "field": "ksefNumber",
@@ -2687,6 +2815,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CollectiveIdentifiersByKsefNumberQueryResponse"
+                },
+                "example": {
+                  "continuationToken": "eyJEYXRlQ3JlYXRlZCI6IjIwMjYtMDctMjBUMDE6MTM6MTMuMTYzOTQ3KzAwOjAwIiwiQ29sbGVjdGl2ZUlkZW50aWZpZXJOdW1iZXIiOiI4NjMxOTQxNTc4LUlaMjAyNjA3LTMyM0I1MjE4NDAwMC1DRCJ9",
+                  "collectiveIdentifiers": [
+                    {
+                      "collectiveIdentifierNumber": "1111111111-IZ202607-65ED02180000-E7",
+                      "createdInCurrentContext": false,
+                      "dateCreated": "2026-07-10T12:00:00+02:00"
+                    }
+                  ]
                 }
               }
             }
@@ -2726,6 +2864,29 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "| | запитів/с | запитів/хв | запитів/год | група\n| --- | --- | --- | --- | --- |\n| **Ліміти кількості запитів** | 20 | 120 | 240 | collectiveIdentifier",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetryAfter"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Too Many Requests"
           }
         },
         "security": [
@@ -2733,6 +2894,11 @@
             "Bearer": []
           }
         ],
+        "x-rate-limits": {
+          "perSecond": 20,
+          "perMinute": 120,
+          "perHour": 240
+        },
         "x-sort": [
           {
             "field": "dateCreated",
@@ -2782,6 +2948,9 @@
                     "maxInvoiceSizeInMB": 1,
                     "maxInvoiceWithAttachmentSizeInMB": 3,
                     "maxInvoices": 10000
+                  },
+                  "collectiveIdentifier": {
+                    "maxInvoices": 500
                   }
                 }
               }
@@ -3043,9 +3212,9 @@
                     "perHour": 64
                   },
                   "collectiveIdentifier": {
-                    "perSecond": 10,
-                    "perMinute": 60,
-                    "perHour": 120
+                    "perSecond": 20,
+                    "perMinute": 120,
+                    "perHour": 240
                   },
                   "other": {
                     "perSecond": 10,
@@ -3141,7 +3310,8 @@
               "schema": {
                 "required": [
                   "onlineSession",
-                  "batchSession"
+                  "batchSession",
+                  "collectiveIdentifier"
                 ],
                 "allOf": [
                   {
@@ -5857,7 +6027,8 @@
                     ],
                     "isTruncated": true,
                     "lastPermanentStorageDate": "2025-09-11T11:40:40.266578+00:00",
-                    "permanentStorageHwmDate": "2025-09-11T12:00:40.266578+00:00"
+                    "permanentStorageHwmDate": "2025-09-11T12:00:40.266578+00:00",
+                    "compressionType": "Zip"
                   }
                 }
               }
@@ -11836,6 +12007,35 @@
           }
         }
       },
+      "CollectiveIdentifierContextLimitsOverride": {
+        "required": [
+          "maxInvoices"
+        ],
+        "type": "object",
+        "properties": {
+          "maxInvoices": {
+            "maximum": 5000,
+            "minimum": 2,
+            "type": "integer",
+            "description": "Максимальна кількість рахунків-фактур, які можна надіслати в одному збірному ідентифікаторі.",
+            "format": "int32"
+          }
+        }
+      },
+      "CollectiveIdentifierEffectiveContextLimits": {
+        "required": [
+          "maxInvoices"
+        ],
+        "type": "object",
+        "properties": {
+          "maxInvoices": {
+            "minimum": 2,
+            "type": "integer",
+            "description": "Максимальна кількість рахунків-фактур, які можна надіслати в одному збірному ідентифікаторі.",
+            "format": "int32"
+          }
+        }
+      },
       "CollectiveIdentifierInvoice": {
         "required": [
           "ksefNumber"
@@ -11848,7 +12048,7 @@
                 "$ref": "#/components/schemas/KsefNumber"
               }
             ],
-            "description": "Номер ksef рахунка-фактури."
+            "description": "Номер ksef рахунка-фактури.\n\nОдин рахунок-фактуру можна призначити максимум до 132 збірних ідентифікаторів в рамках одного контексту."
           },
           "payment": {
             "required": [
@@ -11893,6 +12093,21 @@
           }
         }
       },
+      "CollectiveIdentifierInvoicesQueryRequest": {
+        "required": [
+          "collectiveIdentifierNumbers"
+        ],
+        "type": "object",
+        "properties": {
+          "collectiveIdentifierNumbers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Номери збірних ідентифікаторів. Максимальна кількість - 10."
+          }
+        }
+      },
       "CollectiveIdentifierInvoicesQueryResponse": {
         "required": [
           "invoices"
@@ -11915,6 +12130,7 @@
       },
       "CollectiveIdentifierInvoicesQueryResponseItem": {
         "required": [
+          "collectiveIdentifierNumber",
           "detailsHidden",
           "ksefNumber"
         ],
@@ -11927,6 +12143,10 @@
               }
             ],
             "description": "Номер ksef рахунка-фактури."
+          },
+          "collectiveIdentifierNumber": {
+            "type": "string",
+            "description": "Номер збірного ідентифікатора."
           },
           "payment": {
             "required": [
@@ -12533,6 +12753,7 @@
       "EffectiveContextLimits": {
         "required": [
           "batchSession",
+          "collectiveIdentifier",
           "onlineSession"
         ],
         "type": "object",
@@ -12562,6 +12783,17 @@
               }
             ],
             "description": "Ліміти для пакетних сесій."
+          },
+          "collectiveIdentifier": {
+            "required": [
+              "maxInvoices"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CollectiveIdentifierEffectiveContextLimits"
+              }
+            ],
+            "description": "Ліміти для збірних ідентифікаторів."
           }
         }
       },
@@ -14076,11 +14308,12 @@
         "type": "object",
         "properties": {
           "invoices": {
+            "minItems": 2,
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/CollectiveIdentifierInvoice"
             },
-            "description": "Список рахунків-фактур, що входять до складу збірного ідентифікатора. Ліміт рахунків-фактур становить 500."
+            "description": "Список рахунків-фактур, що входять до складу збірного ідентифікатора. Типовий [ліміт](https://github.com/CIRFMF/ksef-api/blob/main/limity/limity.md) рахунків-фактур становить 500."
           }
         }
       },
@@ -14094,7 +14327,7 @@
             "maxLength": 35,
             "minLength": 35,
             "type": "string",
-            "description": "Згенерований збірний ідентифікатор"
+            "description": "Згенерований колективний ідентифікатор\n\nКолективний ідентифікатор має формат:\n`9999999999-IZRRRRMM-FFFFFFFFFFFF-FF`, де:\n- `9999999999` – 10-цифровий NIP продавця,\n- `IZ` – сталий префікс,\n- `RRRRMM` – рік і місяць створення,\n- `FFFFFFFFFFFF` – технічна частина, що складається з 12 символів у шістнадцятковому записі, тільки [0–9 A–F], великі літери,\n- `FF` – контрольна сума CRC-8 - 2 символи у шістнадцятковому записі, тільки [0–9 A–F], великі літери.\n            \nДля обчислення контрольної суми використовується алгоритм CRC-8 з параметрами:\n- Поліном: 0x07\n- Початкове значення: 0x00\n- Формат результату: 2-символьний шістнадцятковий запис (HEX, великі літери)\n\nПриклад:\n`1111111111-IZ202607-65ED02180000-E7`."
           }
         }
       },
@@ -14475,7 +14708,8 @@
               "invoiceCount",
               "size",
               "parts",
-              "isTruncated"
+              "isTruncated",
+              "compressionType"
             ],
             "allOf": [
               {
@@ -14813,6 +15047,7 @@
       },
       "InvoicePackage": {
         "required": [
+          "compressionType",
           "invoiceCount",
           "isTruncated",
           "parts",
@@ -14867,6 +15102,13 @@
             "description": "Стосується виключно запитів, відфільтрованих за типом дати <b>PermanentStorage</b>.\nЯкщо запит стосувався найновішого періоду, це значення може бути незначно скоригованим відносно верхньої межі, зазначеної в умовах запиту.\nДля старіших періодів воно відповідатиме умовам запиту.\n\nСистема гарантує, що дані нижче цього значення є узгодженими та повними.\nПовторні запити, що охоплюють дані нижче цього ковзного мітки часу, у майбутньому не повернуть інших результатів (наприклад, додаткових рахунків-фактур).\n\nДля dateType = Issue або Invoicing – null.",
             "format": "date-time",
             "nullable": true
+          },
+          "compressionType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CompressionType"
+              }
+            ]
           }
         }
       },
@@ -15062,7 +15304,7 @@
                 "$ref": "#/components/schemas/InvoiceQueryDateRange"
               }
             ],
-            "description": "Тип і діапазон дат, за якими фільтруються рахунки-фактури.\nМаксимально допустимий період становить 3 місяці в зоні UTC або в зоні Europe/Warsaw (WAW).\n            \nФормат дати:\n * Дати мають передаватися у форматі ISO 8601, наприклад `yyyy-MM-ddTHH:mm:ss`.\n * Допустимі такі варіанти:\n   - із суфіксом `Z` (час UTC),\n   - із явним зміщенням, наприклад `+01:00`, `+03:00`,\n   - без зміщення (інтерпретується як місцевий час зони Europe/Warsaw)."
+            "description": "Тип і діапазон дат, за якими фільтруються рахунки-фактури.\nМаксимально допустимий період становить 100 днів у часовому поясі UTC\n            \nФормат дати:\n * Дати мають бути передані у форматі ISO 8601, наприклад, `yyyy-MM-ddTHH:mm:ss`.\n * Допустимі наступні варіанти:\n   - із суфіксом `Z` (час UTC),\n   - з явним зміщенням, наприклад, `+01:00`, `+03:00`"
           },
           "ksefNumber": {
             "allOf": [
@@ -17721,6 +17963,7 @@
       "SetSessionLimitsRequest": {
         "required": [
           "batchSession",
+          "collectiveIdentifier",
           "onlineSession"
         ],
         "type": "object",
@@ -17750,6 +17993,17 @@
               }
             ],
             "description": "Ліміти для пакетних сесій."
+          },
+          "collectiveIdentifier": {
+            "required": [
+              "maxInvoices"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CollectiveIdentifierContextLimitsOverride"
+              }
+            ],
+            "description": "Ліміти для збірних ідентифікаторів."
           }
         }
       },
@@ -18335,7 +18589,7 @@
       },
       "SystemWarning": {
         "type": "string",
-        "description": "Технічне попередження для системи інтегратора. Попередження не впливає на поточний результат операції. Значення заголовка нормалізується за допомогою ASCII folding.\n\nФормат:\n`[code]: message | [code]: message`\n\nRegex для окремого попередження: `\\[(?<code>[^\\]]+)\\]: (?<message>[^|]+)`"
+        "description": "Технічне попередження для системи інтегратора. Попередження не впливає на поточний результат операції. Значення заголовка нормалізується за допомогою ASCII folding.\n\nФормат:\n`[code]: message | [code]: message`\n\nRegex одного попередження: `\\[(?<code>[^\\]]+)\\]: (?<message>[^|]+)`<br/><br/>\nДля тестування обробки попереджень можна передати заголовок `X-Test-System-Warning`. Його вміст буде повернуто у відповіді як `X-System-Warning`."
       },
       "TestDataAuthenticationContextIdentifier": {
         "required": [

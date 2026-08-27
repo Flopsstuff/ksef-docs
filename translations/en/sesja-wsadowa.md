@@ -1,8 +1,8 @@
 ---
 original: sesja-wsadowa.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: d92d285
-last_translated: 2026-05-23
+source_commit: 93b843d
+last_translated: 2026-08-27
 ---
 
 > **Translation.** Original: [sesja-wsadowa.md](https://github.com/CIRFMF/ksef-docs/blob/main/sesja-wsadowa.md)
@@ -26,7 +26,7 @@ To use batch sending, you must first go through the [authentication](uwierzyteln
 Before creating a package for batch sending, it is recommended to calculate the SHA-256 hash for each invoice XML file (original, before encryption) and save local mapping. This enables unambiguous linking of processing statuses on the KSeF side with local source documents (XML) prepared for sending.
 
 Before opening a session and sending invoices, the following is required:
-* generating a symmetric key with a length of 256 bits and an initialization vector with a length of 128 bits (IV), added as a prefix to the ciphertext,
+* generating a symmetric key with a length of 256 bits and an initialization vector with a length of 128 bits (IV),
 * preparing a ZIP package,
 * (optionally, if the package exceeds the allowed size) dividing the ZIP package into parts,
 * encrypting parts with the AES-256-CBC algorithm with PKCS#7 padding,

@@ -1,8 +1,8 @@
 ---
 original: sesja-interaktywna.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: d92d285
-last_translated: 2026-05-23
+source_commit: 93b843d
+last_translated: 2026-08-27
 ---
 
 > **Translation.** Original: [sesja-interaktywna.md](https://github.com/CIRFMF/ksef-docs/blob/main/sesja-interaktywna.md)
@@ -17,7 +17,7 @@ last_translated: 2026-05-23
 Для использования интерактивной отправки необходимо сначала пройти процесс [аутентификации](uwierzytelnianie.md) и иметь действительный токен доступа (```accessToken```), который дает право использовать защищенные ресурсы API KSeF.
 
 Перед открытием сессии и отправкой счетов-фактур требуется:
-* генерация симметричного ключа длиной 256 бит и вектора инициализации длиной 128 бит (IV), добавляемого как префикс к шифротексту,
+* генерация симметричного ключа длиной 256 бит и вектора инициализации длиной 128 бит (IV),
 * шифрование документа алгоритмом AES-256-CBC с дополнением PKCS#7,
 * шифрование симметричного ключа алгоритмом RSAES-OAEP (padding OAEP с функцией MGF1, основанной на SHA-256 и хеше SHA-256), используя публичный ключ KSeF Министерства финансов.
 

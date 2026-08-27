@@ -1,8 +1,8 @@
 ---
 original: sesja-interaktywna.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: d92d285
-last_translated: 2026-05-23
+source_commit: 93b843d
+last_translated: 2026-08-27
 ---
 
 > **Translation.** Original: [sesja-interaktywna.md](https://github.com/CIRFMF/ksef-docs/blob/main/sesja-interaktywna.md)
@@ -17,7 +17,7 @@ An interactive session is used to send individual structured invoices to the KSe
 To use interactive sending, you must first go through the [authentication](uwierzytelnianie.md) process and have a current access token (`accessToken`) that authorizes the use of protected KSeF API resources.
 
 Before opening a session and sending invoices, the following is required:
-* generating a symmetric key of 256 bits length and an initialization vector of 128 bits length (IV), attached as a prefix to the ciphertext,
+* generating a symmetric key of 256 bits length and an initialization vector of 128 bits length (IV),
 * encrypting the document with the AES-256-CBC algorithm with PKCS#7 padding,
 * encrypting the symmetric key with the RSAES-OAEP algorithm (OAEP padding with MGF1 function based on SHA-256 and SHA-256 hash), using the Ministry of Finance KSeF public key.
 

@@ -1,14 +1,14 @@
 ---
 original: limity/limity.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 5e69797
-last_translated: 2026-04-04
+source_commit: 93b843d
+last_translated: 2026-08-27
 ---
 
 > **Translation.** Original: [limity/limity.md](https://github.com/CIRFMF/ksef-docs/blob/main/limity/limity.md)
 
 # Ліміти
-21.10.2025
+26.08.2026
 
 ## Вступ
 
@@ -31,6 +31,7 @@ last_translated: 2026-04-04
 | Максимальний розмір рахунку-фактури без додатка                | 1 MB                                  |
 | Максимальний розмір рахунку-фактури з додатком                 | 3 MB                                  |
 | Максимальна кількість рахунків-фактур в інтерактивній/пакетній сесії | 10 000                                 |
+| Максимальна кількість рахунків-фактур, які можна надіслати в одному колективному ідентифікаторі. | 500                                 |
 
 ## Ліміти на аутентифікований суб'єкт
 

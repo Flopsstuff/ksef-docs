@@ -1,14 +1,14 @@
 ---
 original: limity/limity.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 5e69797
-last_translated: 2026-04-04
+source_commit: 93b843d
+last_translated: 2026-08-27
 ---
 
 > **Translation.** Original: [limity/limity.md](https://github.com/CIRFMF/ksef-docs/blob/main/limity/limity.md)
 
 # Limits
-21.10.2025
+26.08.2026
 
 ## Introduction
 
@@ -26,11 +26,12 @@ More information can be found in [API Request Limits](limity-api.md).
 
 ## Context Limits
 
-| Parameter                                                 | Default Value                         |
-| --------------------------------------------------------- | ------------------------------------- |
-| Maximum invoice size without attachment                   | 1 MB                                  |
-| Maximum invoice size with attachment                      | 3 MB                                  |
-| Maximum number of invoices in interactive/batch session  | 10,000                                |
+| Parameter                                                                 | Default Value                         |
+| ------------------------------------------------------------------------- | ------------------------------------- |
+| Maximum invoice size without attachment                                   | 1 MB                                  |
+| Maximum invoice size with attachment                                      | 3 MB                                  |
+| Maximum number of invoices in interactive/batch session                   | 10,000                                |
+| Maximum number of invoices that can be sent in a single collective identifier | 500                                   |
 
 ## Authenticated Entity Limits
 
