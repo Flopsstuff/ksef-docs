@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "KSeF API TE",
-    "description": "**Версія API:** 2.7.1 (build 2.7.1-te)<br>\n**Публічні ключі** Міністерства фінансів (для даного середовища): [Завантажити ключі](#tag/Certyfikaty-klucza-publicznego)<br>\n**Історія змін:** [Changelog](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)<br>\n**Розширена документація API:** [ksef-docs](https://github.com/CIRFMF/ksef-docs/tree/main)\n\n**Адреса сервера API:**\n- Тестове середовище: `https://api-test.ksef.mf.gov.pl/v2`",
+    "description": "**Версія API:** 2.8.0 (build 2.8.0-te)<br>\n**Публічні ключі** Міністерства фінансів (для відповідного середовища): [Завантажити ключі](#tag/Certyfikaty-klucza-publicznego)<br>\n**Історія змін:** [Changelog](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)<br>\n**Розширена документація API:** [ksef-docs](https://github.com/CIRFMF/ksef-docs/tree/main)\n\n**Адреса сервера API:**\n- Тестове середовище: `https://api-test.ksef.mf.gov.pl/v2`",
     "version": "v2"
   },
   "servers": [
@@ -2501,7 +2501,7 @@
                   "collectiveIdentifiers": [
                     {
                       "collectiveIdentifierNumber": "1111111111-IZ202607-65ED02180000-E7",
-                      "dateCreated": "2026-07-10T12:00:00+02:00",
+                      "dateCreated": "2026-07-11T12:00:00+00:00",
                       "invoiceCount": 16,
                       "createdInCurrentContext": true
                     }
@@ -2603,7 +2603,7 @@
           "Збірні ідентифікатори"
         ],
         "summary": "Отримання списку рахунків-фактур, що входять до складу збірного ідентифікатора",
-        "description": "Повертає список номерів KSeF рахунків-фактур, що входять до складу збірного ідентифікатора.\n            \nІнформація про суму та валюту платежу повертається лише суб'єкту, який створив збірний ідентифікатор, або суб'єкту, що виступає в ролі на даному рахунку-фактурі.\n\nЯкщо сума та валюта платежу були визначені під час створення збірного ідентифікатора, а суб'єкт не має доступу до цієї інформації, поля, що стосуються суми та валюти платежу, не повертаються, а поле <b>detailsHidden</b> приймає значення <b>true</b>.\n\nЯкщо сума та валюта платежу не були визначені під час створення збірного ідентифікатора, їх значення залишаються порожніми, а поле <b>detailsHidden</b> приймає значення <b>false</b>.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - встановлення цього заголовка призводить до повернення помилок у форматі **Problem Details** (`application/problem+json`).\n\n**Сортування:**\n\n- ksefNumber (Desc)\n\n\n\n**Потрібне одне з дозволів**: `InvoiceRead`, `InvoiceWrite`, `CollectiveIdentifierManage`.",
+        "description": "Повертає список номерів KSeF рахунків-фактур, що входять до складу збірного ідентифікатора.\n            \nІнформація про опис, суму та валюту платежу повертається лише суб'єкту, який створив збірний ідентифікатор, або суб'єкту, який виступає в ролі на даному рахунку-фактурі.\n\nЯкщо під час створення збірного ідентифікатора було вказано опис, суму та валюту платежу, а суб'єкт не має доступу до цих відомостей, поля, що стосуються опису, суми та валюти платежу, не повертаються, а поле <b>detailsHidden</b> приймає значення <b>true</b>.\n\nЯкщо під час створення збірного ідентифікатора не було вказано опис, суму та валюту платежу, їх значення залишаються порожніми, а поле <b>detailsHidden</b> приймає значення <b>false</b>.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - встановлення цього заголовка призводить до повернення помилок у форматі **Problem Details** (`application/problem+json`).\n\n**Sortowanie:**\n\n- ksefNumber (Desc)\n\n\n\n**Необхідно одне з дозволів**: `InvoiceRead`, `InvoiceWrite`, `CollectiveIdentifierManage`.",
         "parameters": [
           {
             "name": "x-continuation-token",
@@ -3161,10 +3161,20 @@
                     "perMinute": 30,
                     "perHour": 120
                   },
+                  "onlineSessionClose": {
+                    "perSecond": 20,
+                    "perMinute": 60,
+                    "perHour": 240
+                  },
                   "batchSession": {
                     "perSecond": 10,
                     "perMinute": 20,
                     "perHour": 60
+                  },
+                  "batchSessionClose": {
+                    "perSecond": 20,
+                    "perMinute": 40,
+                    "perHour": 120
                   },
                   "invoiceSend": {
                     "perSecond": 10,
@@ -3220,6 +3230,16 @@
                     "perSecond": 10,
                     "perMinute": 30,
                     "perHour": 120
+                  },
+                  "anonymous": {
+                    "perSecond": 60,
+                    "perMinute": -1,
+                    "perHour": -1
+                  },
+                  "global": {
+                    "perSecond": -1,
+                    "perMinute": -1,
+                    "perHour": -1
                   }
                 }
               }
@@ -3422,7 +3442,7 @@
             }
           },
           "400": {
-            "description": "",
+            "description": "| ExceptionCode | ExceptionDescription | Details |\n|-|-|-|\n| 21405 | Помилка валідації вхідних даних. | {зміст помилки від валідатора} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -3807,7 +3827,7 @@
             }
           },
           "400": {
-            "description": "",
+            "description": "| ExceptionCode | ExceptionDescription | Details |\n|-|-|-|\n| 21405 | Помилка валідації вхідних даних. | {зміст помилки від валідатора} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -8739,7 +8759,7 @@
           "Інтерактивне відправлення"
         ],
         "summary": "Відкриття інтерактивної сесії",
-        "description": "Відкриває сеанс для відправки окремих рахунків-фактур. Необхідно передати схему надсилаючих рахунків-фактур та інформацію про ключ, що використовується для шифрування.\n\n> Більше інформації:\n> - [Відкриття сеансу інтерактивного](https://github.com/CIRFMF/ksef-api/blob/main/sesja-interaktywna.md#1-otwarcie-sesji)\n> - [Публічний ключ Міністерства фінансів](/docs/v2/index.html#tag/Certyfikaty-klucza-publicznego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - встановлення цього заголовка призводить до повернення помилок у форматі **Problem Details** (`application/problem+json`).\n\n**Необхідно одне з дозволів**: `InvoiceWrite`, `PefInvoiceWrite`, `EnforcementOperations`.",
+        "description": "Відкриває сесію для відправки окремих рахунків-фактур. Необхідно передати схему відправлених рахунків-фактур та інформацію про ключ, що використовується для шифрування.\n\n> Більше інформації:\n> - [Відкриття інтерактивної сесії](https://github.com/CIRFMF/ksef-api/blob/main/sesja-interaktywna.md#1-otwarcie-sesji)\n> - [Публічний ключ Міністерства фінансів](/docs/v2/index.html#tag/Certyfikaty-klucza-publicznego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - встановлення цього заголовка призводить до повернення помилок у форматі **Problem Details** (`application/problem+json`).\n\n`X-KSeF-Feature: subject-identifier-validation` - Увімкнює валідацію номерів NIP та внутрішніх ідентифікаторів суб'єктів, зазначених на рахунку-фактурі.\n\n**Необхідно одне з дозволів**: `InvoiceWrite`, `PefInvoiceWrite`, `EnforcementOperations`.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -8937,7 +8957,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                                                                    | \n|---------------------|-----------------------------------------------------|------------------------------------------------------------------------------------------------------------|\n| 21155               | Перевищено допустиму кількість рахунків-фактур у сесії.       | Сесія з референційним номером {referenceNumber} досягла допустимого ліміту кількості рахунків-фактур {invoiceLimit}.    |\n| 21166               | Технічне коригування недоступне.                     | Рахунок-фактура вже має успішно оброблене технічне коригування.                                            |\n| 21167               | Статус рахунку-фактури не дозволяє технічне коригування.   | Неможливо надіслати технічне коригування до успішно обробленого рахунку-фактури.                                  |\n| 21173               | Сесію із зазначеним референційним номером не знайдено.       | Сесію з референційним номером {referenceNumber} не знайдено.                                   |\n| 21180               | Статус сесії не дозволяє виконати операцію.     | Статус сесії {code} унеможливлює надсилання рахунків-фактур.                                                           |\n| 21402               | Неправильний розмір файлу.                        | Довжина вмісту не збігається з розміром файлу.                                                           |\n| 21403               | Неправильний хеш файлу.                          | Хеш вмісту не збігається з хешем файлу.                                                              |\n| 21405 | Помилка валідації вхідних даних. | {вміст помилки від валідатора} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                                                                    | \n|---------------------|-----------------------------------------------------|------------------------------------------------------------------------------------------------------------|\n| 21155               | Перевищено дозволену кількість рахунків-фактур у сесії. | Сесія з номером посилання {referenceNumber} досягла дозволеного ліміту кількості рахунків-фактур {invoiceLimit}.    |\n| 21166               | Технічна корекція недоступна.                     | Рахунок-фактура вже має оброблену правильну технічну корекцію.                                            |\n| 21167               | Статус рахунку-фактури не дозволяє на технічну корекцію.   | Неможливо надіслати технічну корекцію для правильно обробленого рахунку-фактури.                                  |\n| 21173               | Відсутня сесія з вказаним номером посилання.       | Сесія з номером посилання {referenceNumber} не знайдена.                                   |\n| 21180               | Статус сесії не дозволяє виконати операцію.     | Статус сесії {code} унеможливлює надсилання рахунків-фактур.                                                           |\n| 21184               | Сесія тимчасово недоступна.                       | Тривають сервісні роботи і сесія {referenceNumber} тимчасово недоступна. Спробуйте пізніше або відкрийте нову сесію, щоб надіслати наступні рахунки-фактури. |\n| 21402               | Неправильний розмір файлу.                        | Довжина вмісту не збігається з розміром файлу.                                                           |\n| 21403               | Неправильний хеш файлу.                          | Хеш вмісту не збігається з хешем файлу.                                                              |\n| 21405 | Помилка валідації вхідних даних. | {текст помилки з валідатора} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -9079,7 +9099,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | група\n| --- | --- | --- | --- | --- |\n| **Ліміти кількості запитів** | 10 | 30 | 120 | onlineSession\n",
+            "description": "| | req / s | req / min | req / h | група\n| --- | --- | --- | --- | --- |\n| **Ліміти кількості запитів** | 20 | 60 | 240 | onlineSessionClose",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -9108,9 +9128,9 @@
           }
         ],
         "x-rate-limits": {
-          "perSecond": 10,
-          "perMinute": 30,
-          "perHour": 120
+          "perSecond": 20,
+          "perMinute": 60,
+          "perHour": 240
         },
         "x-required-permissions": [
           "InvoiceWrite",
@@ -9125,7 +9145,7 @@
           "Пакетне відправлення"
         ],
         "summary": "Відкриття пакетної сесії",
-        "description": "Відкриває сесію для відправки пакетного рахунка-фактури. Потрібно передати схему відправлених рахунків-фактур, інформацію про пакет рахунків-фактур та інформацію про ключ, що використовується для шифрування.\n\n> Більше інформації:\n> - [Підготовка пакету рахунків-фактур](https://github.com/CIRFMF/ksef-api/blob/main/sesja-wsadowa.md)\n> - [Публічний ключ Міністерства фінансів](/docs/v2/index.html#tag/Certyfikaty-klucza-publicznego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - встановлення цього заголовка призводить до повернення помилок у форматі **Problem Details** (`application/problem+json`).\n\n**Потрібен один із дозволів**: `InvoiceWrite`, `EnforcementOperations`.",
+        "description": "Відкриває сесію для пакетної відправки рахунків-фактур. Потрібно передати схему надсиланих рахунків-фактур, інформацію про пакет рахунків-фактур та інформацію про ключ, що використовується для шифрування.\n\n> Більше інформації:\n> - [Підготовка пакету рахунків-фактур](https://github.com/CIRFMF/ksef-api/blob/main/sesja-wsadowa.md)\n> - [Публічний ключ Міністерства фінансів](/docs/v2/index.html#tag/Certyfikaty-klucza-publicznego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - встановлення цього заголовка призводить до повернення помилок у форматі **Problem Details** (`application/problem+json`).\n\n`X-KSeF-Feature: subject-identifier-validation` - Увімкнює валідацію номерів NIP та внутрішніх ідентифікаторів суб'єктів, зазначених на рахунку-фактурі.\n\n**Необхідно одне з дозволів**: `InvoiceWrite`, `EnforcementOperations`.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -9341,7 +9361,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | група\n| --- | --- | --- | --- | --- |\n| **Ліміти кількості запитів** | 10 | 20 | 60 | batchSession\n",
+            "description": "| | req / s | req / min | req / h | група\n| --- | --- | --- | --- | --- |\n| **Ліміти кількості запитів** | 20 | 40 | 120 | batchSessionClose",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -9370,9 +9390,9 @@
           }
         ],
         "x-rate-limits": {
-          "perSecond": 10,
-          "perMinute": 20,
-          "perHour": 60
+          "perSecond": 20,
+          "perMinute": 40,
+          "perHour": 120
         },
         "x-required-permissions": [
           "InvoiceWrite",
@@ -10905,7 +10925,7 @@
                 "$ref": "#/components/schemas/ApiRateLimitValuesOverride"
               }
             ],
-            "description": "Ліміти для відкриття/закриття інтерактивних сесій."
+            "description": "Ліміти для відкриття інтерактивних сесій."
           },
           "batchSession": {
             "required": [
@@ -10918,7 +10938,7 @@
                 "$ref": "#/components/schemas/ApiRateLimitValuesOverride"
               }
             ],
-            "description": "Ліміти для відкриття/закриття пакетних сесій."
+            "description": "Ліміти для відкриття пакетних сесій."
           },
           "invoiceSend": {
             "required": [
@@ -12532,7 +12552,12 @@
           "YER",
           "ZAR",
           "ZMW",
-          "ZWL"
+          "ZWL",
+          "CNH",
+          "VED",
+          "XTS",
+          "ZWG",
+          "SLE"
         ],
         "type": "string"
       },
@@ -12563,8 +12588,11 @@
       },
       "EffectiveApiRateLimits": {
         "required": [
+          "anonymous",
           "batchSession",
+          "batchSessionClose",
           "collectiveIdentifier",
+          "global",
           "invoiceDownload",
           "invoiceExport",
           "invoiceExportStatus",
@@ -12572,6 +12600,7 @@
           "invoiceSend",
           "invoiceStatus",
           "onlineSession",
+          "onlineSessionClose",
           "other",
           "sessionInvoiceList",
           "sessionList",
@@ -12590,7 +12619,20 @@
                 "$ref": "#/components/schemas/EffectiveApiRateLimitValues"
               }
             ],
-            "description": "Ліміти для відкриття/закриття інтерактивних сесій."
+            "description": "Ліміти для відкриття інтерактивних сесій."
+          },
+          "onlineSessionClose": {
+            "required": [
+              "perSecond",
+              "perMinute",
+              "perHour"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EffectiveApiRateLimitValues"
+              }
+            ],
+            "description": "Ліміти для закриття інтерактивних сесій."
           },
           "batchSession": {
             "required": [
@@ -12603,7 +12645,20 @@
                 "$ref": "#/components/schemas/EffectiveApiRateLimitValues"
               }
             ],
-            "description": "Ліміти для відкриття/закриття пакетних сесій."
+            "description": "Ліміти для відкриття пакетних сесій."
+          },
+          "batchSessionClose": {
+            "required": [
+              "perSecond",
+              "perMinute",
+              "perHour"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EffectiveApiRateLimitValues"
+              }
+            ],
+            "description": "Ліміти для закриття пакетних сесій."
           },
           "invoiceSend": {
             "required": [
@@ -12747,6 +12802,32 @@
               }
             ],
             "description": "Ліміти для інших операцій API."
+          },
+          "anonymous": {
+            "required": [
+              "perSecond",
+              "perMinute",
+              "perHour"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EffectiveApiRateLimitValues"
+              }
+            ],
+            "description": "Ліміти для анонімних операцій API (неавтентифікованих)."
+          },
+          "global": {
+            "required": [
+              "perSecond",
+              "perMinute",
+              "perHour"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EffectiveApiRateLimitValues"
+              }
+            ],
+            "description": "Глобальні ліміти для всіх операцій API (за IP-адресою)."
           }
         }
       },
@@ -14214,7 +14295,6 @@
           "detail",
           "reasonCode",
           "status",
-          "timestamp",
           "title"
         ],
         "type": "object",
@@ -17060,6 +17140,8 @@
             "format": "byte"
           },
           "publicKeyId": {
+            "maxLength": 44,
+            "minLength": 44,
             "type": "string",
             "description": "Ідентифікатор ключа, що використовується як селектор у викликах, у яких клієнт вказує, який відкритий ключ він використав для шифрування.",
             "format": "byte"

@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "KSeF API TE",
-    "description": "**Версия API:** 2.7.1 (build 2.7.1-te)<br>\n**Публичные ключи** Министерства финансов (для данного окружения): [Скачать ключи](#tag/Certyfikaty-klucza-publicznego)<br>\n**История изменений:** [Changelog](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)<br>\n**Расширенная документация API:** [ksef-docs](https://github.com/CIRFMF/ksef-docs/tree/main)\n\n**Адрес API-сервера:**\n- Тестовое окружение: `https://api-test.ksef.mf.gov.pl/v2`",
+    "description": "**Версия API:** 2.8.0 (build 2.8.0-te)<br>\n**Публичные ключи** Министерства Финансов (для данного окружения): [Скачать ключи](#tag/Certyfikaty-klucza-publicznego)<br>\n**История изменений:** [Changelog](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)<br>\n**Расширенная документация API:** [ksef-docs](https://github.com/CIRFMF/ksef-docs/tree/main)\n\n**Адрес сервера API:**\n- Тестовое окружение: `https://api-test.ksef.mf.gov.pl/v2`",
     "version": "v2"
   },
   "servers": [
@@ -2501,7 +2501,7 @@
                   "collectiveIdentifiers": [
                     {
                       "collectiveIdentifierNumber": "1111111111-IZ202607-65ED02180000-E7",
-                      "dateCreated": "2026-07-10T12:00:00+02:00",
+                      "dateCreated": "2026-07-11T12:00:00+00:00",
                       "invoiceCount": 16,
                       "createdInCurrentContext": true
                     }
@@ -2603,7 +2603,7 @@
           "Коллективные идентификаторы"
         ],
         "summary": "Получение списка фактур, входящих в состав коллективного идентификатора",
-        "description": "Возвращает список номеров KSeF счетов, входящих в состав группового идентификатора.\n            \nИнформация о сумме и валюте платежа возвращается только субъекту, который создал групповой идентификатор, или субъекту, выступающему в роли по данному счету.\n\nЕсли сумма и валюта платежа были определены при создании группового идентификатора, а субъект не имеет доступа к этой информации, поля, связанные с суммой и валютой платежа, не возвращаются, а поле <b>detailsHidden</b> принимает значение <b>true</b>.\n\nЕсли сумма и валюта платежа не были определены при создании группового идентификатора, их значения остаются пустыми, а поле <b>detailsHidden</b> принимает значение <b>false</b>.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Сортировка:**\n\n- ksefNumber (Desc)\n\n\n\n**Требуется одно из разрешений**: `InvoiceRead`, `InvoiceWrite`, `CollectiveIdentifierManage`.",
+        "description": "Возвращает список номеров KSeF счетов, входящих в состав идентификатора коллективного.\n            \nИнформация о описании, сумме и валюте платежа возвращается только субъекту, который создал идентификатор коллективный, или субъекту, выступающему в роли на данном счете.\n\nЕсли описание, сумма и валюта платежа были определены при создании идентификатора коллективного, а субъект не имеет доступа к этой информации, поля, относящиеся к описанию, сумме и валюте платежа, не возвращаются, а поле <b>detailsHidden</b> принимает значение <b>true</b>.\n\nЕсли описание, сумма и валюта платежа не были определены при создании идентификатора коллективного, их значения остаются пустыми, а поле <b>detailsHidden</b> принимает значение <b>false</b>.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возвращению ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Сортировка:**\n\n- ksefNumber (Desc)\n\n\n\n**Требуется одно из разрешений**: `InvoiceRead`, `InvoiceWrite`, `CollectiveIdentifierManage`.",
         "parameters": [
           {
             "name": "x-continuation-token",
@@ -3161,10 +3161,20 @@
                     "perMinute": 30,
                     "perHour": 120
                   },
+                  "onlineSessionClose": {
+                    "perSecond": 20,
+                    "perMinute": 60,
+                    "perHour": 240
+                  },
                   "batchSession": {
                     "perSecond": 10,
                     "perMinute": 20,
                     "perHour": 60
+                  },
+                  "batchSessionClose": {
+                    "perSecond": 20,
+                    "perMinute": 40,
+                    "perHour": 120
                   },
                   "invoiceSend": {
                     "perSecond": 10,
@@ -3220,6 +3230,16 @@
                     "perSecond": 10,
                     "perMinute": 30,
                     "perHour": 120
+                  },
+                  "anonymous": {
+                    "perSecond": 60,
+                    "perMinute": -1,
+                    "perHour": -1
+                  },
+                  "global": {
+                    "perSecond": -1,
+                    "perMinute": -1,
+                    "perHour": -1
                   }
                 }
               }
@@ -3422,7 +3442,7 @@
             }
           },
           "400": {
-            "description": "",
+            "description": "| ExceptionCode | ExceptionDescription | Details |\n|-|-|-|\n| 21405 | Ошибка валидации входных данных. | {содержание ошибки от валидатора} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -3807,7 +3827,7 @@
             }
           },
           "400": {
-            "description": "",
+            "description": "| ExceptionCode | ExceptionDescription | Details |\n|-|-|-|\n| 21405 | Ошибка валидации входных данных. | {содержание ошибки от валидатора} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -8739,7 +8759,7 @@
           "Интерактивная отправка"
         ],
         "summary": "Открытие интерактивной сессии",
-        "description": "Открывает сеанс для отправки отдельных счетов. Необходимо передать схему отправляемых счетов и информацию о ключе, используемом для шифрования.\n\n> Дополнительная информация:\n> - [Открытие интерактивного сеанса](https://github.com/CIRFMF/ksef-api/blob/main/sesja-interaktywna.md#1-otwarcie-sesji)\n> - [Публичный ключ Министерства финансов](/docs/v2/index.html#tag/Certyfikaty-klucza-publicznego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Required one of the permissions**: `InvoiceWrite`, `PefInvoiceWrite`, `EnforcementOperations`.",
+        "description": "Открывает сессию для отправки отдельных счетов. Необходимо передать схему отправляемых счетов и информацию о ключе, используемом для шифрования.\n\n> Дополнительная информация:\n> - [Открытие интерактивной сессии](https://github.com/CIRFMF/ksef-api/blob/main/sesja-interaktywna.md#1-otwarcie-sesji)\n> - [Публичный ключ Министерства Финансов](/docs/v2/index.html#tag/Certyfikaty-klucza-publicznego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возвращению ошибок в формате **Problem Details** (`application/problem+json`).\n\n`X-KSeF-Feature: subject-identifier-validation` - Включает валидацию номеров NIP и внутренних идентификаторов субъектов, указанных на счете.\n\n**Требуется одно из разрешений**: `InvoiceWrite`, `PefInvoiceWrite`, `EnforcementOperations`.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -8937,7 +8957,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                                                                    | \n|---------------------|-----------------------------------------------------|------------------------------------------------------------------------------------------------------------|\n| 21155               | Превышено допустимое количество счетов-фактур в сессии.       | Сессия с референсным номером {referenceNumber} достигла допустимого лимита количества счетов-фактур {invoiceLimit}.    |\n| 21166               | Техническая корректировка недоступна.                     | Счёт-фактура уже имеет успешно обработанную техническую корректировку.                                            |\n| 21167               | Статус счёта-фактуры не позволяет выполнить техническую корректировку.   | Невозможно отправить техническую корректировку к успешно обработанному счёту-фактуре.                                  |\n| 21173               | Сессия с указанным референсным номером не найдена.       | Сессия с референсным номером {referenceNumber} не была найдена.                                                   |\n| 21180               | Статус сессии не позволяет выполнить операцию.     | Статус сессии {code} препятствует отправке счетов-фактур.                                                           |\n| 21402               | Неверный размер файла.                        | Длина содержимого не совпадает с размером файла.                                                           |\n| 21403               | Неверный хэш файла.                          | Хэш содержимого не совпадает с хэшем файла.                                                              |\n| 21405 | Ошибка валидации входных данных. | {текст ошибки от валидатора} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                                                                    | \n|---------------------|-----------------------------------------------------|------------------------------------------------------------------------------------------------------------|\n| 21155               | Превышено разрешенное количество счетов в сессии.   | Сессия с номером ссылки {referenceNumber} достигла разрешенного лимита счетов {invoiceLimit}.    |\n| 21166               | Техническая корректировка недоступна.               | Счет уже имеет правильно обработанную техническую корректировку.                                            |\n| 21167               | Статус счета не позволяет на техническую корректировку. | Невозможно отправить техническую корректировку для правильно обработанного счета.                                  |\n| 21173               | Сессия с указанным номером ссылки не найдена.       | Сессия с номером ссылки {referenceNumber} не найдена.                                   |\n| 21180               | Статус сессии не позволяет выполнить операцию.     | Статус сессии {code} не позволяет отправку счетов.                                                           |\n| 21184               | Сессия временно недоступна.                         | Ведутся технические работы, и сессия {referenceNumber} временно недоступна. Попробуйте позже или откройте новую сессию для отправки следующих счетов. |\n| 21402               | Неправильный размер файла.                          | Длина содержимого не соответствует размеру файла.                                                           |\n| 21403               | Неправильная хеш-сумма файла.                      | Хеш-сумма содержимого не соответствует хеш-сумме файла.                                                              |\n| 21405 | Ошибка валидации входных данных. | {текст ошибки от валидатора} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -9079,7 +9099,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | группа\n| --- | --- | --- | --- | --- |\n| **Лимиты количества запросов** | 10 | 30 | 120 | onlineSession\n",
+            "description": "| | req / s | req / min | req / h | группа\n| --- | --- | --- | --- | --- |\n| **Лимиты количества запросов** | 20 | 60 | 240 | onlineSessionClose",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -9108,9 +9128,9 @@
           }
         ],
         "x-rate-limits": {
-          "perSecond": 10,
-          "perMinute": 30,
-          "perHour": 120
+          "perSecond": 20,
+          "perMinute": 60,
+          "perHour": 240
         },
         "x-required-permissions": [
           "InvoiceWrite",
@@ -9125,7 +9145,7 @@
           "Пакетная отправка"
         ],
         "summary": "Открытие пакетной сессии",
-        "description": "Открывает сессию для отправки пакетов счетов-фактур. Необходимо передать схему отправляемых счетов-фактур, информацию о пакете счетов-фактур и информацию о ключе, используемом для шифрования.\n\n> Подробнее:\n> - [Подготовка пакета счетов-фактур](https://github.com/CIRFMF/ksef-api/blob/main/sesja-wsadowa.md)\n> - [Публичный ключ Министерства финансов](/docs/v2/index.html#tag/Certyfikaty-klucza-publicznego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Требуется одно из разрешений**: `InvoiceWrite`, `EnforcementOperations`.",
+        "description": "Открывает сессию для пакетной отправки счетов. Необходимо передать схему отправляемых счетов, информацию о пакете счетов и информацию о ключе, используемом для шифрования.\n\n> Дополнительная информация:\n> - [Подготовка пакета счетов](https://github.com/CIRFMF/ksef-api/blob/main/sesja-wsadowa.md)\n> - [Публичный ключ Министерства Финансов](/docs/v2/index.html#tag/Certyfikaty-klucza-publicznego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n`X-KSeF-Feature: subject-identifier-validation` - Включает валидацию номеров NIP и внутренних идентификаторов субъектов, указанных в счете.\n\n**Требуется одно из разрешений**: `InvoiceWrite`, `EnforcementOperations`.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -9341,7 +9361,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | группа\n| --- | --- | --- | --- | --- |\n| **Лимиты количества запросов** | 10 | 20 | 60 | batchSession\n",
+            "description": "| | req / s | req / min | req / h | группа\n| --- | --- | --- | --- | --- |\n| **Пределы количества запросов** | 20 | 40 | 120 | batchSessionClose",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -9370,9 +9390,9 @@
           }
         ],
         "x-rate-limits": {
-          "perSecond": 10,
-          "perMinute": 20,
-          "perHour": 60
+          "perSecond": 20,
+          "perMinute": 40,
+          "perHour": 120
         },
         "x-required-permissions": [
           "InvoiceWrite",
@@ -10905,7 +10925,7 @@
                 "$ref": "#/components/schemas/ApiRateLimitValuesOverride"
               }
             ],
-            "description": "Лимиты для открытия/закрытия интерактивных сессий."
+            "description": "Пределы для открытия интерактивных сеансов."
           },
           "batchSession": {
             "required": [
@@ -10918,7 +10938,7 @@
                 "$ref": "#/components/schemas/ApiRateLimitValuesOverride"
               }
             ],
-            "description": "Лимиты для открытия/закрытия пакетных сессий."
+            "description": "Пределы для открытия пакетных сеансов."
           },
           "invoiceSend": {
             "required": [
@@ -12532,7 +12552,12 @@
           "YER",
           "ZAR",
           "ZMW",
-          "ZWL"
+          "ZWL",
+          "CNH",
+          "VED",
+          "XTS",
+          "ZWG",
+          "SLE"
         ],
         "type": "string"
       },
@@ -12563,8 +12588,11 @@
       },
       "EffectiveApiRateLimits": {
         "required": [
+          "anonymous",
           "batchSession",
+          "batchSessionClose",
           "collectiveIdentifier",
+          "global",
           "invoiceDownload",
           "invoiceExport",
           "invoiceExportStatus",
@@ -12572,6 +12600,7 @@
           "invoiceSend",
           "invoiceStatus",
           "onlineSession",
+          "onlineSessionClose",
           "other",
           "sessionInvoiceList",
           "sessionList",
@@ -12590,7 +12619,20 @@
                 "$ref": "#/components/schemas/EffectiveApiRateLimitValues"
               }
             ],
-            "description": "Лимиты для открытия/закрытия интерактивных сессий."
+            "description": "Пределы для открытия интерактивных сеансов."
+          },
+          "onlineSessionClose": {
+            "required": [
+              "perSecond",
+              "perMinute",
+              "perHour"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EffectiveApiRateLimitValues"
+              }
+            ],
+            "description": "Пределы для закрытия интерактивных сеансов."
           },
           "batchSession": {
             "required": [
@@ -12603,7 +12645,20 @@
                 "$ref": "#/components/schemas/EffectiveApiRateLimitValues"
               }
             ],
-            "description": "Лимиты для открытия/закрытия пакетных сессий."
+            "description": "Пределы для открытия пакетных сеансов."
+          },
+          "batchSessionClose": {
+            "required": [
+              "perSecond",
+              "perMinute",
+              "perHour"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EffectiveApiRateLimitValues"
+              }
+            ],
+            "description": "Пределы для закрытия пакетных сеансов."
           },
           "invoiceSend": {
             "required": [
@@ -12747,6 +12802,32 @@
               }
             ],
             "description": "Лимиты для прочих операций API."
+          },
+          "anonymous": {
+            "required": [
+              "perSecond",
+              "perMinute",
+              "perHour"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EffectiveApiRateLimitValues"
+              }
+            ],
+            "description": "Пределы для анонимных операций API (неаутентифицированных)."
+          },
+          "global": {
+            "required": [
+              "perSecond",
+              "perMinute",
+              "perHour"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EffectiveApiRateLimitValues"
+              }
+            ],
+            "description": "Глобальные пределы для всех операций API (на IP-адрес)."
           }
         }
       },
@@ -14214,7 +14295,6 @@
           "detail",
           "reasonCode",
           "status",
-          "timestamp",
           "title"
         ],
         "type": "object",
@@ -17060,6 +17140,8 @@
             "format": "byte"
           },
           "publicKeyId": {
+            "maxLength": 44,
+            "minLength": 44,
             "type": "string",
             "description": "Идентификатор ключа, используемый в качестве селектора в вызовах, в которых клиент указывает, какой открытый ключ был использован для шифрования.",
             "format": "byte"

@@ -1,14 +1,14 @@
 ---
 original: limity/limity-api.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: d92d285
-last_translated: 2026-05-23
+source_commit: 7533a80
+last_translated: 2026-09-17
 ---
 
 > **Translation.** Original: [limity/limity-api.md](https://github.com/CIRFMF/ksef-docs/blob/main/limity/limity-api.md)
 
 ## API Request Limits
-22.11.2025
+14.09.2026
 
 Due to the scale of KSeF operations and its public nature, mechanisms have been introduced to limit the intensity of API requests. Their purpose is to protect system stability, protect against cyber threats, and ensure equal access conditions for all users. The limits define the maximum number of queries that can be executed within a specified time and enforce an integration approach that aligns with the system's architectural assumptions.
 
@@ -17,7 +17,7 @@ Due to the scale of KSeF operations and its public nature, mechanisms have been 
 #### 1. How Limits Are Calculated
 All requests to the KSeF API are subject to limits. These restrictions apply to every call to a protected endpoint. For traffic billing purposes, requests are grouped by pair: context and IP address.
 
-- **context** - defined by the `ContextIdentifier` (`Nip`, `InternalId`, or `NipVatUe`) passed during authentication.
+- **context** - defined by the `ContextIdentifier` (`Nip`, `InternalId` or `NipVatUe`) passed during authentication.
 - **IP address** - the IP address from which the network connection is established.
 
 Request limits are calculated independently for each pair: context and IP address. This means that traffic in the same context but from different IP addresses is billed separately.
@@ -187,7 +187,7 @@ Example scenarios for batch mode application:
 | Endpoint | | req/s | req/min | req/h |
 |----------|---|-------|---------|-------|
 | Open batch session * | POST /sessions/batch | 10 | 20 | 60 |
-| Close batch session | POST /sessions/batch/{referenceNumber}/close | 10 | 20 | 60 |
+| Close batch session | POST /sessions/batch/{referenceNumber}/close | 20 | 40 | 120 |
 
 **Package part sending** - requests transmitting package parts within one batch session are not subject to API limits. For packages divided into multiple parts, parallel (multi-threaded) sending is recommended, which significantly shortens the sending time.
 
@@ -207,7 +207,7 @@ Interactive mode, despite greater network overhead in case of larger volumes, is
 |----------|---|-------|---------|-------|
 | Open interactive session | POST /sessions/online | 10 | 30 | 120 |
 | Send invoice * | POST /sessions/online/{referenceNumber}/invoices | 10 | 30 | 180 |
-| Close interactive session | POST /sessions/online/{referenceNumber}/close | 10 | 30 | 120 |
+| Close interactive session | POST /sessions/online/{referenceNumber}/close | 20 | 60 | 240 |
 
 \* **Note:** If your organization's business scenarios regularly reach interactive session sending limits, batch mode should be considered first, which allows more efficient use of available resources and limits.
 In situations where using interactive sessions is necessary but the achieved limits remain insufficient, please contact KSeF support for individual analysis and help in selecting a solution.

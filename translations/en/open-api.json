@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "KSeF API TE",
-    "description": "**API Version:** 2.7.1 (build 2.7.1-te)<br>\n**Public Keys** of the Ministry of Finance (for the given environment): [Download keys](#tag/Certyfikaty-klucza-publicznego)<br>\n**Changelog:** [Changelog](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)<br>\n**Extended API documentation:** [ksef-docs](https://github.com/CIRFMF/ksef-docs/tree/main)\n\n**API Server Address:**\n- TEST Environment: `https://api-test.ksef.mf.gov.pl/v2`",
+    "description": "**API Version:** 2.8.0 (build 2.8.0-te)<br>\n**Public keys** of the Ministry of Finance (for the given environment): [Download keys](#tag/Certyfikaty-klucza-publicznego)<br>\n**Changelog:** [Changelog](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)<br>\n**Extended API documentation:** [ksef-docs](https://github.com/CIRFMF/ksef-docs/tree/main)\n\n**API Server Address:**\n- TEST Environment: `https://api-test.ksef.mf.gov.pl/v2`",
     "version": "v2"
   },
   "servers": [
@@ -2501,7 +2501,7 @@
                   "collectiveIdentifiers": [
                     {
                       "collectiveIdentifierNumber": "1111111111-IZ202607-65ED02180000-E7",
-                      "dateCreated": "2026-07-10T12:00:00+02:00",
+                      "dateCreated": "2026-07-11T12:00:00+00:00",
                       "invoiceCount": 16,
                       "createdInCurrentContext": true
                     }
@@ -2603,7 +2603,7 @@
           "Collective identifiers"
         ],
         "summary": "Retrieval of a list of invoices that make up a collective identifier",
-        "description": "Returns a list of KSeF invoice numbers that make up the collective identifier.\n            \nInformation about the payment amount and currency is returned only to the entity that created the collective identifier, or to the entity acting in the role on the given invoice.\n\nIf the payment amount and currency were specified when creating the collective identifier, and the entity does not have access to this information, the fields related to the payment amount and currency are not returned, and the <b>detailsHidden</b> field takes the value <b>true</b>.\n\nIf the payment amount and currency were not specified when creating the collective identifier, their values remain empty, and the <b>detailsHidden</b> field takes the value <b>false</b>.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- ksefNumber (Desc)\n\n\n\n**Required one of the permissions**: `InvoiceRead`, `InvoiceWrite`, `CollectiveIdentifierManage`.",
+        "description": "Returns a list of KSeF invoice numbers that make up the collective identifier.\n            \nInformation about the payment description, amount, and currency is returned only to the entity that created the collective identifier or to the entity appearing in the role on the given invoice.\n\nIf the payment description, amount, and currency were specified when creating the collective identifier, and the entity does not have access to this information, the fields for the payment description, amount, and currency are not returned, and the <b>detailsHidden</b> field takes the value <b>true</b>.\n\nIf the payment description, amount, and currency were not specified when creating the collective identifier, their values remain empty, and the <b>detailsHidden</b> field takes the value <b>false</b>.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- ksefNumber (Desc)\n\n\n\n**One of the following permissions is required**: `InvoiceRead`, `InvoiceWrite`, `CollectiveIdentifierManage`.",
         "parameters": [
           {
             "name": "x-continuation-token",
@@ -3161,10 +3161,20 @@
                     "perMinute": 30,
                     "perHour": 120
                   },
+                  "onlineSessionClose": {
+                    "perSecond": 20,
+                    "perMinute": 60,
+                    "perHour": 240
+                  },
                   "batchSession": {
                     "perSecond": 10,
                     "perMinute": 20,
                     "perHour": 60
+                  },
+                  "batchSessionClose": {
+                    "perSecond": 20,
+                    "perMinute": 40,
+                    "perHour": 120
                   },
                   "invoiceSend": {
                     "perSecond": 10,
@@ -3220,6 +3230,16 @@
                     "perSecond": 10,
                     "perMinute": 30,
                     "perHour": 120
+                  },
+                  "anonymous": {
+                    "perSecond": 60,
+                    "perMinute": -1,
+                    "perHour": -1
+                  },
+                  "global": {
+                    "perSecond": -1,
+                    "perMinute": -1,
+                    "perHour": -1
                   }
                 }
               }
@@ -3422,7 +3442,7 @@
             }
           },
           "400": {
-            "description": "",
+            "description": "| ExceptionCode | ExceptionDescription | Details |\n|-|-|-|\n| 21405 | Input data validation error. | {error message from validator} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -3807,7 +3827,7 @@
             }
           },
           "400": {
-            "description": "",
+            "description": "| ExceptionCode | ExceptionDescription | Details |\n|-|-|-|\n| 21405 | Input data validation error. | {error message from validator} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -8739,7 +8759,7 @@
           "Interactive submission"
         ],
         "summary": "Opening an interactive session",
-        "description": "Opens a session for sending individual invoices. The schema of the invoices to be sent and information about the key used for encryption must be provided.\n\n> More information:\n> - [Opening an interactive session](https://github.com/CIRFMF/ksef-api/blob/main/sesja-interaktywna.md#1-otwarcie-sesji)\n> - [Public key of the Ministry of Finance](/docs/v2/index.html#tag/Certyfikaty-klucza-publicznego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required one of the permissions**: `InvoiceWrite`, `PefInvoiceWrite`, `EnforcementOperations`.",
+        "description": "Opens a session for sending individual invoices. The schema of the invoices being sent and information about the key used for encryption must be provided.\n\n> More information:\n> - [Opening an interactive session](https://github.com/CIRFMF/ksef-api/blob/main/sesja-interaktywna.md#1-otwarcie-sesji)\n> - [Public key of the Ministry of Finance](/docs/v2/index.html#tag/Certyfikaty-klucza-publicznego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n`X-KSeF-Feature: subject-identifier-validation` - Enables validation of NIP numbers and internal identifiers of entities indicated on the invoice.\n\n**One of the following permissions is required**: `InvoiceWrite`, `PefInvoiceWrite`, `EnforcementOperations`.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -8937,7 +8957,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                                                                    | \n|---------------------|-----------------------------------------------------|------------------------------------------------------------------------------------------------------------|\n| 21155               | The allowed number of invoices in the session has been exceeded.       | The session with reference number {referenceNumber} has reached the allowed invoice limit {invoiceLimit}.    |\n| 21166               | Technical correction unavailable.                     | The invoice already has a successfully processed technical correction.                                            |\n| 21167               | Invoice status does not allow technical correction.   | A technical correction cannot be sent for a successfully processed invoice.                                  |\n| 21173               | No session found with the specified reference number.       | The session with reference number {referenceNumber} was not found.                                   |\n| 21180               | Session status does not allow the operation to be performed.     | Session status {code} prevents invoice submission.                                                           |\n| 21402               | Invalid file size.                        | The content length does not match the file size.                                                           |\n| 21403               | Invalid file hash.                          | The content hash does not match the file hash.                                                              |\n| 21405 | Input data validation error. | {error message from validator} |",
+            "description": "| ExceptionCode | ExceptionDescription | Details |\n|---------------------|-----------------------------------------------------|------------------------------------------------------------------------------------------------------------|\n| 21155 | Exceeded the allowed number of invoices in the session. | The session with reference number {referenceNumber} has reached the allowed invoice limit {invoiceLimit}. |\n| 21166 | Technical correction unavailable. | The invoice already has a properly processed technical correction. |\n| 21167 | Invoice status does not allow for technical correction. | A technical correction cannot be sent to a properly processed invoice. |\n| 21173 | Session with the specified reference number not found. | The session with reference number {referenceNumber} was not found. |\n| 21180 | Session status does not allow operation execution. | Session status {code} prevents sending invoices. |\n| 21184 | Session temporarily unavailable. | Maintenance work is in progress and session {referenceNumber} is temporarily unavailable. Try again later or open a new session to send subsequent invoices. |\n| 21402 | Invalid file size. | Content length does not match the file size. |\n| 21403 | Invalid file hash. | Content hash does not match the file hash. |\n| 21405 | Input data validation error. | {error content from validator} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -9079,7 +9099,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | onlineSession\n",
+            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request Limits** | 20 | 60 | 240 | onlineSessionClose",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -9108,9 +9128,9 @@
           }
         ],
         "x-rate-limits": {
-          "perSecond": 10,
-          "perMinute": 30,
-          "perHour": 120
+          "perSecond": 20,
+          "perMinute": 60,
+          "perHour": 240
         },
         "x-required-permissions": [
           "InvoiceWrite",
@@ -9125,7 +9145,7 @@
           "Batch submission"
         ],
         "summary": "Opening a batch session",
-        "description": "Opens a session for batch sending of invoices. The schema of the invoices being sent, information about the invoice package, and information about the key used for encryption must be provided.\n\n> More information:\n> - [Preparing an invoice package](https://github.com/CIRFMF/ksef-api/blob/main/sesja-wsadowa.md)\n> - [Ministry of Finance public key](/docs/v2/index.html#tag/Certyfikaty-klucza-publicznego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required one of the permissions**: `InvoiceWrite`, `EnforcementOperations`.",
+        "description": "Opens a session for batch invoice sending. You must provide the schema of the invoices being sent, information about the invoice package, and information about the key used for encryption.\n\n> More information:\n> - [Preparing the invoice package](https://github.com/CIRFMF/ksef-api/blob/main/sesja-wsadowa.md)\n> - [Ministry of Finance Public Key](/docs/v2/index.html#tag/Certyfikaty-klucza-publicznego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n`X-KSeF-Feature: subject-identifier-validation` - Enables validation of NIP numbers and internal identifiers of entities indicated on the invoice.\n\n**Required one of the permissions**: `InvoiceWrite`, `EnforcementOperations`.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -9341,7 +9361,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 20 | 60 | batchSession\n",
+            "description": "| | req / s | req / min | req / h | grupa\n| --- | --- | --- | --- | --- |\n| **Request limits** | 20 | 40 | 120 | batchSessionClose",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -9370,9 +9390,9 @@
           }
         ],
         "x-rate-limits": {
-          "perSecond": 10,
-          "perMinute": 20,
-          "perHour": 60
+          "perSecond": 20,
+          "perMinute": 40,
+          "perHour": 120
         },
         "x-required-permissions": [
           "InvoiceWrite",
@@ -10905,7 +10925,7 @@
                 "$ref": "#/components/schemas/ApiRateLimitValuesOverride"
               }
             ],
-            "description": "Limits for opening/closing interactive sessions."
+            "description": "Limits for opening interactive sessions."
           },
           "batchSession": {
             "required": [
@@ -10918,7 +10938,7 @@
                 "$ref": "#/components/schemas/ApiRateLimitValuesOverride"
               }
             ],
-            "description": "Limits for opening/closing batch sessions."
+            "description": "Limits for opening batch sessions."
           },
           "invoiceSend": {
             "required": [
@@ -12532,7 +12552,12 @@
           "YER",
           "ZAR",
           "ZMW",
-          "ZWL"
+          "ZWL",
+          "CNH",
+          "VED",
+          "XTS",
+          "ZWG",
+          "SLE"
         ],
         "type": "string"
       },
@@ -12563,8 +12588,11 @@
       },
       "EffectiveApiRateLimits": {
         "required": [
+          "anonymous",
           "batchSession",
+          "batchSessionClose",
           "collectiveIdentifier",
+          "global",
           "invoiceDownload",
           "invoiceExport",
           "invoiceExportStatus",
@@ -12572,6 +12600,7 @@
           "invoiceSend",
           "invoiceStatus",
           "onlineSession",
+          "onlineSessionClose",
           "other",
           "sessionInvoiceList",
           "sessionList",
@@ -12590,7 +12619,20 @@
                 "$ref": "#/components/schemas/EffectiveApiRateLimitValues"
               }
             ],
-            "description": "Limits for opening/closing interactive sessions."
+            "description": "Limits for opening interactive sessions."
+          },
+          "onlineSessionClose": {
+            "required": [
+              "perSecond",
+              "perMinute",
+              "perHour"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EffectiveApiRateLimitValues"
+              }
+            ],
+            "description": "Limits for closing interactive sessions."
           },
           "batchSession": {
             "required": [
@@ -12603,7 +12645,20 @@
                 "$ref": "#/components/schemas/EffectiveApiRateLimitValues"
               }
             ],
-            "description": "Limits for opening/closing batch sessions."
+            "description": "Limits for opening batch sessions."
+          },
+          "batchSessionClose": {
+            "required": [
+              "perSecond",
+              "perMinute",
+              "perHour"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EffectiveApiRateLimitValues"
+              }
+            ],
+            "description": "Limits for closing batch sessions."
           },
           "invoiceSend": {
             "required": [
@@ -12747,6 +12802,32 @@
               }
             ],
             "description": "Limits for other API operations."
+          },
+          "anonymous": {
+            "required": [
+              "perSecond",
+              "perMinute",
+              "perHour"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EffectiveApiRateLimitValues"
+              }
+            ],
+            "description": "Limits for anonymous API operations (unauthenticated)."
+          },
+          "global": {
+            "required": [
+              "perSecond",
+              "perMinute",
+              "perHour"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EffectiveApiRateLimitValues"
+              }
+            ],
+            "description": "Global limits for all API operations (per IP address)."
           }
         }
       },
@@ -14214,7 +14295,6 @@
           "detail",
           "reasonCode",
           "status",
-          "timestamp",
           "title"
         ],
         "type": "object",
@@ -17060,6 +17140,8 @@
             "format": "byte"
           },
           "publicKeyId": {
+            "maxLength": 44,
+            "minLength": 44,
             "type": "string",
             "description": "Key identifier, used as a selector in calls where the client indicates which public key was used for encryption.",
             "format": "byte"
