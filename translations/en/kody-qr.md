@@ -1,8 +1,8 @@
 ---
 original: kody-qr.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 6fb819b
-last_translated: 2026-03-05
+source_commit: c50f855
+last_translated: 2026-09-24
 ---
 
 > **Translation.** Original: [kody-qr.md](https://github.com/CIRFMF/ksef-docs/blob/main/kody-qr.md)
@@ -27,7 +27,7 @@ Below are the URL addresses for individual KSeF environments used for QR code ge
 |--------------|-----------------------------------|-----------------------------------------------|
 | **TE**       | Test <br/> (Release Candidate)    | https://qr-test.ksef.mf.gov.pl                |
 | **DEMO**     | Pre-production (Demo/Preprod)     | https://qr-demo.ksef.mf.gov.pl                |
-| **PRD**      | Production                        | https://qr.ksef.mf.gov.pl                     |
+| **PROD**     | Production                        | https://qr.ksef.mf.gov.pl                     |
 
 > **Note**: The following examples are prepared for the test environment (TE). For other environments, perform analogously using the appropriate URL address from the table above.
 
@@ -277,7 +277,7 @@ byte[] qrOnline = qrCodeService.generateQrCode(invoiceForOnlineUrl);
 
 #### Label under QR code
 
-Under the QR code there should be a **CERTIFICATE** label, indicating the KSeF certificate verification function.
+Under the QR code there should be a **CERTYFIKAT** label, indicating the KSeF certificate verification function.
 
 Example in ```C#```:
 [KSeF.Client.Tests.Core\E2E\QrCode\QrCodeE2ETests.cs](https://github.com/CIRFMF/ksef-client-csharp/blob/main/KSeF.Client.Tests.Core/E2E/QrCode/QrCodeE2ETests.cs)
@@ -291,7 +291,7 @@ Example in Java:
 [QrCodeOnlineIntegrationTest.java](https://github.com/CIRFMF/ksef-client-java/blob/main/demo-web-app/src/integrationTest/java/pl/akmf/ksef/sdk/QrCodeOnlineIntegrationTest.java)
 
 ```java
-byte[] qrOnline = qrCodeService.addLabelToQrCode(qrOnline, invoiceKsefNumber);
+byte[] qrOnline = qrCodeService.addLabelToQrCode(qrOnline, "CERTYFIKAT");
 ```
 
 ![QR Certificate](qr/qr-cert.png)

@@ -1,8 +1,8 @@
 ---
 original: limity/limity-api.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 7533a80
-last_translated: 2026-09-17
+source_commit: c50f855
+last_translated: 2026-09-24
 ---
 
 > **Translation.** Original: [limity/limity-api.md](https://github.com/CIRFMF/ksef-docs/blob/main/limity/limity-api.md)
@@ -88,15 +88,15 @@ For this reason, limits are dynamic in nature and may be adjusted depending on o
 In the TE environment, limits have been configured to allow integrators to work freely and test integrations without risk of blocking. Default limit values are **ten times higher** than in production, allowing for intensive testing.
 Additionally, thanks to available endpoints, various scenarios can be simulated:
 
-* [POST /testdata/rate-limits/production](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Limity-i-ograniczenia/paths/~1testdata~1rate-limits~1production/post) - activates limits as in production (PRD),
+* [POST /testdata/rate-limits/production](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Limity-i-ograniczenia/paths/~1testdata~1rate-limits~1production/post) - activates limits as in production (PROD),
 * [POST /testdata/rate-limits](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Limity-i-ograniczenia/paths/~1testdata~1rate-limits/post) - allows setting custom values,
 * [DELETE /testdata/rate-limits](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Limity-i-ograniczenia/paths/~1testdata~1rate-limits/delete) - restores default TE environment limits.
 
 **DEMO (Pre-production) Environment**
-In the DEMO environment, **the same limits as in production** apply for a given context. These values are **replicated from PRD** and serve for final validation of performance and integration stability before production deployment.
+In the DEMO environment, **the same limits as in production** apply for a given context. These values are **replicated from PROD** and serve for final validation of performance and integration stability before production deployment.
 
-**PRD (Production) Environment**
-In the PRD environment, **default limits** specified in this documentation are applied.
+**PROD (Production) Environment**
+In the PROD environment, **default limits** specified in this documentation are applied.
 In justified cases - e.g., large-scale invoice processing - there is a possibility to **submit a request for limit increase** via a dedicated form (in preparation).  
 
 ## Invoice Download - Limits

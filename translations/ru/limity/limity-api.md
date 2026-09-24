@@ -1,8 +1,8 @@
 ---
 original: limity/limity-api.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 7533a80
-last_translated: 2026-09-17
+source_commit: c50f855
+last_translated: 2026-09-24
 ---
 
 > **Translation.** Original: [limity/limity-api.md](https://github.com/CIRFMF/ksef-docs/blob/main/limity/limity-api.md)

@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "KSeF API TE",
-    "description": "**API Version:** 2.8.0 (build 2.8.0-te)<br>\n**Public keys** of the Ministry of Finance (for the given environment): [Download keys](#tag/Certyfikaty-klucza-publicznego)<br>\n**Changelog:** [Changelog](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)<br>\n**Extended API documentation:** [ksef-docs](https://github.com/CIRFMF/ksef-docs/tree/main)\n\n**API Server Address:**\n- TEST Environment: `https://api-test.ksef.mf.gov.pl/v2`",
+    "description": "**API Version:** 2.8.1 (build 2.8.1-te)<br>\n**Public Keys** of the Ministry of Finance (for the given environment): [Download keys](#tag/Certyfikaty-klucza-publicznego)<br>\n**Changelog:** [Changelog](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)<br>\n**Extended API documentation:** [ksef-docs](https://github.com/CIRFMF/ksef-docs/tree/main)\n\n**API Server Address:**\n- TEST Environment: `https://api-test.ksef.mf.gov.pl/v2`",
     "version": "v2"
   },
   "servers": [
@@ -2353,7 +2353,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode       | ExceptionDescription                                                         | Details                                                | \n|---------------------|------------------------------------------------------------------------------|--------------------------------------------------------|\n| 71001               | Invoice cannot be assigned to a Collective Identifier.                        | Invoice with KSeF number {ksefNumber} cannot be assigned to a Collective Identifier. |\n| 71002               | Invoice is already assigned to the maximum number of Collective Identifiers.            | Invoice with KSeF number {ksefNumber} is already assigned to the maximum number of Collective Identifiers. |\n| 21405 | Input data validation error. | {error text from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                                         | Details                                                | \n|---------------------|------------------------------------------------------------------------------|--------------------------------------------------------|\n| 71001               | Invoice with the given identifier does not exist.                        | Invoice with KSeF number {ksefNumber} was not found. |\n| 71002               | Invoice is already assigned to the maximum number of Collective Identifiers.            | Invoice with KSeF number {ksefNumber} is already assigned to the maximum number of Collective Identifiers. |\n| 71004               | Invoices have different sellers.                       | Invoice with KSeF number {ksefNumber} has a different seller.   |\n| 71005               | Repeated KSeF number in the request.                       | Repeated KSeF number {ksefNumber}. |\n| 21405 | Input data validation error. | {error content from validator} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -2511,7 +2511,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21405 | Input data validation error. | {error text from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21418               | The continuation token sent is invalid.     |  |\n| 21405 | Input data validation error. | {error content from validator} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -2683,7 +2683,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21405 | Input data validation error. | {error text from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21418               | The continuation token sent is invalid.     |  |\n| 21405 | Input data validation error. | {error content from validator} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -2830,7 +2830,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21405 | Input data validation error. | {error text from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21418               | The continuation token sent is invalid.     |  |\n| 21405 | Input data validation error. | {error content from validator} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -4136,7 +4136,7 @@
           "Granting permissions"
         ],
         "summary": "Granting entities permissions to handle invoices",
-        "description": "The method allows granting the entity specified in the request permissions to handle the context entity's invoices.  \nThe request specifies the permissions being granted from the set:  \n- **InvoiceWrite** – issuing invoices  \n- **InvoiceRead** – viewing invoices  \n            \nThe method allows selecting any combination of the above permissions.  \nFor each permission, a **canDelegate** flag can be set, indicating whether it can be further delegated through indirect granting.\n\n> More information:\n> - [Granting permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadanie-podmiotom-uprawnie%C5%84-do-obs%C5%82ugi-faktur)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permission**: `CredentialsManage`.",
+        "description": "The method allows granting the entity specified in the request permissions to handle invoices of the context entity.  \nThe request specifies the permissions granted from the set:  \n- **InvoiceWrite** – issuing invoices  \n- **InvoiceRead** – viewing invoices  \n- **CollectiveIdentifierManage** – managing collective identifiers\n            \nThe method allows selecting any combination of the above permissions.  \nFor each permission, the **canDelegate** flag can be set, indicating the possibility of further delegation through indirect granting.\n\n> More information:\n> - [Granting permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadanie-podmiotom-uprawnie%C5%84-do-obs%C5%82ugi-faktur)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permission**: `CredentialsManage`.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -4411,7 +4411,7 @@
           "Granting permissions"
         ],
         "summary": "Granting permissions indirectly",
-        "description": "The method allows indirectly granting the person specified in the request permissions to handle invoices of another entity – the client.  \nThis can be one of the options:  \n- granting general permissions – to handle all clients  \n- granting selective permissions – to handle the specified client  \n            \nA selective permission can only be granted if the client has previously granted the current context entity any permission with the right to delegate it (see [POST /v2/permissions/entities/grants](/docs/v2/index.html#tag/Nadawanie-uprawnien/paths/~1permissions~1entities~1grants/post)).  \n            \nThe request specifies the permissions being granted from the set:  \n- **InvoiceWrite** – issuing invoices  \n- **InvoiceRead** – viewing invoices  \n            \nThe method allows selecting any combination of the above permissions.\n\n> More information:\n> - [Granting permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadanie-uprawnie%C5%84-w-spos%C3%B3b-po%C5%9Bredni)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permission**: `CredentialsManage`.",
+        "description": "The method allows for indirectly granting to the person indicated in the request permissions to handle invoices of another entity – the client.  \nThis can be one of the following options:  \n- granting general permissions – to handle all clients  \n- granting selective permissions – to handle a specified client  \n            \nSelective permission can only be granted if the client has previously granted any permission to the current context entity with the right to further transfer it (see [POST /v2/permissions/entities/grants](/docs/v2/index.html#tag/Nadawanie-uprawnien/paths/~1permissions~1entities~1grants/post)).  \n            \nThe request specifies the permissions to be granted from the set:  \n- **InvoiceWrite** – issuing invoices  \n- **InvoiceRead** – viewing invoices  \n- **CollectiveIdentifierManage** – managing collective identifiers  \n            \nThe method allows for selecting any combination of the above permissions.\n\n> More information:\n> - [Granting permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadawanie-uprawnie%C5%84-w-spos%C3%B3b-po%C5%9Bredni)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permission**: `CredentialsManage`.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -9952,7 +9952,7 @@
           "Searching granted permissions"
         ],
         "summary": "Retrieving the list of permissions for invoice handling in the current context",
-        "description": "The method allows reading received permissions for handling invoices in the current login context.  \n\n The following permissions are passed in the response:  \n - granted to the entity for handling invoices by another entity \n\n Permissions returned by the operation include:  \n - **InvoiceWrite** – issuing invoices  \n - **InvoiceRead** – viewing invoices  \n\n The response can be filtered based on the following parameters:  \n - **contextIdentifier** – identifier of the entity that granted the permission to handle invoices  \n\n#### Result Pagination\nThe query returns **one page of results** with the number and size given in the path.\n- On the first call, set the parameter `pageOffset = 0`.  \n- If there is another page of results available, a **`hasMore`** flag will appear in the response.  \n- In such a case, the query can be called again with the next page number.\n\n > More information:\n > - [Retrieving permissions list](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-uprawnie%C5%84-do-obs%C5%82ugi-faktur-w-bie%C5%BC%C4%85cym-kontek%C5%9Bcie)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- startDate (Desc)\n- id (Asc)\n\n\n\n**Required one of the permissions**: `CredentialsManage`, `CredentialsRead`.",
+        "description": " The method allows for reading the received permissions to handle invoices in the current login context.  \n\n The response provides the following permissions:  \n - granted to the entity to handle invoices by another entity \n\n Permissions returned by the operation include:  \n - **InvoiceWrite** – issuing invoices  \n - **InvoiceRead** – viewing invoices  \n - **CollectiveIdentifierManage** – managing collective identifiers  \n\n The response can be filtered based on the following parameters:  \n - **contextIdentifier** – identifier of the entity that granted the permission to handle invoices  \n\n#### Result Pagination\nThe query returns **one page of results** with the number and size specified in the path.\n- On the first call, set the parameter `pageOffset = 0`.  \n- If there is another page of results available, a **`hasMore`** flag will appear in the response.  \n- In such a case, the query can be called again with the next page number.\n\n > More information:\n > - [Retrieving permission list](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-uprawnie%C5%84-do-obs%C5%82ugi-faktur-w-bie%C5%BC%C4%85cym-kontek%C5%9Bcie)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- startDate (Desc)\n- id (Asc)\n\n\n\n**One of the following permissions is required**: `CredentialsManage`, `CredentialsRead`.",
         "parameters": [
           {
             "name": "pageOffset",
@@ -13437,14 +13437,16 @@
       "EntityPermissionItemScope": {
         "enum": [
           "InvoiceWrite",
-          "InvoiceRead"
+          "InvoiceRead",
+          "CollectiveIdentifierManage"
         ],
         "type": "string"
       },
       "EntityPermissionType": {
         "enum": [
           "InvoiceWrite",
-          "InvoiceRead"
+          "InvoiceRead",
+          "CollectiveIdentifierManage"
         ],
         "type": "string"
       },
@@ -14524,7 +14526,8 @@
       "IndirectPermissionType": {
         "enum": [
           "InvoiceRead",
-          "InvoiceWrite"
+          "InvoiceWrite",
+          "CollectiveIdentifierManage"
         ],
         "type": "string"
       },

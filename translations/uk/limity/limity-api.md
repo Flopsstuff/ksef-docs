@@ -1,8 +1,8 @@
 ---
 original: limity/limity-api.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 7533a80
-last_translated: 2026-09-17
+source_commit: c50f855
+last_translated: 2026-09-24
 ---
 
 > **Translation.** Original: [limity/limity-api.md](https://github.com/CIRFMF/ksef-docs/blob/main/limity/limity-api.md)
@@ -88,15 +88,15 @@ Retry-After: 30
 На середовищі TE ліміти налаштовані таким чином, щоб забезпечити вільну роботу інтеграторів та тестування інтеграції без ризику блокувань. Стандартні значення лімітів є **у десять разів вищими** ніж на продукції, що дозволяє проводити інтенсивні тести.
 Додатково, завдяки наданим endpoint-ам можна симулювати різні сценарії:
 
-* [POST /testdata/rate-limits/production](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Limity-i-ograniczenia/paths/~1testdata~1rate-limits~1production/post) - активує ліміти такі ж як на продукції (PRD),
+* [POST /testdata/rate-limits/production](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Limity-i-ograniczenia/paths/~1testdata~1rate-limits~1production/post) - активує ліміти такі ж як на продукції (PROD),
 * [POST /testdata/rate-limits](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Limity-i-ograniczenia/paths/~1testdata~1rate-limits/post) - дозволяє встановити власні значення,
 * [DELETE /testdata/rate-limits](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Limity-i-ograniczenia/paths/~1testdata~1rate-limits/delete) - відновлює стандартні ліміти середовища TE.
 
 **Середовище DEMO (препродуктивне)**
-На середовищі DEMO діють **такі ж ліміти як на продукції** для даного контексту. Ці значення **реплікуються з PRD** і служать для фінальної валідації продуктивності та стабільності інтеграції перед продуктивним впровадженням.
+На середовищі DEMO діють **такі ж ліміти як на продукції** для даного контексту. Ці значення **реплікуються з PROD** і служать для фінальної валідації продуктивності та стабільності інтеграції перед продуктивним впровадженням.
 
-**Середовище PRD (продуктивне)**
-На середовищі PRD застосовуються **стандартні ліміти**, визначені в цій документації.
+**Середовище PROD (продуктивне)**
+На середовищі `PROD` застосовуються **стандартні ліміти**, визначені в цій документації.
 У обґрунтованих випадках — наприклад, великого масштабу обробки рахунків — передбачена можливість **подання заяви на підвищення лімітів** через спеціальну форму (в підготовці).  
 
 ## Завантаження рахунків - ліміти

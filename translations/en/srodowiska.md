@@ -1,8 +1,8 @@
 ---
 original: srodowiska.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 5e69797
-last_translated: 2026-04-04
+source_commit: c50f855
+last_translated: 2026-09-24
 ---
 
 > **Translation.** Original: [srodowiska.md](https://github.com/CIRFMF/ksef-docs/blob/main/srodowiska.md)
@@ -16,7 +16,7 @@ Below is a summary of the public environments.
 |-------|----------------------------------|-----------------------------------|----------------------------------|----------------------------------------------|
 | **TEST**  | Test <br/> (Release Candidate)        | Environment for testing integration with KSeF API 2.0, contains RC versions. | https://api-test.ksef.mf.gov.pl/docs/v2   | FA(2), FA(3), FA_PEF (3), FA_KOR_PEF (3)     |
 | **DEMO**  | Pre-production (Demo)    | Environment matching the production configuration, intended for final integration validation under conditions close to production. | https://api-demo.ksef.mf.gov.pl/docs/v2   | FA(3), FA_PEF (3), FA_KOR_PEF (3)            |
-| **PRD** | Production                        | Environment for issuing and receiving invoices with full legal force, with guaranteed SLA and actual production data.                           | https://api.ksef.mf.gov.pl/docs/v2             | FA(3), FA_PEF (3), FA_KOR_PEF (3)            |
+| **PROD**  | Production                        | Environment for issuing and receiving invoices with full legal force, with guaranteed SLA and actual production data.                           | https://api.ksef.mf.gov.pl/docs/v2             | FA(3), FA_PEF (3), FA_KOR_PEF (3)            |
 
 
 
@@ -27,7 +27,7 @@ For this reason, data entered in the `TE` environment is not isolated and may be
 Use random NIP identifiers for testing, avoiding any real data.
 
 ### URL addresses returned by the API
-In every case when the API returns a URL address for downloading or uploading a resource, its host corresponds to the environment to which the call was directed (TEST, DEMO or PRD).
+In every case when the API returns a URL address for downloading or uploading a resource, its host corresponds to the environment to which the call was directed (TEST, DEMO or PROD).
 
 ### Maintenance work on test environments
 Due to the planned, systematic development of the National e-Invoice System (KSeF 2.0), **from October 1, 2025**, periodic maintenance work may be carried out on the System's test environments.

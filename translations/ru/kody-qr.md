@@ -1,8 +1,8 @@
 ---
 original: kody-qr.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 5e69797
-last_translated: 2026-04-04
+source_commit: c50f855
+last_translated: 2026-09-24
 ---
 
 > **Translation.** Original: [kody-qr.md](https://github.com/CIRFMF/ksef-docs/blob/main/kody-qr.md)
@@ -27,7 +27,7 @@ QR-коды были введены для ситуаций, когда счет
 |------------|-------------------------------------|-----------------------------------------------|
 | **TE**     | Тестовая <br/> (Release Candidate) | https://qr-test.ksef.mf.gov.pl                |
 | **DEMO**   | Предпроизводственная (Demo/Preprod) | https://qr-demo.ksef.mf.gov.pl                |
-| **PRD**    | Производственная                    | https://qr.ksef.mf.gov.pl                     |
+| **PROD**   | Производственная                    | https://qr.ksef.mf.gov.pl                     |
 
 > **Внимание**: Приведённые ниже примеры подготовлены для тестовой среды (TE). Для остальных сред следует выполнить аналогично, используя соответствующий URL-адрес из приведённой выше таблицы.
 
