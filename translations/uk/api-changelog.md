@@ -1,8 +1,8 @@
 ---
 original: api-changelog.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: c50f855
-last_translated: 2026-09-24
+source_commit: ce3670e
+last_translated: 2026-10-15
 ---
 
 > **Translation.** Original: [api-changelog.md](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)
@@ -14,7 +14,21 @@ last_translated: 2026-09-24
 
 
 
+
 ## Зміни в API 2.0
+
+### Версія 2.9.0
+| Середовище | Дата впровадження |
+| ---------- | -------------: |
+| **ТЕСТ**   |     13.10.2026 |
+| **ДЕМО**   |     13.10.2026 |
+| **ПРОД**   |     15.10.2026 |
+
+- **Права доступу**  
+  Розширено POST `/permissions/query/personal/grants` за рахунок `OwnerPermissionScope`, що повертає права власника.
+
+- **OpenAPI**  
+  Доповнено документацію відповідей про помилки кодом `21001` (Нечитабельний вміст) з деталями {`детальний опис помилки`}. Зміна має характер документаційний; код також повертався API раніше.
 
 ### Версія 2.8.1
 | Середовище | Дата впровадження |
@@ -30,6 +44,7 @@ last_translated: 2026-09-24
 - **Дозволи**  
   - Розширено POST `/permissions/entities/grants` та POST `/permissions/indirect/grants` можливістю надання дозволу `CollectiveIdentifierManage`.
   - Розширено відповідь POST `/permissions/query/entities/grants` значенням `CollectiveIdentifierManage` у `permissionScope`.
+
 
 ### Версія 2.8.0
 | Середовище | Дата впровадження |
@@ -61,6 +76,7 @@ last_translated: 2026-09-24
   Додано документацію відповіді `400 Bad Request` для POST та DELETE `/testdata/limits/context/session` зі стандартним кодом помилки `21405` ("Помилка валідації вхідних даних").
 
 
+
 ### Версія 2.7.1
 | Середовище | Дата впровадження |
 | ---------- | -------------: |
@@ -87,6 +103,7 @@ last_translated: 2026-09-24
 
 
 
+
 ### Версія 2.7.0
 | Середовище | Дата впровадження |
 | ---------- | -------------: |
@@ -102,6 +119,7 @@ last_translated: 2026-09-24
 
 - **OpenAPI**  
   Уніфіковано описи необхідних дозволів: коли достатньо мати один із кількох дозволів, використовується формулювання "Потрібен один із дозволів", а в разі одного дозволу — "Потрібен дозвіл". Зміна має характер документаційний; поведінка API залишається без змін.
+
 
 
 
@@ -126,6 +144,7 @@ last_translated: 2026-09-24
 
 
 
+
 ### Версія 2.6.0
 
 | Середовище | Дата впровадження |
@@ -143,6 +162,7 @@ last_translated: 2026-09-24
 - **OpenAPI**  
   - Уніфіковано регулярні вирази для IP-адрес (`Ip4Address`, `Ip4Range`, `Ip4Mask`) у POST `/auth/ksef-token` — застосовано ті самі патерни, що й у схемі AuthTokenRequest 2.1.
   - Додано відсутній опис для `InvoiceMetadataThirdSubject` ("Ідентифікатор третьої сторони.").
+
 
 
 
@@ -176,6 +196,7 @@ last_translated: 2026-09-24
 - **OpenAPI**  
   - Доповнено описи параметра `certificateSerialNumber` форматом і обмеженнями (`minLength/maxLength: 16`, `pattern: ^[0-9A-F]{16}$`). Зміна має документаційний характер — не вводить додаткової валідації на боці API і не змінює поведінки endpoint-ів (наприклад, POST `/certificates/retrieve`).
   - Видалено значення, пов'язані з рахунками-фактурами RR, раніше позначені як deprecated (зокрема `InvoiceQueryFormType.RR`).
+
 
 
 
@@ -235,6 +256,7 @@ last_translated: 2026-09-24
 
 
 
+
 ### Версія 2.3.0
 
 - **Відправка заявки на сертифікацію (POST /certificates/enrollments)**  
@@ -266,12 +288,14 @@ last_translated: 2026-09-24
 
 
 
+
 ### Версія 2.2.1
 
 - **Надсилання рахунків-фактур**  
   Додано нову версію (`1-1E`) схеми `FA_RR (1)`.  
   Схема `FA_RR (1) 1-0E` буде підтримуватися на середовищі TEST до 23.04.
   Схема `FA_RR (1) 1-1E` буде обов'язковою на середовищі PRD з 01.04.  
+
 
 
 
@@ -303,6 +327,7 @@ last_translated: 2026-09-24
 
 
 
+
 ### Версія 2.1.2
 
 - **Надсилання рахунків-фактур**  
@@ -324,6 +349,7 @@ last_translated: 2026-09-24
 
 
 
+
 ### Версія 2.1.1
 
 - **Аутентифікація**  
@@ -331,6 +357,7 @@ last_translated: 2026-09-24
   Доповнено визначення `authenticationMethodInfo` - позначено властивості `category`, `code` та `displayName` як `required` у моделі відповіді.
   - **Аутентифікація з використанням підпису XAdES (POST `/auth/xades-signature`)**  
   Додано можливість раннього увімкнення нових вимог валідації XAdES на середовищах DEMO і PRD через заголовок: `X-KSeF-Feature`: `enforce-xades-compliance`.
+
 
 
 
@@ -370,6 +397,7 @@ last_translated: 2026-09-24
 
 
 
+
 ### Версія 2.0.1
 
 - **Дозволи**
@@ -391,6 +419,7 @@ last_translated: 2026-09-24
 
 - **OpenAPI**  
   Незначні оновлення описів.
+
 
 
 
@@ -468,6 +497,7 @@ last_translated: 2026-09-24
 
 
 
+
 ### Версія 2.0.0 RC6.1
 
 - **Нова адресація середовищ**  
@@ -518,6 +548,7 @@ last_translated: 2026-09-24
   - GET `/sessions`
   - GET `/sessions/{referenceNumber}/invoices`
   - GET `/sessions/{referenceNumber}/invoices/failed`
+
 
 
 
@@ -599,6 +630,7 @@ last_translated: 2026-09-24
 
 
 
+
 ### Версія 2.0.0 RC5.7
 
 - **Відкриття пакетної сесії (POST `/sessions/batch`)**  
@@ -612,6 +644,7 @@ last_translated: 2026-09-24
   - Додано обмеження довжини для властивостей типу string: `minLength` та `maxLength`.  
   - Оновлено описи властивостей (`invoiceMetadataAuthorizedSubject.role`, `invoiceMetadataBuyer`, `invoiceMetadataThirdSubject.role`, `buyerIdentifier`).
   - Оновлено regex шаблони для `vatUeIdentifier`, `authorizedFingerprintIdentifier`, `internalId`, `nipVatUe`, `peppolId`.
+
 
 
 
@@ -645,6 +678,7 @@ last_translated: 2026-09-24
   - Визначено схему `Challenge` (string, 36 символів) і застосовано в `AuthenticationChallengeResponse`.`challenge`.
   - Визначено загальну схему `PermissionId` (string, 36 символів) і застосовано її у всіх місцях: в параметрах та у властивостях відповідей.
   - Додано регулярні вирази для вибраних текстових полів.
+
 
 
 
@@ -702,6 +736,7 @@ last_translated: 2026-09-24
 
 
 
+
 ### Версія 2.0.0 RC5.4
 
 - **Отримання списку метаданых рахунків-фактур (POST /invoices/query/metadata)**  
@@ -719,6 +754,7 @@ last_translated: 2026-09-24
 - **OpenAPI**  
   - Уточнено визначення табличних параметрів в query; застосовано `style: form`. Декілька значень потрібно передавати через повторення параметра, наприклад `?statuses=InProgress&statuses=Succeeded`. Документаційна зміна, без впливу на роботу API.
   - Оновлено описи властивостей (`partUploadRequests`, `encryptedSymmetricKey`, `initializationVector`).
+
 
 
 
@@ -808,6 +844,7 @@ last_translated: 2026-09-24
 
 
 
+
 ### Версія 2.0.0 RC5.2
 - **Дозволи** 
   - "Надання дозволів адміністратора підпорядкованого суб'єкта" (POST `/permissions/subunits/grants`)  
@@ -836,6 +873,7 @@ last_translated: 2026-09-24
   - Оновлено приклади (example) у визначеннях endpoints.
   - Уточнено описи endpoints.
   - Додано атрибут `required` для обов'язкових властивостей у запитах і відповідях.
+
 
 
 
@@ -909,6 +947,7 @@ last_translated: 2026-09-24
 
 - **Отримання списку дозволів для роботи в KSeF, наданих фізичним особам або суб'єктам (POST /permissions/query/persons/grants)**  
   - Додано `contextIdentifier` у фільтрі запиту і в моделі відповіді.
+
 
 
 

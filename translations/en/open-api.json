@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "KSeF API TE",
-    "description": "**API Version:** 2.8.1 (build 2.8.1-te)<br>\n**Public Keys** of the Ministry of Finance (for the given environment): [Download keys](#tag/Certyfikaty-klucza-publicznego)<br>\n**Changelog:** [Changelog](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)<br>\n**Extended API documentation:** [ksef-docs](https://github.com/CIRFMF/ksef-docs/tree/main)\n\n**API Server Address:**\n- TEST Environment: `https://api-test.ksef.mf.gov.pl/v2`",
+    "description": "**API Version:** 2.9.0 (build 2.9.0-te)<br>\n**Public Keys** of the Ministry of Finance (for the given environment): [Download keys](#tag/Certyfikaty-klucza-publicznego)<br>\n**Changelog:** [Changelog](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)<br>\n**Extended API documentation:** [ksef-docs](https://github.com/CIRFMF/ksef-api/tree/main)\n\n**API Server Address:**\n- TEST Environment: `https://api-test.ksef.mf.gov.pl/v2`",
     "version": "v2"
   },
   "servers": [
@@ -82,7 +82,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21418               | The provided continuation token has an invalid format. |   |\n| 21405 | Input data validation error. | {error message from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21001               | Unreadable content.                                  | {detailed error description}                                    |\n| 21418               | The continuation token has an invalid format.        |                                                           |\n| 21405 | Input data validation error. | {validator error content} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -607,7 +607,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode       | ExceptionDescription                                                                           | Details |\n|---------------------|------------------------------------------------------------------------------------------------|---------|\n| 25002               | Unable to submit a certification request for the authentication method used. |         |\n| 25003               | The data in the CSR does not match the data in the authentication vector used.                     |         |\n| 25004               | Invalid CSR format or invalid CSR signature.                                             |         |\n| 25006               | The limit of certification requests that can be submitted has been reached.                              |         |\n| 25007               | The maximum allowed number of certificates has been reached.                                |         |\n| 25010               | Invalid key type or length.                                                          |         |\n| 25011               | Invalid CSR signature algorithm.                                                            |         |\n| 21405 | Input data validation error. | {error message from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                                                           | Details |\n|---------------------|------------------------------------------------------------------------------------------------|---------|\n| 21001               | Unreadable content.                                                           | {detailed error description}  |\n| 25002               | Unable to submit a certificate application for the used authentication method. |         |\n| 25003               | Data in CSR does not match data in the used authentication vector.                     |         |\n| 25004               | Invalid CSR format or invalid CSR signature.                                             |         |\n| 25006               | The limit of possible certificate applications has been reached.                              |         |\n| 25007               | The limit of allowed certificates has been reached.                                |         |\n| 25010               | Invalid key type or length.                                                          |         |\n| 25011               | Invalid CSR signing algorithm.                                                            |         |\n| 21405 | Input data validation error. | {validator error content} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -870,7 +870,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode | ExceptionDescription | Details |\n|-|-|-|\n| 21405 | Input data validation error. | {error message from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                                                           | Details |\n|---------------------|------------------------------------------------------------------------------------------------|---------|\n| 21001               | Unreadable content.                                                           | {detailed error description}  |\n| 21405 | Input data validation error. | {validator error content} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -988,7 +988,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode       | ExceptionDescription                                                                           | Details |\n|---------------------|------------------------------------------------------------------------------------------------|---------|\n| 25008               | A certificate with the given serial number does not exist.                                            |         |\n| 25009               | The indicated certificate cannot be revoked because it is already revoked, blocked, or invalid.|         |\n| 21405 | Input data validation error. | {error content from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                                                           | Details |\n|---------------------|------------------------------------------------------------------------------------------------|---------|\n| 21001               | Unreadable content.                                                            | {detailed error description}  |\n| 25008               | Certificate with the given serial number does not exist.                                        |         |\n| 25009               | Cannot revoke the specified certificate because it is already revoked, blocked or invalid.      |         |\n| 21405 | Input data validation error. | {error content from validator} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -1148,7 +1148,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode | ExceptionDescription | Details |\n|-|-|-|\n| 21405 | Input data validation error. | {error message from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                                                           | Details |\n|---------------------|------------------------------------------------------------------------------------------------|---------|\n| 21001               | Unreadable content.                                                           | {detailed error description}  |\n| 21405 | Input data validation error. | {validator error content} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -2353,7 +2353,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode       | ExceptionDescription                                                         | Details                                                | \n|---------------------|------------------------------------------------------------------------------|--------------------------------------------------------|\n| 71001               | Invoice with the given identifier does not exist.                        | Invoice with KSeF number {ksefNumber} was not found. |\n| 71002               | Invoice is already assigned to the maximum number of Collective Identifiers.            | Invoice with KSeF number {ksefNumber} is already assigned to the maximum number of Collective Identifiers. |\n| 71004               | Invoices have different sellers.                       | Invoice with KSeF number {ksefNumber} has a different seller.   |\n| 71005               | Repeated KSeF number in the request.                       | Repeated KSeF number {ksefNumber}. |\n| 21405 | Input data validation error. | {error content from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                                         | Details                                                | \n|---------------------|------------------------------------------------------------------------------|--------------------------------------------------------|\n| 21001               | Unreadable content.                                                           | {detailed error description}                            |\n| 71001               | Invoice with the given identifier does not exist.                         | Invoice with KSeF number {ksefNumber} was not found. |\n| 71002               | Invoice is already assigned to the maximum number of Collective Identifiers.            | Invoice with KSeF number {ksefNumber} is already assigned to the maximum number of Collective Identifiers. |\n| 71004               | Invoices have different sellers.                       | Invoice with KSeF number {ksefNumber} has a different seller.   |\n| 71005               | Repeated KSeF number in the request.                       | Repeated KSeF number {ksefNumber}. |\n| 21405 | Input data validation error. | {error content from validator} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -2511,7 +2511,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21418               | The continuation token sent is invalid.     |  |\n| 21405 | Input data validation error. | {error content from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21001               | Unreadable content.                                                           | {detailed error description}                            |\n| 21418               | The submitted continuation token is invalid.         |  |\n| 21405 | Input data validation error. | {error content from validator} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -2683,7 +2683,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21418               | The continuation token sent is invalid.     |  |\n| 21405 | Input data validation error. | {error content from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21001               | Unreadable content.                                                           | {detailed error description}                            |\n| 21418               | The submitted continuation token is invalid.         |  |\n| 21405 | Input data validation error. | {error content from validator} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -2830,7 +2830,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21418               | The continuation token sent is invalid.     |  |\n| 21405 | Input data validation error. | {error content from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21001               | Unreadable content.                                                           | {detailed error description}                            |\n| 21418               | The submitted continuation token is invalid.         |  |\n| 21405 | Input data validation error. | {error content from validator} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -4056,7 +4056,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode | ExceptionDescription | Details |\n|-|-|-|\n| 21405 | Input data validation error. | {error message from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                                                           | Details |\n|---------------------|------------------------------------------------------------------------------------------------|---------|\n| 21001               | Unreadable content.                                                           | {detailed error description}  |\n| 21405 | Input data validation error. | {validator error content} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -4198,7 +4198,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode | ExceptionDescription | Details |\n|-|-|-|\n| 21405 | Input data validation error. | {error message from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                                                           | Details |\n|---------------------|------------------------------------------------------------------------------------------------|---------|\n| 21001               | Unreadable content.                                                           | {detailed error description}  |\n| 21405 | Input data validation error. | {validator error content} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -4331,7 +4331,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode | ExceptionDescription | Details |\n|-|-|-|\n| 21405 | Input data validation error. | {error message from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                                                           | Details |\n|---------------------|------------------------------------------------------------------------------------------------|---------|\n| 21001               | Unreadable content.                                                           | {detailed error description}  |\n| 21405 | Input data validation error. | {validator error content} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -4475,7 +4475,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode | ExceptionDescription | Details |\n|-|-|-|\n| 21405 | Input data validation error. | {error message from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                                                           | Details |\n|---------------------|------------------------------------------------------------------------------------------------|---------|\n| 21001               | Unreadable content.                                                           | {detailed error description}  |\n| 21405 | Input data validation error. | {validator error content} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -4616,7 +4616,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode | ExceptionDescription | Details |\n|-|-|-|\n| 21405 | Input data validation error. | {error message from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                                                           | Details |\n|---------------------|------------------------------------------------------------------------------------------------|---------|\n| 21001               | Unreadable content.                                                           | {detailed error description}  |\n| 21405 | Input data validation error. | {validator error content} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -4767,7 +4767,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode | ExceptionDescription | Details |\n|-|-|-|\n| 21405 | Input data validation error. | {error message from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                                                           | Details |\n|---------------------|------------------------------------------------------------------------------------------------|---------|\n| 21001               | Unreadable content.                                                           | {detailed error description}  |\n| 21405 | Input data validation error. | {validator error content} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -4911,7 +4911,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode | ExceptionDescription | Details |\n|-|-|-|\n| 21405 | Input data validation error. | {error message from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                                                           | Details |\n|---------------------|------------------------------------------------------------------------------------------------|---------|\n| 21001               | Unreadable content.                                                           | {detailed error description}  |\n| 21405 | Input data validation error. | {validator error content} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -5755,7 +5755,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode | ExceptionDescription                                      | Details                                                                                                                        | \n|---------------|-----------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|\n| 21183         | Filtering range exceeds the available data range.  | The dateRange.from parameter is later than PermanentStorageHwmDate when restrictToPermanentStorageHwmDate is enabled. |\n| 21405 | Input data validation error. | {error message from validator} |",
+            "description": "| ExceptionCode | ExceptionDescription                                      | Details                                                                                                                        | \n|---------------|-----------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|\n| 21001               | Unreadable content.                                                           | {detailed error description}                            |\n| 21183         | Filtering range exceeds the available data range.  | The dateRange.from parameter is later than PermanentStorageHwmDate when restrictToPermanentStorageHwmDate is enabled. |\n| 21405 | Input data validation error. | {error content from validator} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -5906,7 +5906,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                       | \n|---------------------|-----------------------------------------------------|---------------------------------------------------------------|\n| 21181               | Invalid invoice export request.              | Cannot export an invoice package for the selected subject ({subjecttype}) and the logged-in context identifier ({type}). |\n| 21182               | The limit of ongoing exports has been reached.              | The maximum limit of {count} concurrent invoice exports has been reached for the authenticated subject in the current context. Please try again later. |\n| 21470               | The submitted key identifier is unknown or refers to a revoked key. | The key with identifier {keyId} is not supported. |\n| 21405 | Input data validation error. | {error content from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                       | \n|---------------------|-----------------------------------------------------|---------------------------------------------------------------|\n| 21001               | Unreadable content.                                                           | {detailed error description}                            |\n| 21181               | Invalid invoice export request.              | Cannot export invoice package for the selected subject ({subjecttype}) and logged-in context identifier ({type}). |\n| 21182               | The limit of ongoing exports has been reached.              | For the authenticated subject in the current context, the maximum limit of {count} simultaneous invoice exports has been reached. Try again later. |\n| 21470               | The submitted key identifier is unknown or points to a revoked key. | The key with identifier {keyId} is not supported. |\n| 21405 | Input data validation error. | {error content from validator} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -6322,7 +6322,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21418               | The provided continuation token has an invalid format. |   |\n| 21405 | Input data validation error. | {error message from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21001               | Unreadable content.                                                           | {detailed error description}                            |\n| 21418               | The continuation token has an invalid format. |   |\n| 21405 | Input data validation error. | {error content from validator} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -6633,7 +6633,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21173               | No session with the specified reference number.       | Session with reference number {referenceNumber} was not found.   |\n| 21418               | The provided continuation token has an invalid format. |   |\n| 21405 | Input data validation error. | {error message from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21001               | Illegible content.                                                           | {detailed error description}                            |\n| 21173               | No session with the specified reference number.       | Session with reference number {referenceNumber} was not found.   |\n| 21418               | The provided continuation token has an invalid format. |   |\n| 21405 | Input data validation error. | {error content from validator} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -6929,7 +6929,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21173               | No session with the specified reference number.       | Session with reference number {referenceNumber} was not found.   |\n| 21418               | The provided continuation token has an invalid format. |   |\n| 21405 | Input data validation error. | {error message from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21001               | Illegible content.                                                           | {detailed error description}                            |\n| 21173               | No session with the specified reference number.       | Session with reference number {referenceNumber} was not found.   |\n| 21418               | The provided continuation token has an invalid format. |   |\n| 21405 | Input data validation error. | {error content from validator} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -7447,7 +7447,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode       | ExceptionDescription                                       | Details |\n|---------------------|------------------------------------------------------------|---------|\n| 26001               | Cannot grant the token permissions that you do not possess.  | Information about missing permissions. |\n| 26002               | Cannot generate a token for the current context type.  | Information about the current and allowed context types. |\n| 21405 | Input data validation error. | {error message from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                       | Details |\n|---------------------|------------------------------------------------------------|---------|\n| 21001               | Illegible content.                                                           | {detailed error description}                            |\n| 26001               | Cannot grant permissions to token that you don't possess.  | Information about missing permissions. |\n| 26002               | Cannot generate token for the current context type.  | Information about current and allowed context types. |\n| 21405 | Input data validation error. | {error content from validator} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -7629,7 +7629,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21418               | The provided continuation token has an invalid format. |   |\n| 21405 | Input data validation error. | {error message from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21001               | Unreadable content.                                                           | {detailed error description}                            |\n| 21418               | The continuation token has an invalid format. |   |\n| 21405 | Input data validation error. | {error content from validator} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -7994,7 +7994,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode | ExceptionDescription | Details |\n|-|-|-|\n| 21405 | Input data validation error. | {error message from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                                                           | Details |\n|---------------------|------------------------------------------------------------------------------------------------|---------|\n| 21001               | Unreadable content.                                                           | {detailed error description}  |\n| 21405 | Input data validation error. | {validator error content} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -8282,7 +8282,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode       | ExceptionDescription                                                         | Details                                             | \n|---------------------|------------------------------------------------------------------------------|-----------------------------------------------------|\n| 21111               | Invalid authorization challenge.                                        |                                                     |\n| 21470               | The submitted key identifier is unknown or points to a revoked key. | Key with identifier {keyId} is not supported. |\n| 21405 | Input data validation error. | {error message from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                                         | Details                                             | \n|---------------------|------------------------------------------------------------------------------|-----------------------------------------------------|\n| 21001               | Illegible content.                                                           | {detailed error description}                            |\n| 21111               | Invalid authorization challenge.                                        |                                                     |\n| 21470               | The provided key identifier is unknown or points to a revoked key. | Key with identifier {keyId} is not supported. |\n| 21405 | Input data validation error. | {error content from validator} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -8812,7 +8812,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode       | ExceptionDescription                                                         | Details                                                | \n|---------------------|------------------------------------------------------------------------------|--------------------------------------------------------|\n| 21470               | The submitted key identifier is unknown or refers to a revoked key. | The key with identifier {keyId} is not supported.    |\n| 21405 | Input data validation error. | {error message from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                                         | Details                                                | \n|---------------------|------------------------------------------------------------------------------|--------------------------------------------------------|\n| 21001               | Unreadable content.                                                          | {detailed error description}                          |\n| 21470               | The submitted key identifier is unknown or points to a revoked key.          | Key with identifier {keyId} is not supported.          |\n| 21405               | Input data validation error.                                                 | {error content from validator}                        |",
             "content": {
               "application/json": {
                 "schema": {
@@ -8957,7 +8957,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode | ExceptionDescription | Details |\n|---------------------|-----------------------------------------------------|------------------------------------------------------------------------------------------------------------|\n| 21155 | Exceeded the allowed number of invoices in the session. | The session with reference number {referenceNumber} has reached the allowed invoice limit {invoiceLimit}. |\n| 21166 | Technical correction unavailable. | The invoice already has a properly processed technical correction. |\n| 21167 | Invoice status does not allow for technical correction. | A technical correction cannot be sent to a properly processed invoice. |\n| 21173 | Session with the specified reference number not found. | The session with reference number {referenceNumber} was not found. |\n| 21180 | Session status does not allow operation execution. | Session status {code} prevents sending invoices. |\n| 21184 | Session temporarily unavailable. | Maintenance work is in progress and session {referenceNumber} is temporarily unavailable. Try again later or open a new session to send subsequent invoices. |\n| 21402 | Invalid file size. | Content length does not match the file size. |\n| 21403 | Invalid file hash. | Content hash does not match the file hash. |\n| 21405 | Input data validation error. | {error content from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                                                                    | \n|---------------------|-----------------------------------------------------|------------------------------------------------------------------------------------------------------------|\n| 21001               | Unreadable content.                                                          | {detailed error description}                          |\n| 21155               | Exceeded the allowed number of invoices in the session.                     | Session with reference number {referenceNumber} has reached the allowed invoice limit {invoiceLimit}.    |\n| 21166               | Technical correction not available.                                         | Invoice already has a properly processed technical correction.                                            |\n| 21167               | Invoice status does not allow for technical correction.                     | Cannot send a technical correction to a properly processed invoice.                                     |\n| 21173               | No session with the specified reference number.                            | Session with reference number {referenceNumber} was not found.                                          |\n| 21180               | Session status does not allow operation execution.                          | Session status {code} prevents invoice sending.                                                          |\n| 21184               | Session temporarily unavailable.                                            | Maintenance work is in progress and session {referenceNumber} is temporarily unavailable. Try again later or open a new session to send further invoices. |\n| 21402               | Invalid file size.                                                          | Content length does not match file size.                                                                |\n| 21403               | Invalid file hash.                                                          | Content hash does not match file hash.                                                                  |\n| 21405               | Input data validation error.                                                | {error content from validator}                                                                          |",
             "content": {
               "application/json": {
                 "schema": {
@@ -9220,7 +9220,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode       | ExceptionDescription                                                         | Details                                             | \n|---------------------|------------------------------------------------------------------------------|-----------------------------------------------------|\n| 21157               | Invalid package part size.                                        | {validation error message}                             | \n| 21161               | The allowed number of package parts has been exceeded.                                | {validation error message}                             |\n| 21470               | The submitted key identifier is unknown or refers to a revoked key. | Key with identifier {keyId} is not supported. |\n| 21405 | Input data validation error. | {error message from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                                         | Details                                             | \n|---------------------|------------------------------------------------------------------------------|-----------------------------------------------------|\n| 21001               | Unreadable content.                                                          | {detailed error description}                        |\n| 21157               | Invalid size of package part.                                               | {validation error content}                          | \n| 21161               | Exceeded the allowed number of package parts.                                | {validation error content}                          |\n| 21470               | The submitted key identifier is unknown or points to a revoked key.         | Key with identifier {keyId} is not supported.       |\n| 21405 | Input data validation error. | {error content from validator} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -9495,7 +9495,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode | ExceptionDescription | Details |\n|-|-|-|\n| 21405 | Input data validation error. | {error message from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                                                           | Details |\n|---------------------|------------------------------------------------------------------------------------------------|---------|\n| 21001               | Unreadable content.                                                           | {detailed error description}  |\n| 21405 | Input data validation error. | {validator error content} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -9681,7 +9681,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode | ExceptionDescription | Details |\n|-|-|-|\n| 21405 | Input data validation error. | {error message from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                                                           | Details |\n|---------------------|------------------------------------------------------------------------------------------------|---------|\n| 21001               | Unreadable content.                                                           | {detailed error description}  |\n| 21405 | Input data validation error. | {validator error content} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -9860,7 +9860,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode | ExceptionDescription | Details |\n|-|-|-|\n| 21405 | Input data validation error. | {error message from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                                                           | Details |\n|---------------------|------------------------------------------------------------------------------------------------|---------|\n| 21001               | Unreadable content.                                                           | {detailed error description}  |\n| 21405 | Input data validation error. | {validator error content} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -10032,7 +10032,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode | ExceptionDescription | Details |\n|-|-|-|\n| 21405 | Input data validation error. | {error message from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                                                           | Details |\n|---------------------|------------------------------------------------------------------------------------------------|---------|\n| 21001               | Unreadable content.                                                           | {detailed error description}  |\n| 21405 | Input data validation error. | {validator error content} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -10178,7 +10178,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode | ExceptionDescription | Details |\n|-|-|-|\n| 21405 | Input data validation error. | {error message from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                                                           | Details |\n|---------------------|------------------------------------------------------------------------------------------------|---------|\n| 21001               | Unreadable content.                                                           | {detailed error description}  |\n| 21405 | Input data validation error. | {validator error content} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -10347,7 +10347,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode | ExceptionDescription | Details |\n|-|-|-|\n| 21405 | Input data validation error. | {error message from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                                                           | Details |\n|---------------------|------------------------------------------------------------------------------------------------|---------|\n| 21001               | Unreadable content.                                                           | {detailed error description}  |\n| 21405 | Input data validation error. | {validator error content} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -10535,7 +10535,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode | ExceptionDescription | Details |\n|-|-|-|\n| 21405 | Input data validation error. | {error message from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                                                           | Details |\n|---------------------|------------------------------------------------------------------------------------------------|---------|\n| 21001               | Unreadable content.                                                           | {detailed error description}  |\n| 21405 | Input data validation error. | {validator error content} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -10710,7 +10710,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode | ExceptionDescription | Details |\n|-|-|-|\n| 21405 | Input data validation error. | {error message from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                                                           | Details |\n|---------------------|------------------------------------------------------------------------------------------------|---------|\n| 21001               | Unreadable content.                                                           | {detailed error description}  |\n| 21405 | Input data validation error. | {validator error content} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -15782,6 +15782,19 @@
           }
         }
       },
+      "OwnerPermissionScope": {
+        "enum": [
+          "CredentialsManage",
+          "CredentialsRead",
+          "InvoiceWrite",
+          "InvoiceRead",
+          "Introspection",
+          "SubunitManage",
+          "EnforcementOperations",
+          "CollectiveIdentifierManage"
+        ],
+        "type": "string"
+      },
       "PartUploadRequest": {
         "required": [
           "headers",
@@ -17402,6 +17415,14 @@
               "$ref": "#/components/schemas/PersonalPermission"
             },
             "description": "List of retrieved permissions."
+          },
+          "ownerPermissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OwnerPermissionScope"
+            },
+            "description": "List of ownership permissions.",
+            "nullable": true
           },
           "hasMore": {
             "type": "boolean",

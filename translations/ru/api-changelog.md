@@ -1,8 +1,8 @@
 ---
 original: api-changelog.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: c50f855
-last_translated: 2026-09-24
+source_commit: ce3670e
+last_translated: 2026-10-15
 ---
 
 > **Translation.** Original: [api-changelog.md](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)
@@ -14,7 +14,21 @@ last_translated: 2026-09-24
 
 
 
+
 ## Изменения в API 2.0
+
+### Версия 2.9.0
+| Среда | Дата внедрения |
+| ---------- | -------------: |
+| **TEST**   |     13.10.2026 |
+| **DEMO**   |     13.10.2026 |
+| **PROD**   |     15.10.2026 |
+
+- **Разрешения**  
+  Расширен POST `/permissions/query/personal/grants` за счет `OwnerPermissionScope`, возвращающий владельческие права.
+
+- **OpenAPI**  
+  Дополнена документация ответов об ошибками кодом `21001` (Нечитаемое содержимое) с подробностями {`подробное описание ошибки`}. Изменение носит документационный характер; код возвращался API и ранее.
 
 ### Версия 2.8.1
 | Среда | Дата внедрения |
@@ -30,6 +44,7 @@ last_translated: 2026-09-24
 - **Разрешения**  
   - Расширены POST `/permissions/entities/grants` и POST `/permissions/indirect/grants` возможностью предоставления разрешения `CollectiveIdentifierManage`.
   - Расширена ответ POST `/permissions/query/entities/grants` значением `CollectiveIdentifierManage` в `permissionScope`.
+
 
 ### Версия 2.8.0
 | Среда | Дата внедрения |
@@ -61,6 +76,7 @@ last_translated: 2026-09-24
   Дополнена документация ответа `400 Bad Request` для POST и DELETE `/testdata/limits/context/session` стандартным кодом ошибки `21405` ("Ошибка валидации входных данных").
 
 
+
 ### Версия 2.7.1
 | Среда | Дата внедрения |
 | ---------- | -------------: |
@@ -87,6 +103,7 @@ last_translated: 2026-09-24
 
 
 
+
 ### Версия 2.7.0
 | Среда | Дата внедрения |
 | ---------- | -------------: |
@@ -102,6 +119,7 @@ last_translated: 2026-09-24
 
 - **OpenAPI**  
   Унифицированы описания требуемых разрешений: когда достаточно иметь одно из нескольких разрешений, используется формулировка "Требуется одно из разрешений", а в случае единичного разрешения — "Требуется разрешение". Изменение носит документационный характер; поведение API остается без изменений.
+
 
 
 
@@ -126,6 +144,7 @@ last_translated: 2026-09-24
 
 
 
+
 ### Версия 2.6.0
 
 | Среда | Дата развертывания |
@@ -143,6 +162,7 @@ last_translated: 2026-09-24
 - **OpenAPI**  
   - Унифицированы регулярные выражения для IP-адресов (`Ip4Address`, `Ip4Range`, `Ip4Mask`) в POST `/auth/ksef-token` - применены те же паттерны, что и в схеме AuthTokenRequest 2.1.
   - Дополнено недостающее описание для `InvoiceMetadataThirdSubject` ("Идентификатор третьего субъекта.").
+
 
 
 
@@ -176,6 +196,7 @@ last_translated: 2026-09-24
 - **OpenAPI**  
   - Дополнены описания параметра `certificateSerialNumber` форматом и ограничениями (`minLength/maxLength: 16`, `pattern: ^[0-9A-F]{16}$`). Изменение носит документационный характер - не вводит дополнительную валидацию на стороне API и не изменяет поведение endpoints (например, POST `/certificates/retrieve`).
   - Удалены значения, связанные с накладными RR, ранее помеченные как deprecated (в том числе `InvoiceQueryFormType.RR`).
+
 
 
 
@@ -235,6 +256,7 @@ last_translated: 2026-09-24
 
 
 
+
 ### Версия 2.3.0
 
 - **Отправка заявки на сертификацию (POST /certificates/enrollments)**  
@@ -266,12 +288,14 @@ last_translated: 2026-09-24
 
 
 
+
 ### Версия 2.2.1
 
 - **Отправка счетов**  
   Добавлена новая версия (`1-1E`) схемы `FA_RR (1)`.  
   Схема `FA_RR (1) 1-0E` будет поддерживаться на среде TEST до 23.04.
   Схема `FA_RR (1) 1-1E` будет действовать на среде PRD с 01.04.  
+
 
 
 
@@ -303,6 +327,7 @@ last_translated: 2026-09-24
 
 
 
+
 ### Версия 2.1.2
 
 - **Отправка счетов**  
@@ -324,6 +349,7 @@ last_translated: 2026-09-24
 
 
 
+
 ### Версия 2.1.1
 
 - **Аутентификация**  
@@ -331,6 +357,7 @@ last_translated: 2026-09-24
   Дополнено определение `authenticationMethodInfo` - помечены свойства `category`, `code` и `displayName` как `required` в модели ответа.
   - **Аутентификация с использованием подписи XAdES (POST `/auth/xades-signature`)**  
   Добавлена возможность предварительного включения новых требований валидации XAdES на средах DEMO и PRD через заголовок: `X-KSeF-Feature`: `enforce-xades-compliance`.  
+
 
 
 
@@ -370,6 +397,7 @@ last_translated: 2026-09-24
 
 
 
+
 ### Версия 2.0.1
 
 - **Разрешения**
@@ -391,6 +419,7 @@ last_translated: 2026-09-24
 
 - **OpenAPI**  
   Мелкие обновления описаний.
+
 
 
 
@@ -468,6 +497,7 @@ last_translated: 2026-09-24
 
 
 
+
 ### Версия 2.0.0 RC6.1
 
 - **Новая адресация сред**  
@@ -518,6 +548,7 @@ last_translated: 2026-09-24
   - GET `/sessions`
   - GET `/sessions/{referenceNumber}/invoices`
   - GET `/sessions/{referenceNumber}/invoices/failed`
+
 
 
 
@@ -599,6 +630,7 @@ last_translated: 2026-09-24
 
 
 
+
 ### Версия 2.0.0 RC5.7
 
 - **Открытие пакетной сессии (POST `/sessions/batch`)**  
@@ -612,6 +644,7 @@ last_translated: 2026-09-24
   - Добавлены ограничения длины для свойств типа string: `minLength` и `maxLength`.  
   - Обновлены описания свойств (`invoiceMetadataAuthorizedSubject.role`, `invoiceMetadataBuyer`, `invoiceMetadataThirdSubject.role`, `buyerIdentifier`).
   - Обновлены regex patterns для `vatUeIdentifier`, `authorizedFingerprintIdentifier`, `internalId`, `nipVatUe`, `peppolId`.
+
 
 
 
@@ -645,6 +678,7 @@ last_translated: 2026-09-24
   - Определена схема `Challenge` (string, 36 символов) и применена в `AuthenticationChallengeResponse`.`challenge`.
   - Определена общая схема `PermissionId` (string, 36 символов) и применена во всех местах: в параметрах и в свойствах ответов.
   - Добавлены регулярные выражения для выбранных текстовых полей.
+
 
 
 
@@ -702,6 +736,7 @@ last_translated: 2026-09-24
 
 
 
+
 ### Версия 2.0.0 RC5.4
 
 - **Получение списка метаданных счетов (POST /invoices/query/metadata)**  
@@ -719,6 +754,7 @@ last_translated: 2026-09-24
 - **OpenAPI**  
   - Уточнены определения массивов параметров в query; применен `style: form`. Множественные значения следует передавать через повтор параметра, например `?statuses=InProgress&statuses=Succeeded`. Документационное изменение, без влияния на работу API.
   - Обновлены описания свойств (`partUploadRequests`, `encryptedSymmetricKey`, `initializationVector`).
+
 
 
 
@@ -808,6 +844,7 @@ last_translated: 2026-09-24
 
 
 
+
 ### Версия 2.0.0 RC5.2
 - **Разрешения** 
   - "Предоставление разрешений администратора подчиненного субъекта" (POST `/permissions/subunits/grants`)  
@@ -836,6 +873,7 @@ last_translated: 2026-09-24
   - Обновлены примеры (example) в определениях endpoints.
   - Уточнены описания endpoints.
   - Добавлен атрибут `required` для обязательных свойств в запросах и ответах.
+
 
 
 
@@ -920,6 +958,7 @@ last_translated: 2026-09-24
 
 
 
+
 ### Версия 2.0.0 RC5
 
 - **Обработка счетов PEF и поставщиков услуг Peppol**
@@ -939,6 +978,7 @@ last_translated: 2026-09-24
       - `NumerReferencyjnyTokenaKSeF` - идентификатор токена аутентификации в системе KSeF,
       - `SkrotDokumentuUwierzytelniajacego` - значение функции хеша документа аутентификации в полученном системой виде (включая электронную подпись).
   - В эл
+
 
 
 

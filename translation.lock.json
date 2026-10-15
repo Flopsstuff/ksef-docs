@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "c50f855ef3ae550396c6a272594047506e220498",
+  "sourceCommit": "ce3670ea042de380039de4c5849fd6455811b292",
   "languages": {
     "ru": {
       "srodowiska.md": {
@@ -119,8 +119,8 @@
         "translatedAt": "2026-04-04T18:17:39.378Z"
       },
       "api-changelog.md": {
-        "sourceHash": "93601fd769be5c44cdd72a0fb5c95f7b08abc5fc8faf9ddca718218769835343",
-        "translatedAt": "2026-09-24T12:56:44.137Z"
+        "sourceHash": "d3dd53fc70cef72d735b576ce1a643e2eeda103d283f91ed62bd1ccaded0276b",
+        "translatedAt": "2026-10-15T12:53:47.765Z"
       },
       "faktury/sesje/sesja-sprawdzenie-stanu-i-pobranie-upo.md": {
         "sourceHash": "7c888c889b120d6922785c77c1691004654d8818d5d0b94c9bc5f531bb6e8be8",
@@ -131,8 +131,8 @@
         "translatedAt": "2026-05-23T15:44:45.102Z"
       },
       "open-api.json": {
-        "sourceHash": "2ece1f24c1493c29231b9da5aac4441de56e107fef733f5801c863ecb037dd18",
-        "translatedAt": "2026-09-24T13:03:20.791Z"
+        "sourceHash": "5808388d358e531ad79e92ad71857a8f643322ac25331ca60a26d4392677273f",
+        "translatedAt": "2026-10-15T12:56:50.965Z"
       }
     },
     "en": {
@@ -253,8 +253,8 @@
         "translatedAt": "2026-04-04T18:24:09.552Z"
       },
       "api-changelog.md": {
-        "sourceHash": "93601fd769be5c44cdd72a0fb5c95f7b08abc5fc8faf9ddca718218769835343",
-        "translatedAt": "2026-09-24T13:03:43.325Z"
+        "sourceHash": "d3dd53fc70cef72d735b576ce1a643e2eeda103d283f91ed62bd1ccaded0276b",
+        "translatedAt": "2026-10-15T12:57:06.164Z"
       },
       "bezpieczenstwo/klucze-publiczne-do-szyfrowania.md": {
         "sourceHash": "02024e6ef459c5d6d7795ff4082d54a0386312f4ffa472a24c1f794c68333676",
@@ -265,8 +265,8 @@
         "translatedAt": "2026-05-23T16:25:09.993Z"
       },
       "open-api.json": {
-        "sourceHash": "2ece1f24c1493c29231b9da5aac4441de56e107fef733f5801c863ecb037dd18",
-        "translatedAt": "2026-09-24T13:08:54.328Z"
+        "sourceHash": "5808388d358e531ad79e92ad71857a8f643322ac25331ca60a26d4392677273f",
+        "translatedAt": "2026-10-15T12:59:08.587Z"
       }
     },
     "uk": {
@@ -383,8 +383,8 @@
         "translatedAt": "2026-08-27T18:43:22.661Z"
       },
       "api-changelog.md": {
-        "sourceHash": "93601fd769be5c44cdd72a0fb5c95f7b08abc5fc8faf9ddca718218769835343",
-        "translatedAt": "2026-09-24T13:09:33.368Z"
+        "sourceHash": "d3dd53fc70cef72d735b576ce1a643e2eeda103d283f91ed62bd1ccaded0276b",
+        "translatedAt": "2026-10-15T12:59:23.447Z"
       },
       "uprawnienia.md": {
         "sourceHash": "e54588888d56d0ffc6e629f9a6e334a9fcd4a3adf5a5dde3d348e9574bf8a4f1",
@@ -399,8 +399,8 @@
         "translatedAt": "2026-05-23T16:34:49.929Z"
       },
       "open-api.json": {
-        "sourceHash": "2ece1f24c1493c29231b9da5aac4441de56e107fef733f5801c863ecb037dd18",
-        "translatedAt": "2026-09-24T13:16:59.026Z"
+        "sourceHash": "5808388d358e531ad79e92ad71857a8f643322ac25331ca60a26d4392677273f",
+        "translatedAt": "2026-10-15T13:02:11.284Z"
       }
     }
   }
