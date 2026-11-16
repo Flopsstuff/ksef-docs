@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "KSeF API TE",
-    "description": "**API Version:** 2.9.0 (build 2.9.0-te)<br>\n**Public Keys** of the Ministry of Finance (for the given environment): [Download keys](#tag/Certyfikaty-klucza-publicznego)<br>\n**Changelog:** [Changelog](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)<br>\n**Extended API documentation:** [ksef-docs](https://github.com/CIRFMF/ksef-api/tree/main)\n\n**API Server Address:**\n- TEST Environment: `https://api-test.ksef.mf.gov.pl/v2`",
+    "description": "**API Version:** 2.10.0 (build 2.9.0-te)<br>\n**Public keys** of the Ministry of Finance (for a given environment): [Download keys](#tag/Certyfikaty-klucza-publicznego)<br>\n**Change history:** [Changelog](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)<br>\n**Extended API documentation:** [ksef-docs](https://github.com/CIRFMF/ksef-api/tree/main)\n\n**API server address:**\n- TEST environment: `https://api-test.ksef.mf.gov.pl/v2`",
     "version": "v2"
   },
   "servers": [
@@ -18,6 +18,204 @@
           "Active sessions"
         ],
         "summary": "Retrieve list of active sessions",
+        "description": "**Deprecation:** this operation is obsolete and will be withdrawn on 15.06.2027. It is replaced by a new revision: [`GET /auth/sessions/rev2`](/docs/v2/index.html#tag/Aktywne-sesje/paths/~1auth~1sessions~1rev2/get).\n\nReturns a list of active authentication sessions.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in the **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- startDate (Desc)",
+        "parameters": [
+          {
+            "name": "x-continuation-token",
+            "in": "header",
+            "description": "Token used to retrieve the next page of results.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Page size of results.",
+            "schema": {
+              "maximum": 100,
+              "minimum": 10,
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-System-Warning": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemWarning"
+                }
+              },
+              "Deprecation": {
+                "description": "The moment from which the operation is obsolete (RFC 9745), in the format `@<unix-timestamp>`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "The moment the operation is disabled (RFC 8594), in HTTP-date format. From this moment, the operation returns `410 Gone`.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationListResponse"
+                },
+                "example": {
+                  "continuationToken": "W3siY29tcG9zaXRlVG9rZW4iOnsidG9rZW4iOm51bGwsInJhbmdlIjp7Im1pbiI6IjA1QzFFMCIsIm1heCI6IkZGIn19LCJyZXN1bWVWYWx1ZXMiOlsiMjAyNS0xMC0wM1QxMjoxODo0OS4zNDY2ODQ3WiJdLCJyaWQiOiIzeHd0QVBJWDVRRlVoZ0FBQUFBQUJBPT0iLCJza2lwQ291bnQiOjF9XQ==",
+                  "items": [
+                    {
+                      "referenceNumber": "20251010-AU-19F5E39000-39B5B182BA-B8",
+                      "isCurrent": false,
+                      "startDate": "2025-10-11T12:23:56.0154302+00:00",
+                      "authenticationMethod": "QualifiedSeal",
+                      "authenticationMethodInfo": {
+                        "category": "XadesSignature",
+                        "code": "xades.qualified-seal",
+                        "displayName": "Pieczęć kwalifikowana"
+                      },
+                      "status": {
+                        "code": 200,
+                        "description": "Authentication completed successfully"
+                      },
+                      "isTokenRedeemed": true,
+                      "refreshTokenValidUntil": "2025-11-28T09:22:13.388+00:00"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21001               | Unreadable content.                                  | {detailed error description}                                    |\n| 21418               | The continuation token has an invalid format.        |                                                           |\n| 21405 | Input data validation error. | {validator error content} |",
+            "headers": {
+              "Deprecation": {
+                "description": "The moment from which the operation is obsolete (RFC 9745), in the format `@<unix-timestamp>`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "The moment the operation is disabled (RFC 8594), in HTTP-date format. From this moment, the operation returns `410 Gone`.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblemDetails"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Gone",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoneProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetryAfter"
+                }
+              },
+              "Deprecation": {
+                "description": "The moment from which the operation is obsolete (RFC 9745), in the format `@<unix-timestamp>`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "The moment the operation is disabled (RFC 8594), in HTTP-date format. From this moment, the operation returns `410 Gone`.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Too Many Requests"
+          }
+        },
+        "deprecated": true,
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "x-rate-limits": {
+          "perSecond": 10,
+          "perMinute": 30,
+          "perHour": 120
+        },
+        "x-sort": [
+          {
+            "field": "startDate",
+            "direction": "Desc"
+          }
+        ],
+        "x-sunset": "2027-06-15",
+        "x-successor": "GET /auth/sessions/rev2"
+      }
+    },
+    "/auth/sessions/rev2": {
+      "get": {
+        "tags": [
+          "Active sessions"
+        ],
+        "summary": "Retrieve the list of active sessions (rev2)",
         "description": "Returns a list of active authentication sessions.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- startDate (Desc)\n\n",
         "parameters": [
           {
@@ -54,7 +252,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AuthenticationListResponse"
+                  "$ref": "#/components/schemas/AuthenticationListResponseRev2"
                 },
                 "example": {
                   "continuationToken": "W3siY29tcG9zaXRlVG9rZW4iOnsidG9rZW4iOm51bGwsInJhbmdlIjp7Im1pbiI6IjA1QzFFMCIsIm1heCI6IkZGIn19LCJyZXN1bWVWYWx1ZXMiOlsiMjAyNS0xMC0wM1QxMjoxODo0OS4zNDY2ODQ3WiJdLCJyaWQiOiIzeHd0QVBJWDVRRlVoZ0FBQUFBQUJBPT0iLCJza2lwQ291bnQiOjF9XQ==",
@@ -63,9 +261,12 @@
                       "referenceNumber": "20251010-AU-19F5E39000-39B5B182BA-B8",
                       "isCurrent": false,
                       "startDate": "2025-10-11T12:23:56.0154302+00:00",
-                      "authenticationMethod": "QualifiedSeal",
                       "authenticationMethodInfo": {
-                        "category": "XadesSignature",
+                        "category": {
+                          "code": "XadesSignature",
+                          "rawCode": "XadesSignature",
+                          "displayName": "Podpis XAdES"
+                        },
                         "code": "xades.qualified-seal",
                         "displayName": "Pieczęć kwalifikowana"
                       },
@@ -82,7 +283,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21001               | Unreadable content.                                  | {detailed error description}                                    |\n| 21418               | The continuation token has an invalid format.        |                                                           |\n| 21405 | Input data validation error. | {validator error content} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21001               | Unreadable content.                                                           | {detailed error description}                            |\n| 21418               | The continuation token has an invalid format. |   |\n| 21405 | Input data validation error. | {error content from validator} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -2951,6 +3152,9 @@
                   },
                   "collectiveIdentifier": {
                     "maxInvoices": 500
+                  },
+                  "tokens": {
+                    "maxTokens": 100
                   }
                 }
               }
@@ -3633,7 +3837,7 @@
             }
           },
           "400": {
-            "description": "",
+            "description": "| ExceptionCode | ExceptionDescription | Details |\n|-|-|-|\n| 21405 | Input data validation error. | {error message from validator} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -4696,7 +4900,7 @@
           "Granting permissions"
         ],
         "summary": "Granting administrator permissions for a EU entity",
-        "description": "The method allows granting administrator rights to the entity or natural person specified in the request, in the context composed of the NIP identifier of the current context entity and the EU VAT number of the EU entity specified in the request.  \nAlong with the creation of the EU entity administrator, a context is created composed of the NIP number of the login context entity and the specified EU VAT identification number of the EU entity.  \nThe request also includes the name and address of the EU entity.  \n            \nThe only way to identify the authorized person is the fingerprint of the qualified certificate:  \n- electronic signature certificate for natural persons  \n- electronic seal certificate for entities  \n            \nEU entity administrator rights include:  \n- **VatEuManage** – managing rights within the EU entity  \n- **InvoiceWrite** – issuing invoices  \n- **InvoiceRead** – viewing invoices  \n- **Introspection** – viewing session history  \n            \nThe method automatically grants all of the above rights, without the need to specify them in the request.            \n> More information:\n> - [Granting permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadanie-uprawnie%C5%84-administratora-podmiotu-unijnego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permission**: `CredentialsManage`.",
+        "description": "The method allows granting administrator privileges to the entity or natural person specified in the request within a composite context consisting of the NIP identifier of the current context entity and the EU VAT number of the EU entity specified in the request.\nAlong with the creation of the EU entity administrator, a composite context is created consisting of the NIP number of the login context entity and the specified EU VAT identification number of the EU entity.\nThe name and address of the EU entity are also provided in the request.\n\nThe only way to identify the authorized person is the fingerprint of a qualified certificate:\n- electronic signature certificate for natural persons\n- electronic seal certificate for entities\n\nEU entity administrator privileges include:\n- **VatEuManage** – managing privileges within the EU entity\n- **InvoiceWrite** – issuing invoices\n- **InvoiceRead** – viewing invoices\n- **Introspection** – viewing session history\n- **CollectiveIdentifierManage** – managing collective identifiers\n\nThe method automatically grants all the above privileges without the need to specify them in the request.\n\n> More information:\n> - [Granting privileges](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadanie-uprawnie%C5%84-administratora-podmiotu-unijnego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in the **Problem Details** format (`application/problem+json`).\n\n**Required privilege**: `CredentialsManage`.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -4847,7 +5051,7 @@
           "Granting permissions"
         ],
         "summary": "Granting permissions to an EU entity representative",
-        "description": "The method allows granting the entity or natural person specified in the request rights to issue and/or view invoices in the context of the current context.  \n            \nThe only way to identify the authorized person is the fingerprint of the qualified certificate:  \n- electronic signature certificate for natural persons  \n- electronic seal certificate for entities  \n            \nThe rights to be granted are specified in the request from the set:  \n- **InvoiceWrite** – issuing invoices  \n- **InvoiceRead** – viewing invoices  \n            \nThe method allows for any combination of the above rights to be selected.\n\n> More information:\n> - [Granting permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadanie-uprawnie%C5%84-reprezentanta-podmiotu-unijnego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permission**: `VatUeManage`.",
+        "description": "The method allows granting the entity or natural person specified in the request permissions to issue and/or view invoices in the context of the current session.  \n\nThe only way to identify the authorized entity is the fingerprint of the qualified certificate:  \n- electronic signature certificate for natural persons  \n- electronic seal certificate for entities  \n\nThe request specifies the permissions granted from the set:  \n- **InvoiceWrite** – issuing invoices  \n- **InvoiceRead** – viewing invoices  \n- **CollectiveIdentifierManage** – managing collective identifiers  \n\nThe method allows selecting any combination of the above permissions.\n\n> More information:\n> - [Granting permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadanie-uprawnie%C5%84-reprezentanta-podmiotu-unijnego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required permission**: `VatUeManage`.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -6322,7 +6526,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21001               | Unreadable content.                                                           | {detailed error description}                            |\n| 21418               | The continuation token has an invalid format. |   |\n| 21405 | Input data validation error. | {error content from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21001               | Unreadable content.                                                           | {detailed error description}           |\n| 21418               | The continuation token has an invalid format. |   |\n| 21405 | Input data validation error. | {error content from validator} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -7012,7 +7216,7 @@
           "Submission status and UPO"
         ],
         "summary": "Retrieve UPO for a session invoice based on KSeF number",
-        "description": "Returns the UPO of the invoice submitted in the session based on its KSeF number.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required one of the permissions**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
+        "description": "Returns the UPO of the invoice sent in the session based on its KSeF number.\n> More information:\n> - UPO schema:\n>   - [upo v4.3](https://github.com/CIRFMF/ksef-api/blob/main/faktury/upo/schemy/upo-v4-3.xsd)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**One of the following permissions is required**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
         "parameters": [
           {
             "name": "referenceNumber",
@@ -7141,7 +7345,7 @@
           "Submission status and UPO"
         ],
         "summary": "Retrieving invoice UPO from session based on invoice reference number",
-        "description": "Returns the UPO of the invoice submitted in the session based on its KSeF number.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required one of the permissions**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
+        "description": "Returns the UPO of the invoice sent in the session based on its reference number.\n> More information:\n> - UPO schema:\n>   - [upo v4.3](https://github.com/CIRFMF/ksef-api/blob/main/faktury/upo/schemy/upo-v4-3.xsd)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**One of the following permissions is required**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
         "parameters": [
           {
             "name": "referenceNumber",
@@ -7270,7 +7474,7 @@
           "Submission status and UPO"
         ],
         "summary": "Retrieving UPO for session",
-        "description": "Returns XML containing collective UPO for the session.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required one of the permissions**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
+        "description": "Returns XML containing collective UPO for the session.\n> More information:\n> - UPO Schema:\n>   - [upo v4.3](https://github.com/CIRFMF/ksef-api/blob/main/faktury/upo/schemy/upo-v4-3.xsd)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Required one of the permissions**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
         "parameters": [
           {
             "name": "referenceNumber",
@@ -7399,7 +7603,7 @@
           "KSeF tokens"
         ],
         "summary": "Generating a new token",
-        "description": "Returns a token that can be used for authentication in KSeF.\n\nA token can only be generated in the context of a NIP or an internal identifier. It is returned only once. It becomes active when its status changes to `Active`.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).",
+        "description": "**Deprecated:** the operation is deprecated and will be retired on 30.09.2027. It is replaced by a new revision: [`POST /tokens/rev2`](/docs/v2/index.html#tag/Tokeny-KSeF/paths/~1tokens~1rev2/post).\n\nReturns a token that can be used to authenticate with KSeF.\n\nToken can only be generated in the context of a NIP or internal identifier. It is returned only once. It becomes active when its status changes to `Active`.\n            \nToken generated from 07.11.2026 is valid for 90 days from generation, unless it is revoked earlier.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).",
         "requestBody": {
           "content": {
             "application/json": {
@@ -7432,6 +7636,18 @@
                 "schema": {
                   "$ref": "#/components/schemas/SystemWarning"
                 }
+              },
+              "Deprecation": {
+                "description": "The moment from which the operation is obsolete (RFC 9745), in the format `@<unix-timestamp>`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "The moment the operation is disabled (RFC 8594), in HTTP-date format. From this moment, the operation returns `410 Gone`.",
+                "schema": {
+                  "type": "string"
+                }
               }
             },
             "content": {
@@ -7448,6 +7664,411 @@
           },
           "400": {
             "description": "| ExceptionCode       | ExceptionDescription                                       | Details |\n|---------------------|------------------------------------------------------------|---------|\n| 21001               | Illegible content.                                                           | {detailed error description}                            |\n| 26001               | Cannot grant permissions to token that you don't possess.  | Information about missing permissions. |\n| 26002               | Cannot generate token for the current context type.  | Information about current and allowed context types. |\n| 21405 | Input data validation error. | {error content from validator} |",
+            "headers": {
+              "Deprecation": {
+                "description": "The moment from which the operation is obsolete (RFC 9745), in the format `@<unix-timestamp>`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "The moment the operation is disabled (RFC 8594), in HTTP-date format. From this moment, the operation returns `410 Gone`.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblemDetails"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Gone",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoneProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetryAfter"
+                }
+              },
+              "Deprecation": {
+                "description": "The moment from which the operation is obsolete (RFC 9745), in the format `@<unix-timestamp>`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "The moment the operation is disabled (RFC 8594), in HTTP-date format. From this moment, the operation returns `410 Gone`.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Too Many Requests"
+          }
+        },
+        "deprecated": true,
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "x-rate-limits": {
+          "perSecond": 10,
+          "perMinute": 30,
+          "perHour": 120
+        },
+        "x-sunset": "2027-09-30",
+        "x-successor": "POST /tokens/rev2"
+      },
+      "get": {
+        "tags": [
+          "KSeF tokens"
+        ],
+        "summary": "Retrieving the list of generated tokens",
+        "description": "**Deprecated:** the operation is deprecated and will be retired on 30.09.2027. It is replaced by a new revision: [`GET /tokens/rev2`](/docs/v2/index.html#tag/Tokeny-KSeF/paths/~1tokens~1rev2/get).\n\nReturns a list of token metadata. The scope of results depends on the authentication method and the permissions of the calling entity.\n\nIf the entity has **CredentialsManage** or **CredentialsRead** permissions,\nthe service returns all tokens generated in the given context regardless of the authentication method. \n\nIf the entity does not have any of the above permissions, the scope of results is limited: \n- For an entity authenticated with a token, only the token used for authentication is returned.\n- For other authentication methods, tokens are returned,\nwhose author is the calling entity – taking into account the NIP-PESEL connection.\n            \nToken statuses introduced in `rev2` are mapped to the previous ones:\n- `NotYetActive` → `Active`,\n- `AwaitingApproval` → `Active`,\n- `ApprovalExpired` → `Revoked`,\n- `Expired` → `Revoked`.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- dateCreated (Desc)",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Status of tokens to be returned. If the parameter is absent, all tokens are returned. The parameter can be passed multiple times.\n| Value | Description |\n| --- | --- |\n| Pending | The token has been created but is still in the process of activation and permission assignment. It cannot yet be used for authentication. |\n| Active | The token is active and can be used for authentication. |\n| Revoking | The token is in the process of being revoked. It can no longer be used for authentication. |\n| Revoked | The token has been revoked and cannot be used for authentication. |\n| Failed | The token could not be activated. A new token must be generated; the current one cannot be used for authentication. |\n",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/AuthenticationTokenStatus"
+              }
+            }
+          },
+          {
+            "name": "description",
+            "in": "query",
+            "description": "Allows filtering tokens by description. The parameter value is searched within the token description (the operation is case-insensitive). At least 3 characters must be provided.",
+            "schema": {
+              "minLength": 3,
+              "type": "string"
+            }
+          },
+          {
+            "name": "authorIdentifier",
+            "in": "query",
+            "description": "Allows filtering tokens by their creator. The parameter value is searched within the identifier (the operation is case-insensitive). At least 3 characters must be provided.",
+            "schema": {
+              "minLength": 3,
+              "type": "string"
+            }
+          },
+          {
+            "name": "authorIdentifierType",
+            "in": "query",
+            "description": "Allows filtering tokens by their creator. The parameter value specifies the identifier type in which the string passed in the `authorIdentifier` parameter will be searched.\n| Value | Description |\n| --- | --- |\n| Nip | NIP. |\n| Pesel | PESEL. |\n| Fingerprint | Certificate fingerprint. |\n",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/TokenAuthorIdentifierType"
+                }
+              ]
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Page size of results.",
+            "schema": {
+              "maximum": 100,
+              "minimum": 10,
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "name": "x-continuation-token",
+            "in": "header",
+            "description": "Token used to retrieve the next page of results.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-System-Warning": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemWarning"
+                }
+              },
+              "Deprecation": {
+                "description": "The moment from which the operation is obsolete (RFC 9745), in the format `@<unix-timestamp>`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "The moment the operation is disabled (RFC 8594), in HTTP-date format. From this moment, the operation returns `410 Gone`.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryTokensResponse"
+                },
+                "example": {
+                  "continuationToken": "W3sidG9rZW4iOiIrUklEOn4zeHd0QUlqZUc5VkhCQUFBQUFBQUJBPT0jUlQ6MSNUUkM6MTAjSVNWOjIjSUVPOjY1NTY3I1FDRjo4I0ZQQzpBZ2dBQUFBQUFCQUFBQUFBQUFBQUVBQUFBQUFBQUFBUUFBQUVBRWVFMllFPSIsInJhbmdlIjp7Im1pbiI6IjA1QzFERjIxOUY5OTIwIiwibWF4IjoiRkYifX1d",
+                  "tokens": [
+                    {
+                      "referenceNumber": "20251001-EC-2DD3AFF000-A6B7F19A95-11",
+                      "authorIdentifier": {
+                        "type": "Nip",
+                        "value": "5265877635"
+                      },
+                      "contextIdentifier": {
+                        "type": "Nip",
+                        "value": "5265877635"
+                      },
+                      "description": "Issuing and viewing invoices.",
+                      "requestedPermissions": [
+                        "InvoiceRead",
+                        "InvoiceWrite"
+                      ],
+                      "dateCreated": "2025-10-01T13:20:52.9919681+00:00",
+                      "status": "Active",
+                      "statusDetails": []
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21001               | Unreadable content.                                                           | {detailed error description}                            |\n| 21418               | The continuation token has an invalid format. |   |\n| 21405 | Input data validation error. | {error content from validator} |",
+            "headers": {
+              "Deprecation": {
+                "description": "The moment from which the operation is obsolete (RFC 9745), in the format `@<unix-timestamp>`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "The moment the operation is disabled (RFC 8594), in HTTP-date format. From this moment, the operation returns `410 Gone`.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblemDetails"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Gone",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoneProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetryAfter"
+                }
+              },
+              "Deprecation": {
+                "description": "The moment from which the operation is obsolete (RFC 9745), in the format `@<unix-timestamp>`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "The moment the operation is disabled (RFC 8594), in HTTP-date format. From this moment, the operation returns `410 Gone`.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Too Many Requests"
+          }
+        },
+        "deprecated": true,
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "x-rate-limits": {
+          "perSecond": 10,
+          "perMinute": 30,
+          "perHour": 120
+        },
+        "x-sort": [
+          {
+            "field": "dateCreated",
+            "direction": "Desc"
+          }
+        ],
+        "x-sunset": "2027-09-30",
+        "x-successor": "GET /tokens/rev2"
+      }
+    },
+    "/tokens/rev2": {
+      "post": {
+        "tags": [
+          "KSeF tokens"
+        ],
+        "summary": "Generation of a new token with a specified validity period (rev2)",
+        "description": "Returns a token that can be used for authentication in KSeF. The token is returned only once and can be generated only in the context of a NIP or internal identifier. It can be used for authentication only after obtaining the `Active` status.\n            \nThe validity period of the token is determined by the `validFrom` and `validTo` properties:\n* `validFrom` can be set at most 60 days after the token generation is initiated. If not provided, it takes the value corresponding to the moment of initiation.\n* `validTo` can be set at most 365 days after `validFrom`. If not provided, the validity period is 90 days from `validFrom`.\n            \nIf the validity period has not yet started, a token that has been approved or does not require approval has the status `NotYetActive`. Each token has an independent validity period. Expiration or revocation of a token used for session authentication does not affect the validity of a new token.\n            \nThe first token can be generated only after authentication using the National Node or an XAdES signature accepted in the KSeF authentication process. Subsequent tokens can also be generated in a session authenticated with a KSeF token.\n            \nA token generated after authentication using the National Node or XAdES signature does not require approval. A token generated in a session authenticated with a KSeF token receives the status `AwaitingApproval` and before use must be approved by a separate endpoint, after authentication using the National Node or XAdES signature. Approval is expected within 24 hours of receiving the `AwaitingApproval` status. After this time, the token changes to the `ApprovalExpired` status and can no longer be approved.\n            \nThe maximum number of tokens in a context is 100. The limit includes tokens in the `Active`, `NotYetActive`, `Pending`, and `AwaitingApproval` statuses, regardless of the author and revision of the endpoint used to generate them. Attempting to generate a token beyond the limit results in an error.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "permissions",
+                  "description"
+                ],
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/GenerateTokenRequestRev2"
+                  }
+                ]
+              },
+              "example": {
+                "permissions": [
+                  "InvoiceRead",
+                  "InvoiceWrite"
+                ],
+                "description": "Issuing and viewing invoices.",
+                "validFrom": "2026-11-14T09:48:26.8700925+00:00",
+                "validTo": "2026-11-20T09:48:26.8700925+00:00"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted",
+            "headers": {
+              "X-System-Warning": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemWarning"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateTokenResponseRev2"
+                },
+                "example": {
+                  "referenceNumber": "20251010-EC-1DCE3E3000-12ECB5B36E-45",
+                  "token": "20251010-EC-1DCE3E3000-12ECB5B36E-45|internalId-5265877635-12345|919f704466624ce29cd5ac7b65ded5e7cccc112eee314f2aaa76e02cd16df7b9"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "| ExceptionCode | ExceptionDescription | Details |\n|---------------------|----------------------------------------------------------------------|---------|\n| 21001 | Unreadable content. | {detailed error description} |\n| 26001 | Cannot grant permissions to a token that you do not have. | Information about missing permissions. |\n| 26002 | Cannot generate a token for the current context type. | Information about current and allowed context types. |\n| 26006 | Token limit reached in the context. | Token limit reached in the context. The allowed limit is: {limit}. |\n| 21405 | Input data validation error. | {error content from validator} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -7521,17 +8142,17 @@
         "tags": [
           "KSeF tokens"
         ],
-        "summary": "Retrieving the list of generated tokens",
+        "summary": "Retrieval of the list of generated tokens (rev2)",
         "description": "Returns a list of token metadata. The scope of results depends on the authentication method and the permissions of the calling entity.\n\nIf the entity has the **CredentialsManage** or **CredentialsRead** permission, \nthe service returns all tokens generated in the given context regardless of the authentication method. \n\nIf the entity does not have any of the above permissions, the scope of results is limited: \n- For an entity authenticated with a token, only the token used for authentication is returned.\n- For other authentication methods, tokens are returned  \nwhose author is the calling entity – taking into account the NIP–PESEL association.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- dateCreated (Desc)\n\n",
         "parameters": [
           {
             "name": "status",
             "in": "query",
-            "description": "Status of tokens to be returned. If the parameter is absent, all tokens are returned. The parameter can be passed multiple times.\n| Value | Description |\n| --- | --- |\n| Pending | The token has been created but is still in the process of activation and permission assignment. It cannot yet be used for authentication. |\n| Active | The token is active and can be used for authentication. |\n| Revoking | The token is in the process of being revoked. It can no longer be used for authentication. |\n| Revoked | The token has been revoked and cannot be used for authentication. |\n| Failed | The token could not be activated. A new token must be generated; the current one cannot be used for authentication. |\n",
+            "description": "Status of tokens to be returned. If the parameter is not provided, all tokens are returned. The parameter can be passed multiple times.\n| Value | Description |\n| --- | --- |\n| Pending | The token has been created but is still in the process of activation and permission assignment. It cannot yet be used for authentication. |\n| Active | The token is active and can be used for authentication. |\n| Revoking | The token is in the process of being revoked. It can no longer be used for authentication. |\n| Revoked | The token has been revoked and cannot be used for authentication. |\n| Failed | Failed to activate the token. A new token must be generated, the current one cannot be used for authentication. |\n| NotYetActive | The token was generated correctly, but its validity period has not yet started. |\n| AwaitingApproval | The token was generated using a KSeF token and is awaiting approval. Until approval, it cannot be used for authentication. |\n| ApprovalExpired | The 24-hour waiting time for approval has expired. The token can no longer be approved or used for authentication. A new token generation must be initiated again. |\n| Expired | The token's validity period has expired. |",
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/components/schemas/AuthenticationTokenStatus"
+                "$ref": "#/components/schemas/TokenStatusFilterRev2"
               }
             }
           },
@@ -7560,9 +8181,27 @@
             "schema": {
               "allOf": [
                 {
-                  "$ref": "#/components/schemas/TokenAuthorIdentifierType"
+                  "$ref": "#/components/schemas/TokenAuthorIdentifierTypeFilterRev2"
                 }
               ]
+            }
+          },
+          {
+            "name": "validFrom",
+            "in": "query",
+            "description": "Enables filtering tokens by the start date of the validity period. Tokens are returned whose `validFrom` is at the same time or later than the specified date.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "validTo",
+            "in": "query",
+            "description": "Enables filtering tokens by the end date of the validity period. Tokens are returned whose `validTo` is at the same time or earlier than the specified date.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
             }
           },
           {
@@ -7599,29 +8238,50 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/QueryTokensResponse"
+                  "$ref": "#/components/schemas/QueryTokensResponseRev2"
                 },
                 "example": {
                   "continuationToken": "W3sidG9rZW4iOiIrUklEOn4zeHd0QUlqZUc5VkhCQUFBQUFBQUJBPT0jUlQ6MSNUUkM6MTAjSVNWOjIjSUVPOjY1NTY3I1FDRjo4I0ZQQzpBZ2dBQUFBQUFCQUFBQUFBQUFBQUVBQUFBQUFBQUFBUUFBQUVBRWVFMllFPSIsInJhbmdlIjp7Im1pbiI6IjA1QzFERjIxOUY5OTIwIiwibWF4IjoiRkYifX1d",
                   "tokens": [
                     {
-                      "referenceNumber": "20251001-EC-2DD3AFF000-A6B7F19A95-11",
+                      "referenceNumber": "20270115-EC-2DD3AFF000-A6B7F19A95-6E",
                       "authorIdentifier": {
-                        "type": "Nip",
+                        "type": {
+                          "code": "Nip",
+                          "rawCode": "Nip",
+                          "displayName": "Nip"
+                        },
                         "value": "5265877635"
                       },
                       "contextIdentifier": {
-                        "type": "Nip",
+                        "type": {
+                          "code": "Nip",
+                          "rawCode": "Nip",
+                          "displayName": "Nip"
+                        },
                         "value": "5265877635"
                       },
                       "description": "Issuing and viewing invoices.",
                       "requestedPermissions": [
-                        "InvoiceRead",
-                        "InvoiceWrite"
+                        {
+                          "code": "InvoiceRead",
+                          "rawCode": "InvoiceRead",
+                          "displayName": "Przeglądanie faktur"
+                        },
+                        {
+                          "code": "InvoiceWrite",
+                          "rawCode": "InvoiceWrite",
+                          "displayName": "Wystawianie faktur"
+                        }
                       ],
-                      "dateCreated": "2025-10-01T13:20:52.9919681+00:00",
-                      "status": "Active",
-                      "statusDetails": []
+                      "dateCreated": "2027-01-15T13:20:52.9919681+00:00",
+                      "validFrom": "2027-01-15T13:20:52.9919681+00:00",
+                      "validTo": "2027-04-15T13:20:52.9919681+00:00",
+                      "status": {
+                        "code": "Active",
+                        "rawCode": "Active",
+                        "displayName": "Token aktywny"
+                      }
                     }
                   ]
                 }
@@ -7712,7 +8372,7 @@
           "KSeF tokens"
         ],
         "summary": "Retrieve token status",
-        "description": "\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).",
+        "description": "**Deprecated:** This operation is deprecated and will be withdrawn on 30.09.2027. It is replaced by a new revision: [`GET /tokens/rev2/{referenceNumber}`](/docs/v2/index.html#tag/Tokeny-KSeF/paths/~1tokens~1rev2~1%7BreferenceNumber%7D/get).\n\nToken statuses introduced in `rev2` are mapped to the previous ones:\n- `NotYetActive` → `Active`,\n- `AwaitingApproval` → `Active`,\n- `ApprovalExpired` → `Revoked`,\n- `Expired` → `Revoked`.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - Setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).",
         "parameters": [
           {
             "name": "referenceNumber",
@@ -7731,6 +8391,18 @@
               "X-System-Warning": {
                 "schema": {
                   "$ref": "#/components/schemas/SystemWarning"
+                }
+              },
+              "Deprecation": {
+                "description": "The moment from which the operation is obsolete (RFC 9745), in the format `@<unix-timestamp>`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "The moment the operation is disabled (RFC 8594), in HTTP-date format. From this moment, the operation returns `410 Gone`.",
+                "schema": {
+                  "type": "string"
                 }
               }
             },
@@ -7763,7 +8435,145 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode | ExceptionDescription | Details |\n|-|-|-|\n| 21405 | Input data validation error. | {error message from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21409               | Token with the given identifier does not exist. | Token with reference number {referenceNumber} was not found.  |\n| 21405 | Input data validation error. | {error content from validator} |",
+            "headers": {
+              "Deprecation": {
+                "description": "The moment from which the operation is obsolete (RFC 9745), in the format `@<unix-timestamp>`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "The moment the operation is disabled (RFC 8594), in HTTP-date format. From this moment, the operation returns `410 Gone`.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblemDetails"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Gone",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoneProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetryAfter"
+                }
+              },
+              "Deprecation": {
+                "description": "The moment from which the operation is obsolete (RFC 9745), in the format `@<unix-timestamp>`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "The moment the operation is disabled (RFC 8594), in HTTP-date format. From this moment, the operation returns `410 Gone`.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Too Many Requests"
+          }
+        },
+        "deprecated": true,
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "x-rate-limits": {
+          "perSecond": 10,
+          "perMinute": 30,
+          "perHour": 120
+        },
+        "x-sunset": "2027-09-30",
+        "x-successor": "GET /tokens/rev2/{referenceNumber}"
+      },
+      "delete": {
+        "tags": [
+          "KSeF tokens"
+        ],
+        "summary": "Token revocation",
+        "description": "Invalidates a token with the given reference number. The scope of tokens available for invalidation depends on the authentication method and the permissions of the calling entity.\n\nIf the entity has the **CredentialsManage** permission,\nit can invalidate any active token in a given context regardless of the authentication method.\n\nIf the entity does not have the above permission, the invalidation scope is limited: \n- For an entity authenticated with a token, only the token used for authentication can be invalidated. \n- For other authentication methods, the entity can invalidate tokens,\nit is the author of – taking into account the NIP-PESEL connection.\n            \nAn invalidated token will no longer allow authentication with it. Invalidation cannot be reversed.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - Setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).",
+        "parameters": [
+          {
+            "name": "referenceNumber",
+            "in": "path",
+            "description": "KSeF token reference number.",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/ReferenceNumber"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content",
+            "headers": {
+              "X-System-Warning": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemWarning"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21409               | Token with the given identifier does not exist. | Token with reference number {referenceNumber} was not found.  |\n| 26004               | Token status does not allow operation execution. | Status {status} of token {referenceNumber} does not allow its revocation.  |\n| 21405 | Input data validation error. | {error content from validator} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -7832,13 +8642,163 @@
           "perMinute": 30,
           "perHour": 120
         }
-      },
-      "delete": {
+      }
+    },
+    "/tokens/rev2/{referenceNumber}": {
+      "get": {
         "tags": [
           "KSeF tokens"
         ],
-        "summary": "Token revocation",
-        "description": "Revokes the token with the specified reference number. The scope of tokens available for revocation depends on the authentication method and the permissions of the calling entity.\n\nIf the entity has the **CredentialsManage** permission, \nit can revoke any active token in the given context regardless of the authentication method.\n\nIf the entity does not have the above permission, the scope of revocation is limited: \n- For an entity authenticated with a token, it is only possible to revoke the token used for authentication. \n- For other authentication methods, the entity may revoke tokens  \nof which it is the author – taking into account the NIP–PESEL association.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).",
+        "summary": "Get token status (rev2)",
+        "description": "\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).",
+        "parameters": [
+          {
+            "name": "referenceNumber",
+            "in": "path",
+            "description": "KSeF token reference number.",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/ReferenceNumber"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-System-Warning": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemWarning"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenStatusResponseRev2"
+                },
+                "example": {
+                  "referenceNumber": "20251001-EC-220B0CE000-E228129563-96",
+                  "authorIdentifier": {
+                    "type": {
+                      "code": "Nip",
+                      "rawCode": "Nip",
+                      "displayName": "Nip"
+                    },
+                    "value": "7762811692"
+                  },
+                  "contextIdentifier": {
+                    "type": {
+                      "code": "Nip",
+                      "rawCode": "Nip",
+                      "displayName": "Nip"
+                    },
+                    "value": "5265877635"
+                  },
+                  "description": "Issuing and viewing invoices.",
+                  "requestedPermissions": [
+                    {
+                      "code": "InvoiceRead",
+                      "rawCode": "InvoiceRead",
+                      "displayName": "Przeglądanie faktur"
+                    },
+                    {
+                      "code": "InvoiceWrite",
+                      "rawCode": "InvoiceWrite",
+                      "displayName": "Wystawianie faktur"
+                    }
+                  ],
+                  "dateCreated": "2026-11-10T12:23:56.0154302+00:00",
+                  "validFrom": "2026-11-14T09:48:26.8700925+00:00",
+                  "validTo": "2026-11-20T09:48:26.8700925+00:00",
+                  "status": {
+                    "code": "Pending",
+                    "rawCode": "Pending",
+                    "displayName": "Token w trakcie aktywacji"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21409               | Token with the given identifier does not exist. | Token with reference number {referenceNumber} was not found.  |\n| 21405 | Input data validation error. | {error content from validator} |",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetryAfter"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Too Many Requests"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "x-rate-limits": {
+          "perSecond": 10,
+          "perMinute": 30,
+          "perHour": 120
+        }
+      }
+    },
+    "/tokens/{referenceNumber}/approve": {
+      "post": {
+        "tags": [
+          "KSeF tokens"
+        ],
+        "summary": "Token approval",
+        "description": "Approves a token in the `AwaitingApproval` status specified by the reference number. Approval is only required for a token whose generation was initiated in `rev2` after authentication with a KSeF token. Until approved, the token cannot be used for authentication. Tokens generated after authentication by another method or through previous endpoints do not require approval.\n            \n24 hours are allocated for token approval from the moment the `AwaitingApproval` status is assigned. After this time, the token automatically changes to the `ApprovalExpired` status and can no longer be approved or used for authentication. Obtaining a new token requires re-initiating generation.\n            \nThe token can be approved by:\n* an entity with owner permissions (`Owner`),\n* an entity with the `CredentialsManage` permission,\n* the token owner, if they have all the permissions designated for that token.\n            \nThe owner and author of the token is the entity that initiated its generation, indicated in `authorIdentifier`. Approval of the token by another entity does not change its author. When approving as the owner, the identity of the approver must match the type and value of `authorIdentifier`.\n            \nApproval of another entity's token requires owner permissions (`Owner`) or the `CredentialsManage` permission in the given context.\n            \nApproval requires authentication using the National Node or an XAdES signature format accepted in the KSeF authentication process.\n            \nAfter approval, the token changes from the `AwaitingApproval` status to `Active` or `NotYetActive`, depending on whether its validity period has begun.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in the **Problem Details** format (`application/problem+json`).",
         "parameters": [
           {
             "name": "referenceNumber",
@@ -7862,7 +8822,108 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode | ExceptionDescription | Details |\n|-|-|-|\n| 21405 | Input data validation error. | {error message from validator} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21409               | Token with the given identifier does not exist. | Token with reference number {referenceNumber} was not found.  |\n| 26001               | Cannot grant permissions to the token that you do not have.  | Information about missing permissions. |\n| 26004               | Token status does not allow the operation to be performed. | Status {status} of token {referenceNumber} does not allow its approval.  |\n| 26005               | Unable to approve token for the authentication method used. | Token approval requires authentication by a method other than KSeF token. |\n| 21405 | Input data validation error. | {error content from validator} |",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetryAfter"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Too Many Requests"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "x-rate-limits": {
+          "perSecond": 10,
+          "perMinute": 30,
+          "perHour": 120
+        }
+      }
+    },
+    "/testdata/tokens/{referenceNumber}/expire-approval": {
+      "post": {
+        "tags": [
+          "KSeF tokens"
+        ],
+        "summary": "Token approval expiration",
+        "description": "Moves the specified KSeF token in the current context from the `AwaitingApproval` status to the `ApprovalExpired` status, simulating the passage of time allocated for its approval. **Only on test environments.**\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).",
+        "parameters": [
+          {
+            "name": "referenceNumber",
+            "in": "path",
+            "description": "KSeF token reference number.",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/ReferenceNumber"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content",
+            "headers": {
+              "X-System-Warning": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemWarning"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     |\n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21409               | Token with the given identifier does not exist. | Token with reference number {referenceNumber} was not found.  |\n| 26004               | Token status does not allow the operation to be performed. | Status {status} of token {referenceNumber} does not allow the expiration of its approval deadline.  |",
             "content": {
               "application/json": {
                 "schema": {
@@ -8332,7 +9393,7 @@
           "Gaining access"
         ],
         "summary": "Retrieve authentication status",
-        "description": "Checks the current status of the authentication operation for the given token.\n\nAuthentication method: `AuthenticationToken` received when starting the authentication operation.\nThe operation is available for 7 days.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).",
+        "description": "**Deprecated:** the operation is obsolete and will be deprecated on 15.06.2027. It is replaced by a new revision: [`GET /auth/rev2/{referenceNumber}`](/docs/v2/index.html#tag/Uzyskiwanie-dostepu/paths/~1auth~1rev2~1%7BreferenceNumber%7D/get).\n\nChecks the current status of the authentication operation for the given token.\n\nAuthentication method: `AuthenticationToken` received at the start of the authentication operation.\nThe operation is available for 7 days.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).",
         "parameters": [
           {
             "name": "referenceNumber",
@@ -8351,6 +9412,18 @@
               "X-System-Warning": {
                 "schema": {
                   "$ref": "#/components/schemas/SystemWarning"
+                }
+              },
+              "Deprecation": {
+                "description": "The moment from which the operation is obsolete (RFC 9745), in the format `@<unix-timestamp>`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "The moment the operation is disabled (RFC 8594), in HTTP-date format. From this moment, the operation returns `410 Gone`.",
+                "schema": {
+                  "type": "string"
                 }
               }
             },
@@ -8380,12 +9453,12 @@
                       }
                     }
                   },
-                  "Kod 400 | Uwierzytelnianie zakończone niepowodzeniem | Nieważny certyfikat": {
+                  "Kod 460 | Uwierzytelnianie zakończone niepowodzeniem | Nieważny certyfikat": {
                     "value": {
                       "startDate": "0001-01-01T00:00:00+00:00",
                       "authenticationMethod": "Token",
                       "status": {
-                        "code": 400,
+                        "code": 460,
                         "description": "Authentication failed",
                         "details": [
                           "Nieważny certyfikat."
@@ -8393,12 +9466,12 @@
                       }
                     }
                   },
-                  "Kod 400 | Uwierzytelnianie zakończone niepowodzeniem | Błąd weryfikacji łańcucha certyfikatów": {
+                  "Kod 460 | Uwierzytelnianie zakończone niepowodzeniem | Błąd weryfikacji łańcucha certyfikatów": {
                     "value": {
                       "startDate": "0001-01-01T00:00:00+00:00",
                       "authenticationMethod": "Token",
                       "status": {
-                        "code": 400,
+                        "code": 460,
                         "description": "Authentication failed",
                         "details": [
                           "Błąd weryfikacji łańcucha certyfikatów."
@@ -8406,12 +9479,12 @@
                       }
                     }
                   },
-                  "Kod 400 | Uwierzytelnianie zakończone niepowodzeniem | Niezaufany łańcuch certyfikatów": {
+                  "Kod 460 | Uwierzytelnianie zakończone niepowodzeniem | Niezaufany łańcuch certyfikatów": {
                     "value": {
                       "startDate": "0001-01-01T00:00:00+00:00",
                       "authenticationMethod": "Token",
                       "status": {
-                        "code": 400,
+                        "code": 460,
                         "description": "Authentication failed",
                         "details": [
                           "Niezaufany łańcuch certyfikatów."
@@ -8419,12 +9492,12 @@
                       }
                     }
                   },
-                  "Kod 400 | Uwierzytelnianie zakończone niepowodzeniem | Certyfikat odwołany": {
+                  "Kod 460 | Uwierzytelnianie zakończone niepowodzeniem | Certyfikat odwołany": {
                     "value": {
                       "startDate": "0001-01-01T00:00:00+00:00",
                       "authenticationMethod": "Token",
                       "status": {
-                        "code": 400,
+                        "code": 460,
                         "description": "Authentication failed",
                         "details": [
                           "Certyfikat odwołany."
@@ -8432,12 +9505,12 @@
                       }
                     }
                   },
-                  "Kod 400 | Uwierzytelnianie zakończone niepowodzeniem | Niepoprawny certyfikat": {
+                  "Kod 460 | Uwierzytelnianie zakończone niepowodzeniem | Niepoprawny certyfikat": {
                     "value": {
                       "startDate": "0001-01-01T00:00:00+00:00",
                       "authenticationMethod": "Token",
                       "status": {
-                        "code": 400,
+                        "code": 460,
                         "description": "Authentication failed",
                         "details": [
                           "Niepoprawny certyfikat."
@@ -8449,6 +9522,325 @@
                     "value": {
                       "startDate": "0001-01-01T00:00:00+00:00",
                       "authenticationMethod": "Token",
+                      "status": {
+                        "code": 500,
+                        "description": "Unknown error ({statusCode})"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "| ExceptionCode       | ExceptionDescription                           | Details                                                                     | \n|---------------------|------------------------------------------------|-----------------------------------------------------------------------------|\n| 21304               | No authentication.                         | Authentication operation with reference number {referenceNumber} was not found. |",
+            "headers": {
+              "Deprecation": {
+                "description": "The moment from which the operation is obsolete (RFC 9745), in the format `@<unix-timestamp>`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "The moment the operation is disabled (RFC 8594), in HTTP-date format. From this moment, the operation returns `410 Gone`.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblemDetails"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Gone",
+            "headers": {
+              "Deprecation": {
+                "description": "The moment from which the operation is obsolete (RFC 9745), in the format `@<unix-timestamp>`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "The moment the operation is disabled (RFC 8594), in HTTP-date format. From this moment, the operation returns `410 Gone`.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoneProblemDetails"
+                },
+                "example": {
+                  "title": "Gone",
+                  "status": 410,
+                  "instance": "{{uri_path}}",
+                  "detail": "Operacja wygasła i nie jest już dostępna.",
+                  "timestamp": "2025-07-11T12:23:56.0154302+00:00",
+                  "traceId": "673843e023c432286660bc0501a3af44"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 60 | - | - | -\n",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetryAfter"
+                }
+              },
+              "Deprecation": {
+                "description": "The moment from which the operation is obsolete (RFC 9745), in the format `@<unix-timestamp>`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "The moment the operation is disabled (RFC 8594), in HTTP-date format. From this moment, the operation returns `410 Gone`.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Too Many Requests"
+          }
+        },
+        "deprecated": true,
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "x-rate-limits": {
+          "perSecond": 60
+        },
+        "x-sunset": "2027-06-15",
+        "x-successor": "GET /auth/rev2/{referenceNumber}"
+      }
+    },
+    "/auth/rev2/{referenceNumber}": {
+      "get": {
+        "tags": [
+          "Gaining access"
+        ],
+        "summary": "Get authentication status (rev2)",
+        "description": "Checks the current status of the authentication operation for the given token.\n\nAuthentication method: `AuthenticationToken` received when starting the authentication operation.\nThe operation is available for 7 days.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).",
+        "parameters": [
+          {
+            "name": "referenceNumber",
+            "in": "path",
+            "description": "Reference number of the token received when initializing the authentication operation.",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/ReferenceNumber"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-System-Warning": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemWarning"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationOperationStatusResponseRev2"
+                },
+                "examples": {
+                  "Kod 100 | Uwierzytelnianie w toku": {
+                    "value": {
+                      "startDate": "2025-10-11T12:23:56.0154302+00:00",
+                      "authenticationMethodInfo": {
+                        "category": {
+                          "code": "XadesSignature",
+                          "rawCode": "XadesSignature",
+                          "displayName": "Podpis XAdES"
+                        },
+                        "code": "xades.qualified-seal",
+                        "displayName": "Pieczęć kwalifikowana"
+                      },
+                      "status": {
+                        "code": 100,
+                        "description": "Authentication in progress"
+                      }
+                    }
+                  },
+                  "Kod 200 | Uwierzytelnianie zakończone sukcesem": {
+                    "value": {
+                      "startDate": "2025-10-11T12:23:56.0154302+00:00",
+                      "authenticationMethodInfo": {
+                        "category": {
+                          "code": "XadesSignature",
+                          "rawCode": "XadesSignature",
+                          "displayName": "Podpis XAdES"
+                        },
+                        "code": "xades.qualified-seal",
+                        "displayName": "Pieczęć kwalifikowana"
+                      },
+                      "status": {
+                        "code": 200,
+                        "description": "Authentication completed successfully"
+                      }
+                    }
+                  },
+                  "Kod 460 | Uwierzytelnianie zakończone niepowodzeniem | Nieważny certyfikat": {
+                    "value": {
+                      "startDate": "2025-10-11T12:23:56.0154302+00:00",
+                      "authenticationMethodInfo": {
+                        "category": {
+                          "code": "XadesSignature",
+                          "rawCode": "XadesSignature",
+                          "displayName": "Podpis XAdES"
+                        },
+                        "code": "xades.qualified-seal",
+                        "displayName": "Pieczęć kwalifikowana"
+                      },
+                      "status": {
+                        "code": 460,
+                        "description": "Authentication failed",
+                        "details": [
+                          "Nieważny certyfikat."
+                        ]
+                      }
+                    }
+                  },
+                  "Kod 460 | Uwierzytelnianie zakończone niepowodzeniem | Błąd weryfikacji łańcucha certyfikatów": {
+                    "value": {
+                      "startDate": "2025-10-11T12:23:56.0154302+00:00",
+                      "authenticationMethodInfo": {
+                        "category": {
+                          "code": "XadesSignature",
+                          "rawCode": "XadesSignature",
+                          "displayName": "Podpis XAdES"
+                        },
+                        "code": "xades.qualified-seal",
+                        "displayName": "Pieczęć kwalifikowana"
+                      },
+                      "status": {
+                        "code": 460,
+                        "description": "Authentication failed",
+                        "details": [
+                          "Błąd weryfikacji łańcucha certyfikatów."
+                        ]
+                      }
+                    }
+                  },
+                  "Kod 460 | Uwierzytelnianie zakończone niepowodzeniem | Niezaufany łańcuch certyfikatów": {
+                    "value": {
+                      "startDate": "2025-10-11T12:23:56.0154302+00:00",
+                      "authenticationMethodInfo": {
+                        "category": {
+                          "code": "XadesSignature",
+                          "rawCode": "XadesSignature",
+                          "displayName": "Podpis XAdES"
+                        },
+                        "code": "xades.qualified-seal",
+                        "displayName": "Pieczęć kwalifikowana"
+                      },
+                      "status": {
+                        "code": 460,
+                        "description": "Authentication failed",
+                        "details": [
+                          "Niezaufany łańcuch certyfikatów."
+                        ]
+                      }
+                    }
+                  },
+                  "Kod 460 | Uwierzytelnianie zakończone niepowodzeniem | Certyfikat odwołany": {
+                    "value": {
+                      "startDate": "2025-10-11T12:23:56.0154302+00:00",
+                      "authenticationMethodInfo": {
+                        "category": {
+                          "code": "XadesSignature",
+                          "rawCode": "XadesSignature",
+                          "displayName": "Podpis XAdES"
+                        },
+                        "code": "xades.qualified-seal",
+                        "displayName": "Pieczęć kwalifikowana"
+                      },
+                      "status": {
+                        "code": 460,
+                        "description": "Authentication failed",
+                        "details": [
+                          "Certyfikat odwołany."
+                        ]
+                      }
+                    }
+                  },
+                  "Kod 460 | Uwierzytelnianie zakończone niepowodzeniem | Niepoprawny certyfikat": {
+                    "value": {
+                      "startDate": "2025-10-11T12:23:56.0154302+00:00",
+                      "authenticationMethodInfo": {
+                        "category": {
+                          "code": "XadesSignature",
+                          "rawCode": "XadesSignature",
+                          "displayName": "Podpis XAdES"
+                        },
+                        "code": "xades.qualified-seal",
+                        "displayName": "Pieczęć kwalifikowana"
+                      },
+                      "status": {
+                        "code": 460,
+                        "description": "Authentication failed",
+                        "details": [
+                          "Niepoprawny certyfikat."
+                        ]
+                      }
+                    }
+                  },
+                  "Kod 500 | Nieznany błąd": {
+                    "value": {
+                      "startDate": "2025-10-11T12:23:56.0154302+00:00",
                       "status": {
                         "code": 500,
                         "description": "Unknown error ({statusCode})"
@@ -10627,7 +12019,7 @@
           "Searching granted permissions"
         ],
         "summary": "Retrieving the list of permissions for administrators or representatives of EU entities authorized for self-invoicing",
-        "description": " The method allows reading permissions of administrators or representatives of EU entities:  \n - If the login context is NIP, it is possible to read the permissions of EU entities related to the current context entity, i.e., those for which the first part of the composite context is equal to the NIP of the login context.  \n - If the login context is composite (NIP-VAT UE), it is possible to retrieve all permissions of administrators and representatives of the entity in the current composite context.  \n\n Permissions returned by the operation include:  \n - **VatUeManage** – managing permissions within the EU entity  \n - **InvoiceWrite** – issuing invoices  \n - **InvoiceRead** – viewing invoices  \n - **Introspection** – viewing session history  \n\n The response can be filtered based on the following parameters:  \n - **vatUeIdentifier** – EU entity identifier  \n - **authorizedFingerprintIdentifier** – fingerprint of the authorized person's or entity's certificate  \n - **permissionTypes** – list of types of permissions being searched  \n\n#### Pagination of results\nThe query returns **one page of results** with the number and size given in the path.\n- On the first call, set the parameter `pageOffset = 0`.  \n- If there is another page of results available, a **`hasMore`** flag will appear in the response.  \n- In such a case, the query can be called again with the next page number.\n \n > More information:\n > - [Retrieving a list of permissions](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-uprawnie%C5%84-administrator%C3%B3w-lub-reprezentant%C3%B3w-podmiot%C3%B3w-unijnych-uprawnionych-do-samofakturowania)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- startDate (Desc)\n- id (Asc)\n\n\n\n**One of the following permissions required**: `CredentialsManage`, `CredentialsRead`, `VatUeManage`.",
+        "description": "The method allows reading permissions of administrators or representatives of EU entities:  \n - If the login context is NIP, it is possible to read permissions of EU entity administrators related to the entity of the current context, i.e., those for which the first part of the composite context is equal to the NIP of the login context.  \n - If the login context is composite (NIP-VAT UE), it is possible to retrieve all permissions of administrators and representatives of the entity in the current composite context.  \n\nPermissions returned by the operation include:  \n - **VatUeManage** – managing permissions within the EU entity  \n - **InvoiceWrite** – issuing invoices  \n - **InvoiceRead** – viewing invoices  \n - **Introspection** – viewing session history  \n - **CollectiveIdentifierManage** – managing collective identifiers  \n\nThe response can be filtered based on the following parameters:  \n - **vatUeIdentifier** – EU entity identifier  \n - **authorizedFingerprintIdentifier** – fingerprint of the certificate of the authorized person or entity  \n - **permissionTypes** – list of types of permissions being searched for  \n\n#### Pagination\nThe request returns **one page of results** with the number and size provided in the path.\n- For the first call, set the parameter `pageOffset = 0`.  \n- If there is another page of results available, a **`hasMore`** flag will appear in the response.  \n- In such a case, the request can be called again with the next page number.\n \n > More information:\n > - [Retrieving permissions list](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-uprawnie%C5%84-administrator%C3%B3w-lub-reprezentant%C3%B3w-podmiot%C3%B3w-unijnych-uprawnionych-do-samofakturowania)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).\n\n**Sorting:**\n\n- startDate (Desc)\n- id (Asc)\n\n**Required one of the permissions**: `CredentialsManage`, `CredentialsRead`, `VatUeManage`.",
         "parameters": [
           {
             "name": "pageOffset",
@@ -11243,7 +12635,74 @@
                 "$ref": "#/components/schemas/StatusInfo"
               }
             ],
-            "description": "Information about the current status.\n| Code | Description | Details |\n| --- | --- | --- |\n| 100 | Authentication in progress | - |\n| 200 | Authentication completed successfully | - |\n| 415 | Authentication failed | No assigned permissions |\n| 425 | Authentication revoked | Authentication and associated refresh tokens have been revoked by the user |\n| 450 | Authentication failed due to invalid token | Invalid authorization challenge |\n| 450 | Authentication failed due to invalid token | Invalid token |\n| 450 | Authentication failed due to invalid token | Invalid token time |\n| 450 | Authentication failed due to invalid token | Token revoked |\n| 450 | Authentication failed due to invalid token | Token inactive |\n| 450 | Authentication failed due to invalid token | Invalid token encryption |\n| 450 | Authentication failed due to invalid token | Invalid token encoding |\n| 450 | Authentication failed due to invalid token | Token cannot be used in the context of {contextIdentifier} |\n| 460 | Authentication failed due to certificate error | Invalid certificate |\n| 460 | Authentication failed due to certificate error | Certificate chain verification error |\n| 460 | Authentication failed due to certificate error | Untrusted certificate chain |\n| 460 | Authentication failed due to certificate error | Certificate revoked |\n| 460 | Authentication failed due to certificate error | Certificate suspended |\n| 460 | Authentication failed due to certificate error | Incorrect certificate |\n| 470 | Authentication failed | Attempt to use authorization methods of a deceased person |\n| 480 | Authentication blocked | Security incident suspected. Please contact the Ministry of Finance via the submission form. |\n| 500 | Unknown error | - |\n| 550 | Operation has been cancelled by the system | Processing was interrupted due to internal system reasons. Please try again |"
+            "description": "Information about the current status.\n| Code | Description | Details |\n| --- | --- | --- |\n| 100 | Authentication in progress | - |\n| 200 | Authentication completed successfully | - |\n| 415 | Authentication failed | No assigned permissions |\n| 425 | Authentication revoked | Authentication and associated refresh tokens have been revoked by the user |\n| 450 | Authentication failed due to incorrect token | Invalid authorization challenge |\n| 450 | Authentication failed due to incorrect token | Invalid token |\n| 450 | Authentication failed due to incorrect token | Invalid token time |\n| 450 | Authentication failed due to incorrect token | Token revoked |\n| 450 | Authentication failed due to incorrect token | Token inactive |\n| 450 | Authentication failed due to incorrect token | Token out of validity period |\n| 450 | Authentication failed due to incorrect token | Invalid token encryption |\n| 450 | Authentication failed due to incorrect token | Invalid token encoding |\n| 450 | Authentication failed due to incorrect token | Token cannot be used in context {contextIdentifier} |\n| 460 | Authentication failed due to certificate error | Invalid certificate |\n| 460 | Authentication failed due to certificate error | Certificate chain verification error |\n| 460 | Authentication failed due to certificate error | Untrusted certificate chain |\n| 460 | Authentication failed due to certificate error | Certificate revoked |\n| 460 | Authentication failed due to certificate error | Certificate suspended |\n| 460 | Authentication failed due to certificate error | Incorrect certificate |\n| 470 | Authentication failed | Attempt to use authorization methods of a deceased person |\n| 480 | Authentication blocked | Suspicion of a security incident. Contact the Ministry of Finance through the reporting form. |\n| 500 | Unknown error | - |\n| 550 | Operation was canceled by the system | Processing was interrupted due to internal system reasons. Try again |"
+          },
+          "isTokenRedeemed": {
+            "type": "boolean",
+            "description": "Whether a refresh token associated with the given authentication has already been issued.",
+            "nullable": true
+          },
+          "lastTokenRefreshDate": {
+            "type": "string",
+            "description": "Date of the last token refresh.",
+            "format": "date-time",
+            "nullable": true
+          },
+          "refreshTokenValidUntil": {
+            "type": "string",
+            "description": "Expiry date of the refresh token (unless revoked earlier).",
+            "format": "date-time",
+            "nullable": true
+          },
+          "referenceNumber": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ReferenceNumber"
+              }
+            ],
+            "description": "Authentication session reference number."
+          },
+          "isCurrent": {
+            "type": "boolean",
+            "description": "Whether the session is associated with the currently used token.",
+            "readOnly": true
+          }
+        }
+      },
+      "AuthenticationListItemRev2": {
+        "required": [
+          "authenticationMethodInfo",
+          "referenceNumber",
+          "startDate",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "startDate": {
+            "type": "string",
+            "description": "Authentication operation start date.",
+            "format": "date-time"
+          },
+          "authenticationMethodInfo": {
+            "required": [
+              "category",
+              "code",
+              "displayName"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuthenticationMethodInfoRev2"
+              }
+            ],
+            "description": "Authentication method used."
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StatusInfo"
+              }
+            ],
+            "description": "Information about the current status.\n| Code | Description | Details |\n| --- | --- | --- |\n| 100 | Authentication in progress | - |\n| 200 | Authentication completed successfully | - |\n| 415 | Authentication failed | No assigned permissions |\n| 425 | Authentication revoked | Authentication and associated refresh tokens have been revoked by the user |\n| 450 | Authentication failed due to incorrect token | Invalid authorization challenge |\n| 450 | Authentication failed due to incorrect token | Invalid token |\n| 450 | Authentication failed due to incorrect token | Invalid token time |\n| 450 | Authentication failed due to incorrect token | Token revoked |\n| 450 | Authentication failed due to incorrect token | Token inactive |\n| 450 | Authentication failed due to incorrect token | Token out of validity period |\n| 450 | Authentication failed due to incorrect token | Invalid token encryption |\n| 450 | Authentication failed due to incorrect token | Invalid token encoding |\n| 450 | Authentication failed due to incorrect token | Token cannot be used in context {contextIdentifier} |\n| 460 | Authentication failed due to certificate error | Invalid certificate |\n| 460 | Authentication failed due to certificate error | Certificate chain verification error |\n| 460 | Authentication failed due to certificate error | Untrusted certificate chain |\n| 460 | Authentication failed due to certificate error | Certificate revoked |\n| 460 | Authentication failed due to certificate error | Certificate suspended |\n| 460 | Authentication failed due to certificate error | Incorrect certificate |\n| 470 | Authentication failed | Attempt to use authorization methods of a deceased person |\n| 480 | Authentication blocked | Suspicion of a security incident. Contact the Ministry of Finance through the reporting form. |\n| 500 | Unknown error | - |\n| 550 | Operation was canceled by the system | Processing was interrupted due to internal system reasons. Try again |"
           },
           "isTokenRedeemed": {
             "type": "boolean",
@@ -11297,6 +12756,26 @@
           }
         }
       },
+      "AuthenticationListResponseRev2": {
+        "required": [
+          "items"
+        ],
+        "type": "object",
+        "properties": {
+          "continuationToken": {
+            "type": "string",
+            "description": "Token used to retrieve the next page of results. If empty, there are no more pages.",
+            "nullable": true
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuthenticationListItemRev2"
+            },
+            "description": "List of authentication sessions."
+          }
+        }
+      },
       "AuthenticationMethod": {
         "enum": [
           "Token",
@@ -11319,6 +12798,44 @@
         ],
         "type": "string",
         "description": "| Value | Description |\n| --- | --- |\n| XadesSignature | Authentication using Xades signature. |\n| NationalNode | Authentication via the National Node (login.gov.pl). |\n| Token | Authentication using a token. |\n| Other | Authentication using another method. |\n"
+      },
+      "AuthenticationMethodCategoryRev2": {
+        "required": [
+          "code",
+          "displayName",
+          "rawCode"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuthenticationMethodCategoryRev2Code"
+              }
+            ],
+            "description": "Dictionary value code.\n| Code | DisplayName | Description |\n| --- | --- | --- |\n| XadesSignature | XadesSignature | Authentication with XAdES signature. |\n| NationalNode | NationalNode | Authentication using the National Node. |\n| Token | Token | Authentication with token. |\n| FutureValue |  | Authentication method category unknown at the time of the current model release.            The actual category code is available in the `rawCode` field,            and its name in the `displayName` field. |"
+          },
+          "rawCode": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Original dictionary value code."
+          },
+          "displayName": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Name intended for presentation to the user."
+          }
+        }
+      },
+      "AuthenticationMethodCategoryRev2Code": {
+        "enum": [
+          "XadesSignature",
+          "NationalNode",
+          "Token",
+          "FutureValue"
+        ],
+        "type": "string",
+        "description": "| Code | DisplayName | Description |\n| --- | --- | --- |\n| XadesSignature | XAdES Signature | Authentication with XAdES signature. |\n| NationalNode | National Node | Authentication using National Node. |\n| Token | Token | Authentication with token. |\n| FutureValue |  | Authentication method category unknown at the time of            the current model release.            The actual category code is available in the `rawCode` field,            and its name in the `displayName` field. |"
       },
       "AuthenticationMethodInfo": {
         "required": [
@@ -11344,6 +12861,32 @@
             "type": "string",
             "description": "Authentication method name to display to the user.",
             "readOnly": true
+          }
+        }
+      },
+      "AuthenticationMethodInfoRev2": {
+        "required": [
+          "category",
+          "code",
+          "displayName"
+        ],
+        "type": "object",
+        "properties": {
+          "category": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuthenticationMethodCategoryRev2"
+              }
+            ],
+            "description": "Authentication method category."
+          },
+          "code": {
+            "type": "string",
+            "description": "Authentication method code."
+          },
+          "displayName": {
+            "type": "string",
+            "description": "Authentication method name to display to the user."
           }
         }
       },
@@ -11389,7 +12932,60 @@
                 "$ref": "#/components/schemas/StatusInfo"
               }
             ],
-            "description": "Information about the current status.\n| Code | Description | Details |\n| --- | --- | --- |\n| 100 | Authentication in progress | - |\n| 200 | Authentication completed successfully | - |\n| 415 | Authentication failed | No assigned permissions |\n| 425 | Authentication revoked | Authentication and associated refresh tokens have been revoked by the user |\n| 450 | Authentication failed due to invalid token | Invalid authorization challenge |\n| 450 | Authentication failed due to invalid token | Invalid token |\n| 450 | Authentication failed due to invalid token | Invalid token time |\n| 450 | Authentication failed due to invalid token | Token revoked |\n| 450 | Authentication failed due to invalid token | Token inactive |\n| 450 | Authentication failed due to invalid token | Invalid token encryption |\n| 450 | Authentication failed due to invalid token | Invalid token encoding |\n| 450 | Authentication failed due to invalid token | Token cannot be used in the context of {contextIdentifier} |\n| 460 | Authentication failed due to certificate error | Invalid certificate |\n| 460 | Authentication failed due to certificate error | Certificate chain verification error |\n| 460 | Authentication failed due to certificate error | Untrusted certificate chain |\n| 460 | Authentication failed due to certificate error | Certificate revoked |\n| 460 | Authentication failed due to certificate error | Certificate suspended |\n| 460 | Authentication failed due to certificate error | Incorrect certificate |\n| 470 | Authentication failed | Attempt to use authorization methods of a deceased person |\n| 480 | Authentication blocked | Security incident suspected. Please contact the Ministry of Finance via the submission form. |\n| 500 | Unknown error | - |\n| 550 | Operation has been cancelled by the system | Processing was interrupted due to internal system reasons. Please try again |"
+            "description": "Information about the current status.\n| Code | Description | Details |\n| --- | --- | --- |\n| 100 | Authentication in progress | - |\n| 200 | Authentication completed successfully | - |\n| 415 | Authentication failed | No assigned permissions |\n| 425 | Authentication revoked | Authentication and associated refresh tokens have been revoked by the user |\n| 450 | Authentication failed due to incorrect token | Invalid authorization challenge |\n| 450 | Authentication failed due to incorrect token | Invalid token |\n| 450 | Authentication failed due to incorrect token | Invalid token time |\n| 450 | Authentication failed due to incorrect token | Token revoked |\n| 450 | Authentication failed due to incorrect token | Token inactive |\n| 450 | Authentication failed due to incorrect token | Token out of validity period |\n| 450 | Authentication failed due to incorrect token | Invalid token encryption |\n| 450 | Authentication failed due to incorrect token | Invalid token encoding |\n| 450 | Authentication failed due to incorrect token | Token cannot be used in context {contextIdentifier} |\n| 460 | Authentication failed due to certificate error | Invalid certificate |\n| 460 | Authentication failed due to certificate error | Certificate chain verification error |\n| 460 | Authentication failed due to certificate error | Untrusted certificate chain |\n| 460 | Authentication failed due to certificate error | Certificate revoked |\n| 460 | Authentication failed due to certificate error | Certificate suspended |\n| 460 | Authentication failed due to certificate error | Incorrect certificate |\n| 470 | Authentication failed | Attempt to use authorization methods of a deceased person |\n| 480 | Authentication blocked | Suspicion of a security incident. Contact the Ministry of Finance through the reporting form. |\n| 500 | Unknown error | - |\n| 550 | Operation was canceled by the system | Processing was interrupted due to internal system reasons. Try again |"
+          },
+          "isTokenRedeemed": {
+            "type": "boolean",
+            "description": "Whether a refresh token associated with the given authentication has already been issued.",
+            "nullable": true
+          },
+          "lastTokenRefreshDate": {
+            "type": "string",
+            "description": "Date of the last token refresh.",
+            "format": "date-time",
+            "nullable": true
+          },
+          "refreshTokenValidUntil": {
+            "type": "string",
+            "description": "Expiry date of the refresh token (unless revoked earlier).",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
+      "AuthenticationOperationStatusResponseRev2": {
+        "required": [
+          "authenticationMethodInfo",
+          "startDate",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "startDate": {
+            "type": "string",
+            "description": "Authentication operation start date.",
+            "format": "date-time"
+          },
+          "authenticationMethodInfo": {
+            "required": [
+              "category",
+              "code",
+              "displayName"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuthenticationMethodInfoRev2"
+              }
+            ],
+            "description": "Authentication method used."
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StatusInfo"
+              }
+            ],
+            "description": "Information about the current status.\n| Code | Description | Details |\n| --- | --- | --- |\n| 100 | Authentication in progress | - |\n| 200 | Authentication completed successfully | - |\n| 415 | Authentication failed | No assigned permissions |\n| 425 | Authentication revoked | Authentication and associated refresh tokens have been revoked by the user |\n| 450 | Authentication failed due to incorrect token | Invalid authorization challenge |\n| 450 | Authentication failed due to incorrect token | Invalid token |\n| 450 | Authentication failed due to incorrect token | Invalid token time |\n| 450 | Authentication failed due to incorrect token | Token revoked |\n| 450 | Authentication failed due to incorrect token | Token inactive |\n| 450 | Authentication failed due to incorrect token | Token out of validity period |\n| 450 | Authentication failed due to incorrect token | Invalid token encryption |\n| 450 | Authentication failed due to incorrect token | Invalid token encoding |\n| 450 | Authentication failed due to incorrect token | Token cannot be used in context {contextIdentifier} |\n| 460 | Authentication failed due to certificate error | Invalid certificate |\n| 460 | Authentication failed due to certificate error | Certificate chain verification error |\n| 460 | Authentication failed due to certificate error | Untrusted certificate chain |\n| 460 | Authentication failed due to certificate error | Certificate revoked |\n| 460 | Authentication failed due to certificate error | Certificate suspended |\n| 460 | Authentication failed due to certificate error | Incorrect certificate |\n| 470 | Authentication failed | Attempt to use authorization methods of a deceased person |\n| 480 | Authentication blocked | Suspicion of a security incident. Contact the Ministry of Finance through the reporting form. |\n| 500 | Unknown error | - |\n| 550 | Operation was canceled by the system | Processing was interrupted due to internal system reasons. Try again |"
           },
           "isTokenRedeemed": {
             "type": "boolean",
@@ -11996,13 +13592,16 @@
         "type": "string"
       },
       "CertificateSubjectLimitsOverride": {
+        "required": [
+          "maxCertificates"
+        ],
         "type": "object",
         "properties": {
           "maxCertificates": {
             "minimum": 0,
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "description": "Maximum number of active certificates.",
+            "format": "int32"
           }
         }
       },
@@ -12835,7 +14434,8 @@
         "required": [
           "batchSession",
           "collectiveIdentifier",
-          "onlineSession"
+          "onlineSession",
+          "tokens"
         ],
         "type": "object",
         "properties": {
@@ -12875,6 +14475,17 @@
               }
             ],
             "description": "Limits for collective identifiers."
+          },
+          "tokens": {
+            "required": [
+              "maxTokens"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TokensEffectiveContextLimits"
+              }
+            ],
+            "description": "Limits for KSeF tokens."
           }
         }
       },
@@ -12994,13 +14605,16 @@
         }
       },
       "EnrollmentSubjectLimitsOverride": {
+        "required": [
+          "maxEnrollments"
+        ],
         "type": "object",
         "properties": {
           "maxEnrollments": {
             "minimum": 0,
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "description": "Maximum number of active certificate requests.",
+            "format": "int32"
           }
         }
       },
@@ -14042,7 +15656,8 @@
       "EuEntityPermissionType": {
         "enum": [
           "InvoiceWrite",
-          "InvoiceRead"
+          "InvoiceRead",
+          "CollectiveIdentifierManage"
         ],
         "type": "string"
       },
@@ -14130,7 +15745,8 @@
           "VatUeManage",
           "InvoiceWrite",
           "InvoiceRead",
-          "Introspection"
+          "Introspection",
+          "CollectiveIdentifierManage"
         ],
         "type": "string"
       },
@@ -14435,7 +16051,63 @@
           }
         }
       },
+      "GenerateTokenRequestRev2": {
+        "required": [
+          "description",
+          "permissions"
+        ],
+        "type": "object",
+        "properties": {
+          "permissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TokenPermissionType"
+            },
+            "description": "Permissions assigned to the token."
+          },
+          "description": {
+            "maxLength": 256,
+            "minLength": 5,
+            "type": "string",
+            "description": "Token description."
+          },
+          "validFrom": {
+            "type": "string",
+            "description": "Start date of the token validity period. It can be at most 60 days after the token generation is initiated. If not provided, it takes the value corresponding to the moment of initiation.",
+            "format": "date-time",
+            "nullable": true
+          },
+          "validTo": {
+            "type": "string",
+            "description": "Token expiration date. It can be at most 365 days after `validFrom`. If not provided, the validity period is 90 days from `validFrom`.",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
       "GenerateTokenResponse": {
+        "required": [
+          "referenceNumber",
+          "token"
+        ],
+        "type": "object",
+        "properties": {
+          "referenceNumber": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ReferenceNumber"
+              }
+            ],
+            "description": "KSeF token reference number."
+          },
+          "token": {
+            "maxLength": 160,
+            "type": "string",
+            "description": "KSeF token."
+          }
+        }
+      },
+      "GenerateTokenResponseRev2": {
         "required": [
           "referenceNumber",
           "token"
@@ -17576,6 +19248,125 @@
           }
         }
       },
+      "QueryTokensResponseItemRev2": {
+        "required": [
+          "authorIdentifier",
+          "contextIdentifier",
+          "dateCreated",
+          "description",
+          "referenceNumber",
+          "requestedPermissions",
+          "status",
+          "validFrom",
+          "validTo"
+        ],
+        "type": "object",
+        "properties": {
+          "referenceNumber": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ReferenceNumber"
+              }
+            ],
+            "description": "KSeF token reference number."
+          },
+          "authorIdentifier": {
+            "required": [
+              "type",
+              "value"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TokenAuthorIdentifierTypeCodeRev2Identifier"
+              }
+            ],
+            "description": "Identifier of the person who generated the token."
+          },
+          "contextIdentifier": {
+            "required": [
+              "type",
+              "value"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TokenContextIdentifierTypeCodeRev2Identifier"
+              }
+            ],
+            "description": "Identifier of the context in which the token was generated and to which it grants access."
+          },
+          "description": {
+            "maxLength": 256,
+            "minLength": 5,
+            "type": "string",
+            "description": "Token description."
+          },
+          "requestedPermissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TokenPermissionRev2"
+            },
+            "description": "Permissions assigned to the token."
+          },
+          "dateCreated": {
+            "type": "string",
+            "description": "Date and time of token creation.",
+            "format": "date-time"
+          },
+          "lastUseDate": {
+            "type": "string",
+            "description": "Date of last token use.",
+            "format": "date-time",
+            "nullable": true
+          },
+          "validFrom": {
+            "type": "string",
+            "description": "Start date of the token validity period.",
+            "format": "date-time"
+          },
+          "validTo": {
+            "type": "string",
+            "description": "Token expiration date.",
+            "format": "date-time"
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TokenStatusRev2"
+              }
+            ],
+            "description": "Token status."
+          },
+          "failure": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TokenFailureRev2"
+              }
+            ],
+            "description": "Information about the reason for token activation failure.\nThe field is filled only for the `Failed` status.",
+            "nullable": true
+          }
+        }
+      },
+      "QueryTokensResponseRev2": {
+        "required": [
+          "tokens"
+        ],
+        "type": "object",
+        "properties": {
+          "continuationToken": {
+            "type": "string",
+            "description": "Token used to retrieve the next page of results. If empty, there are no more pages.",
+            "nullable": true
+          },
+          "tokens": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QueryTokensResponseItemRev2"
+            },
+            "description": "List of authentication tokens."
+          }
+        }
+      },
       "QueryType": {
         "enum": [
           "Granted",
@@ -18124,6 +19915,9 @@
             ]
           },
           "enrollment": {
+            "required": [
+              "maxEnrollments"
+            ],
             "allOf": [
               {
                 "$ref": "#/components/schemas/EnrollmentSubjectLimitsOverride"
@@ -18132,6 +19926,9 @@
             "nullable": true
           },
           "certificate": {
+            "required": [
+              "maxCertificates"
+            ],
             "allOf": [
               {
                 "$ref": "#/components/schemas/CertificateSubjectLimitsOverride"
@@ -18917,6 +20714,77 @@
         "type": "string",
         "description": "| Value | Description |\n| --- | --- |\n| Nip | NIP. |\n| Pesel | PESEL. |\n| Fingerprint | Certificate fingerprint. |\n"
       },
+      "TokenAuthorIdentifierTypeCodeRev2": {
+        "enum": [
+          "Nip",
+          "Pesel",
+          "Fingerprint",
+          "FutureValue"
+        ],
+        "type": "string",
+        "description": "| Code | DisplayName | Description |\n| --- | --- | --- |\n| Nip | NIP | Tax Identification Number (NIP). |\n| Pesel | PESEL | PESEL number. |\n| Fingerprint | Certificate fingerprint | Certificate fingerprint. |\n| FutureValue |  | Author identifier type unknown in the current operation revision.            The actual code is available in the `rawCode` field. |"
+      },
+      "TokenAuthorIdentifierTypeCodeRev2Identifier": {
+        "required": [
+          "type",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "type": {
+            "required": [
+              "code",
+              "rawCode",
+              "displayName"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TokenAuthorIdentifierTypeCodeRev2IdentifierType"
+              }
+            ],
+            "description": "Information about the identifier type."
+          },
+          "value": {
+            "type": "string",
+            "description": "Identifier value."
+          }
+        }
+      },
+      "TokenAuthorIdentifierTypeCodeRev2IdentifierType": {
+        "required": [
+          "code",
+          "displayName",
+          "rawCode"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TokenAuthorIdentifierTypeCodeRev2"
+              }
+            ],
+            "description": "Identifier type code.\n| Code | DisplayName | Description |\n| --- | --- | --- |\n| Nip | NIP | Tax Identification Number (NIP). |\n| Pesel | PESEL | PESEL number. |\n| Fingerprint | Certificate fingerprint | Certificate fingerprint. |\n| FutureValue |  | Author identifier type unknown in the current operation revision.            The actual code is available in the `rawCode` field. |"
+          },
+          "rawCode": {
+            "type": "string",
+            "description": "Actual, stable identifier type code."
+          },
+          "displayName": {
+            "type": "string",
+            "description": "Identifier type name intended for presentation to the user."
+          }
+        }
+      },
+      "TokenAuthorIdentifierTypeFilterRev2": {
+        "enum": [
+          "Nip",
+          "Pesel",
+          "Fingerprint"
+        ],
+        "type": "string",
+        "description": "| Value | Description |\n| --- | --- |\n| Nip | NIP. |\n| Pesel | PESEL. |\n| Fingerprint | Certificate fingerprint. |\n"
+      },
       "TokenAuthorIdentifierTypeIdentifier": {
         "required": [
           "type",
@@ -18948,6 +20816,69 @@
         "type": "string",
         "description": "| Value | Description |\n| --- | --- |\n| Nip | NIP. |\n| InternalId | Internal identifier. |\n| NipVatUe | Two-part identifier consisting of a NIP number and a VAT-UE number: `{nip}-{vat_ue}`. |\n| PeppolId | Peppol service provider identifier. |\n"
       },
+      "TokenContextIdentifierTypeCodeRev2": {
+        "enum": [
+          "Nip",
+          "InternalId",
+          "NipVatUe",
+          "PeppolId",
+          "FutureValue"
+        ],
+        "type": "string",
+        "description": "| Code | DisplayName | Description |\n| --- | --- | --- |\n| Nip | NIP | Tax Identification Number (NIP). |\n| InternalId | Internal ID | Internal identifier. |\n| NipVatUe | NIP VAT-UE | Two-part identifier consisting of NIP            and VAT-UE number: `{nip}-{vat_ue}`. |\n| PeppolId | Peppol service provider identifier | Peppol service provider identifier. |\n| FutureValue |  | Context identifier type unknown in the current operation revision.            The actual code is available in the `rawCode` field. |"
+      },
+      "TokenContextIdentifierTypeCodeRev2Identifier": {
+        "required": [
+          "type",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "type": {
+            "required": [
+              "code",
+              "rawCode",
+              "displayName"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TokenContextIdentifierTypeCodeRev2IdentifierType"
+              }
+            ],
+            "description": "Information about the identifier type."
+          },
+          "value": {
+            "type": "string",
+            "description": "Identifier value."
+          }
+        }
+      },
+      "TokenContextIdentifierTypeCodeRev2IdentifierType": {
+        "required": [
+          "code",
+          "displayName",
+          "rawCode"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TokenContextIdentifierTypeCodeRev2"
+              }
+            ],
+            "description": "Identifier type code.\n| Code | DisplayName | Description |\n| --- | --- | --- |\n| Nip | NIP | Tax identification number (NIP). |\n| InternalId | Internal identifier | Internal identifier. |\n| NipVatUe | NIP VAT-UE | Two-part identifier consisting of the NIP number            and the VAT-UE number: `{nip}-{vat_ue}`. |\n| PeppolId | Peppol service provider identifier | Peppol service provider identifier. |\n| FutureValue |  | Context identifier type unknown in the current operation revision.            The actual code is available in the `rawCode` field. |"
+          },
+          "rawCode": {
+            "type": "string",
+            "description": "Actual, stable identifier type code."
+          },
+          "displayName": {
+            "type": "string",
+            "description": "Identifier type name intended for presentation to the user."
+          }
+        }
+      },
       "TokenContextIdentifierTypeIdentifier": {
         "required": [
           "type",
@@ -18969,6 +20900,33 @@
           }
         }
       },
+      "TokenFailureRev2": {
+        "required": [
+          "code",
+          "description"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Failure code.\n            \n| Code | Description |\n| --- | --- |\n| token.permission-grant-failed | Failed to grant permissions to token |\n| token.context-limit-exceeded | Token limit exceeded in context |\n| token.unknown-error | Unknown error occurred |"
+          },
+          "description": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Failure description intended for user presentation."
+          },
+          "details": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Additional error details.",
+            "nullable": true
+          }
+        }
+      },
       "TokenInfo": {
         "required": [
           "token",
@@ -18987,6 +20945,48 @@
           }
         }
       },
+      "TokenPermissionCodeRev2": {
+        "enum": [
+          "InvoiceRead",
+          "InvoiceWrite",
+          "CredentialsRead",
+          "CredentialsManage",
+          "SubunitManage",
+          "EnforcementOperations",
+          "Introspection",
+          "CollectiveIdentifierManage",
+          "FutureValue"
+        ],
+        "type": "string"
+      },
+      "TokenPermissionRev2": {
+        "required": [
+          "code",
+          "displayName",
+          "rawCode"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TokenPermissionCodeRev2"
+              }
+            ],
+            "description": "Token permission.\n            \n| Code | DisplayName |\n| --- | --- |\n| InvoiceRead | Invoice viewing |\n| InvoiceWrite | Invoice issuing |\n| CredentialsRead | Permission viewing |\n| CredentialsManage | Permission management |\n| SubunitManage | Subunit management |\n| EnforcementOperations | Enforcement operations execution |\n| Introspection | Session history viewing and UPO generation |\n| CollectiveIdentifierManage | Collective identifier management |\n| FutureValue | Permission unknown in the current operation revision. The actual permission code is available in the `rawCode` field. |"
+          },
+          "rawCode": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Actual, stable permission code."
+          },
+          "displayName": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Permission name intended for user presentation."
+          }
+        }
+      },
       "TokenPermissionType": {
         "enum": [
           "InvoiceRead",
@@ -18999,6 +20999,21 @@
           "CollectiveIdentifierManage"
         ],
         "type": "string"
+      },
+      "TokenStatusFilterRev2": {
+        "enum": [
+          "Pending",
+          "Active",
+          "Revoking",
+          "Revoked",
+          "Failed",
+          "NotYetActive",
+          "AwaitingApproval",
+          "ApprovalExpired",
+          "Expired"
+        ],
+        "type": "string",
+        "description": "| Value | Description |\n| --- | --- |\n| Pending | Token has been created but is still in the process of activation and permission granting. It cannot yet be used for authentication. |\n| Active | Token is active and can be used for authentication. |\n| Revoking | Token is in the process of revocation. It can no longer be used for authentication. |\n| Revoked | Token has been revoked and cannot be used for authentication. |\n| Failed | Failed to activate the token. A new token must be generated, the current one cannot be used for authentication. |\n| NotYetActive | Token was generated correctly, however, its validity period has not yet started. |\n| AwaitingApproval | Token was generated using a KSeF token and is awaiting approval. Until approval, it cannot be used for authentication. |\n| ApprovalExpired | 24-hour waiting time for approval has expired. Token can no longer be approved or used for authentication. A new token generation must be initiated again. |\n| Expired | Token validity period has expired. |"
       },
       "TokenStatusResponse": {
         "required": [
@@ -19083,6 +21098,163 @@
             },
             "description": "Additional information about the status, returned in case of errors.",
             "nullable": true
+          }
+        }
+      },
+      "TokenStatusResponseRev2": {
+        "required": [
+          "authorIdentifier",
+          "contextIdentifier",
+          "dateCreated",
+          "description",
+          "referenceNumber",
+          "requestedPermissions",
+          "status",
+          "validFrom",
+          "validTo"
+        ],
+        "type": "object",
+        "properties": {
+          "referenceNumber": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ReferenceNumber"
+              }
+            ],
+            "description": "KSeF token reference number."
+          },
+          "authorIdentifier": {
+            "required": [
+              "type",
+              "value"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TokenAuthorIdentifierTypeCodeRev2Identifier"
+              }
+            ],
+            "description": "Identifier of the person who generated the token."
+          },
+          "contextIdentifier": {
+            "required": [
+              "type",
+              "value"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TokenContextIdentifierTypeCodeRev2Identifier"
+              }
+            ],
+            "description": "Identifier of the context in which the token was generated and to which it grants access."
+          },
+          "description": {
+            "maxLength": 256,
+            "minLength": 5,
+            "type": "string",
+            "description": "Token description."
+          },
+          "requestedPermissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TokenPermissionRev2"
+            },
+            "description": "Permissions assigned to the token."
+          },
+          "dateCreated": {
+            "type": "string",
+            "description": "Date and time of token creation.",
+            "format": "date-time"
+          },
+          "lastUseDate": {
+            "type": "string",
+            "description": "Date of last token use.",
+            "format": "date-time",
+            "nullable": true
+          },
+          "validFrom": {
+            "type": "string",
+            "description": "Start date of the token validity period.",
+            "format": "date-time"
+          },
+          "validTo": {
+            "type": "string",
+            "description": "Token expiration date.",
+            "format": "date-time"
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TokenStatusRev2"
+              }
+            ],
+            "description": "Token status."
+          },
+          "failure": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TokenFailureRev2"
+              }
+            ],
+            "description": "Information about the reason for token activation failure.\nThe field is filled only for the `Failed` status.",
+            "nullable": true
+          }
+        }
+      },
+      "TokenStatusRev2": {
+        "required": [
+          "code",
+          "displayName",
+          "rawCode"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TokenStatusRev2Code"
+              }
+            ],
+            "description": "Dictionary value code.\n| Code | DisplayName | Description |\n| --- | --- | --- |\n| Pending | Token in activation process | Token has been created, but its activation and granting of permissions is in progress. It cannot yet be used for authentication. |\n| Active | Active token | Token is active and can be used for authentication. |\n| Revoking | Token in revocation process | Token is in the process of being revoked. It can no longer be used for authentication. |\n| Revoked | Revoked token | Token has been revoked and cannot be used for authentication. |\n| Failed | Token activation failed | Failed to activate the token. A new token must be generated. The current token cannot be used for authentication. |\n| NotYetActive | Token not yet active | Token was generated correctly, but its validity period has not yet started. |\n| AwaitingApproval | Token awaiting approval | Token was generated using a KSeF token and is awaiting approval. Until approved, it cannot be used for authentication. |\n| ApprovalExpired | Token approval deadline expired | The 24-hour approval deadline has expired. The token can no longer be approved or used for authentication. A new token generation must be initiated. |\n| Expired | Token expired | The token's validity period has expired. |\n| FutureValue | | Token status unknown at the time of the current model version release. The actual status code is available in the `rawCode` field, and its name is in the `displayName` field. |"
+          },
+          "rawCode": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Original dictionary value code."
+          },
+          "displayName": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Name intended for presentation to the user."
+          }
+        }
+      },
+      "TokenStatusRev2Code": {
+        "enum": [
+          "Pending",
+          "Active",
+          "Revoking",
+          "Revoked",
+          "Failed",
+          "NotYetActive",
+          "AwaitingApproval",
+          "ApprovalExpired",
+          "Expired",
+          "FutureValue"
+        ],
+        "type": "string",
+        "description": "| Code | DisplayName | Opis |\n| --- | --- | --- |\n| Pending | Token in activation | Token has been created, but its activation and granting of permissions are in progress.            It cannot yet be used for authentication. |\n| Active | Active token | Token is active and can be used for authentication. |\n| Revoking | Token in revocation | Token is in the process of being revoked.            It can no longer be used for authentication. |\n| Revoked | Revoked token | Token has been revoked and cannot be used for authentication. |\n| Failed | Token activation failed | Failed to activate the token. A new token must be generated.            The current token cannot be used for authentication. |\n| NotYetActive | Token not yet active | Token was generated correctly, but its validity period            has not yet started. |\n| AwaitingApproval | Token awaiting approval | Token was generated using a KSeF token and is awaiting approval. Until approved, it cannot be used for authentication. |\n| ApprovalExpired | Token approval deadline expired | The 24-hour waiting period for approval has expired. Token can no longer be approved or used for authentication. A new token generation must be initiated. |\n| Expired | Token expired | The token's validity period has expired. |\n| FutureValue | | Token status unknown at the time of the current model version release.            The actual status code is available in the `rawCode` field,            and its name is in the `displayName` field. |"
+      },
+      "TokensEffectiveContextLimits": {
+        "required": [
+          "maxTokens"
+        ],
+        "type": "object",
+        "properties": {
+          "maxTokens": {
+            "minimum": 0,
+            "type": "integer",
+            "description": "Maximum number of KSeF tokens in context, counted towards the limit.",
+            "format": "int32"
           }
         }
       },

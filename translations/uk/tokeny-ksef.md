@@ -1,8 +1,8 @@
 ---
 original: tokeny-ksef.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 6fb819b
-last_translated: 2026-03-07
+source_commit: ccc26b0
+last_translated: 2026-11-16
 ---
 
 > **Translation.** Original: [tokeny-ksef.md](https://github.com/CIRFMF/ksef-docs/blob/main/tokeny-ksef.md)
@@ -136,3 +136,5 @@ await ksefClient.RevokeKsefTokenAsync(referenceNumber, accessToken, cancellation
 ```java
 ksefClient.revokeKsefToken(token.getReferenceNumber(), accessToken);
 ```
+
+</original>

@@ -1,8 +1,8 @@
 ---
 original: tokeny-ksef.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 6fb819b
-last_translated: 2026-03-05
+source_commit: ccc26b0
+last_translated: 2026-11-16
 ---
 
 > **Translation.** Original: [tokeny-ksef.md](https://github.com/CIRFMF/ksef-docs/blob/main/tokeny-ksef.md)
@@ -30,7 +30,7 @@ POST [/tokens](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Tokeny-KSe
 
  **Примеры реализации:** <br>
 
-| Поле        | Примерное значение                         | Описание                                       |
+| Поле        | Пример значения                         | Описание                                       |
 |-------------|---------------------------------------------|--------------------------------------------|
 | Permissions | `["InvoiceRead", "InvoiceWrite", "CredentialsRead", "CredentialsManage"]`        | Список разрешений, назначенных токену      |
 | Description | `"Токен для чтения счетов и данных учетной записи"` | Описание токена                                 |
@@ -55,7 +55,7 @@ POST [/tokens](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Tokeny-KSe
 
 ```java
 KsefTokenRequest request = new KsefTokenRequestBuilder()
-        .withDescription("test description")
+        .withDescription("тестовое описание")
         .withPermissions(List.of(TokenPermissionType.INVOICE_READ, TokenPermissionType.INVOICE_WRITE))
         .build();
 GenerateTokenResponse ksefToken = ksefClient.generateKsefToken(request, authToken.accessToken());

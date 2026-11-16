@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "KSeF API TE",
-    "description": "**Версия API:** 2.9.0 (build 2.9.0-te)<br>\n**Публичные ключи** Министерства финансов (для данного окружения): [Скачать ключи](#tag/Certyfikaty-klucza-publicznego)<br>\n**История изменений:** [Changelog](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)<br>\n**Расширенная документация API:** [ksef-docs](https://github.com/CIRFMF/ksef-api/tree/main)\n\n**Адрес сервера API:**\n- Тестовое окружение: `https://api-test.ksef.mf.gov.pl/v2`",
+    "description": "**Версия API:** 2.10.0 (build 2.9.0-te)<br>\n**Публичные ключи** Министерства финансов (для данного окружения): [Скачать ключи](#tag/Certyfikaty-klucza-publicznego)<br>\n**История изменений:** [Changelog](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)<br>\n**Расширенная документация API:** [ksef-docs](https://github.com/CIRFMF/ksef-api/tree/main)\n\n**Адрес сервера API:**\n- Тестовое окружение: `https://api-test.ksef.mf.gov.pl/v2`",
     "version": "v2"
   },
   "servers": [
@@ -18,6 +18,204 @@
           "Активные сессии"
         ],
         "summary": "Получение списка активных сессий",
+        "description": "**Устаревание:** операция устарела и будет удалена 15.06.2027. Заменяет ее новая ревизия: [`GET /auth/sessions/rev2`](/docs/v2/index.html#tag/Aktywne-sesje/paths/~1auth~1sessions~1rev2/get).\n\nВозвращает список активных сеансов аутентификации.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возвращению ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Сортировка:**\n\n- startDate (Desc)",
+        "parameters": [
+          {
+            "name": "x-continuation-token",
+            "in": "header",
+            "description": "Token для получения следующей страницы результатов.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Размер страницы результатов.",
+            "schema": {
+              "maximum": 100,
+              "minimum": 10,
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-System-Warning": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemWarning"
+                }
+              },
+              "Deprecation": {
+                "description": "Момент, с которого операция устарела (RFC 9745), в формате `@<unix-timestamp>`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "Момент отключения операции (RFC 8594), в формате HTTP-date. С этого момента операция возвращает `410 Gone`.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationListResponse"
+                },
+                "example": {
+                  "continuationToken": "W3siY29tcG9zaXRlVG9rZW4iOnsidG9rZW4iOm51bGwsInJhbmdlIjp7Im1pbiI6IjA1QzFFMCIsIm1heCI6IkZGIn19LCJyZXN1bWVWYWx1ZXMiOlsiMjAyNS0xMC0wM1QxMjoxODo0OS4zNDY2ODQ3WiJdLCJyaWQiOiIzeHd0QVBJWDVRRlVoZ0FBQUFBQUJBPT0iLCJza2lwQ291bnQiOjF9XQ==",
+                  "items": [
+                    {
+                      "referenceNumber": "20251010-AU-19F5E39000-39B5B182BA-B8",
+                      "isCurrent": false,
+                      "startDate": "2025-10-11T12:23:56.0154302+00:00",
+                      "authenticationMethod": "QualifiedSeal",
+                      "authenticationMethodInfo": {
+                        "category": "XadesSignature",
+                        "code": "xades.qualified-seal",
+                        "displayName": "Pieczęć kwalifikowana"
+                      },
+                      "status": {
+                        "code": 200,
+                        "description": "Аутентификация выполнена успешно"
+                      },
+                      "isTokenRedeemed": true,
+                      "refreshTokenValidUntil": "2025-11-28T09:22:13.388+00:00"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21001               | Нечитаемое содержимое.                              | {подробное описание ошибки}                                 |\n| 21418               | Переданный токен продолжения имеет неверный формат. |                                                           |\n| 21405 | Ошибка валидации входных данных. | {текст ошибки от валидатора} |",
+            "headers": {
+              "Deprecation": {
+                "description": "Момент, с которого операция устарела (RFC 9745), в формате `@<unix-timestamp>`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "Момент отключения операции (RFC 8594), в формате HTTP-date. С этого момента операция возвращает `410 Gone`.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblemDetails"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Gone",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoneProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "| | req / s | req / min | req / h | группа\n| --- | --- | --- | --- | --- |\n| **Лимиты количества запросов** | 10 | 30 | 120 | other\n",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetryAfter"
+                }
+              },
+              "Deprecation": {
+                "description": "Момент, с которого операция устарела (RFC 9745), в формате `@<unix-timestamp>`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "Момент отключения операции (RFC 8594), в формате HTTP-date. С этого момента операция возвращает `410 Gone`.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Too Many Requests"
+          }
+        },
+        "deprecated": true,
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "x-rate-limits": {
+          "perSecond": 10,
+          "perMinute": 30,
+          "perHour": 120
+        },
+        "x-sort": [
+          {
+            "field": "startDate",
+            "direction": "Desc"
+          }
+        ],
+        "x-sunset": "2027-06-15",
+        "x-successor": "GET /auth/sessions/rev2"
+      }
+    },
+    "/auth/sessions/rev2": {
+      "get": {
+        "tags": [
+          "Активные сессии"
+        ],
+        "summary": "Получение списка активных сеансов (rev2)",
         "description": "Возвращает список активных сессий аутентификации.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Сортировка:**\n\n- startDate (Desc)\n\n",
         "parameters": [
           {
@@ -54,7 +252,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AuthenticationListResponse"
+                  "$ref": "#/components/schemas/AuthenticationListResponseRev2"
                 },
                 "example": {
                   "continuationToken": "W3siY29tcG9zaXRlVG9rZW4iOnsidG9rZW4iOm51bGwsInJhbmdlIjp7Im1pbiI6IjA1QzFFMCIsIm1heCI6IkZGIn19LCJyZXN1bWVWYWx1ZXMiOlsiMjAyNS0xMC0wM1QxMjoxODo0OS4zNDY2ODQ3WiJdLCJyaWQiOiIzeHd0QVBJWDVRRlVoZ0FBQUFBQUJBPT0iLCJza2lwQ291bnQiOjF9XQ==",
@@ -63,9 +261,12 @@
                       "referenceNumber": "20251010-AU-19F5E39000-39B5B182BA-B8",
                       "isCurrent": false,
                       "startDate": "2025-10-11T12:23:56.0154302+00:00",
-                      "authenticationMethod": "QualifiedSeal",
                       "authenticationMethodInfo": {
-                        "category": "XadesSignature",
+                        "category": {
+                          "code": "XadesSignature",
+                          "rawCode": "XadesSignature",
+                          "displayName": "Podpis XAdES"
+                        },
                         "code": "xades.qualified-seal",
                         "displayName": "Pieczęć kwalifikowana"
                       },
@@ -82,7 +283,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21001               | Нечитаемое содержимое.                              | {подробное описание ошибки}                                 |\n| 21418               | Переданный токен продолжения имеет неверный формат. |                                                           |\n| 21405 | Ошибка валидации входных данных. | {текст ошибки от валидатора} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21001               | Нечитаемое содержимое.                                                           | {подробное описание ошибки}                            |\n| 21418               | Переданный токен продолжения имеет неверный формат. |   |\n| 21405 | Ошибка проверки входных данных. | {содержание ошибки от валидатора} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -2951,6 +3152,9 @@
                   },
                   "collectiveIdentifier": {
                     "maxInvoices": 500
+                  },
+                  "tokens": {
+                    "maxTokens": 100
                   }
                 }
               }
@@ -3633,7 +3837,7 @@
             }
           },
           "400": {
-            "description": "",
+            "description": "| ExceptionCode | ExceptionDescription | Details |\n|-|-|-|\n| 21405 | Ошибка валидации входных данных. | {содержание ошибки от валидатора} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -4696,7 +4900,7 @@
           "Предоставление прав доступа"
         ],
         "summary": "Предоставление прав администратора субъекта ЕС",
-        "description": "Метод позволяет предоставить указанному в запросе субъекту или физическому лицу права администратора в контексте, состоящем из идентификатора NIP текущего контекстного субъекта и номера НДС ЕС субъекта ЕС, указанного в запросе. \nПри создании администратора субъекта ЕС создается контекст, состоящий из номера NIP субъекта контекста входа и указанного номера идентификационного НДС ЕС субъекта ЕС. \nВ запросе также указывается название и адрес субъекта ЕС. \n            \nЕдинственным способом идентификации уполномоченного лица является отпечаток сертификата квалифицированного удостоверения: \n- сертификат электронной подписи для физических лиц \n- сертификат электронной печати для субъектов \n            \nПрава администратора субъекта ЕС включают: \n- **VatEuManage** – управление правами в рамках субъекта ЕС \n- **InvoiceWrite** – выставление счетов-фактур \n- **InvoiceRead** – просмотр счетов-фактур \n- **Introspection** – просмотр истории сессий \n            \nМетод автоматически предоставляет все указанные выше права без необходимости их указания в запросе.\n            \n> Подробнее:\n> - [Предоставление прав](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadawanie-uprawnie%C5%84-administratora-podmiotu-unijnego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Требуемое разрешение**: `CredentialsManage`.",
+        "description": "Метод позволяет предоставить указанному в запросе субъекту или физическому лицу права администратора в контексте, состоящем из идентификатора NIP текущего контекстного субъекта и номера VAT UE указанного в запросе европейского субъекта.  \nПри создании администратора европейского субъекта создается составной контекст, состоящий из номера NIP субъекта контекста входа и указанного идентификационного номера VAT UE европейского субъекта.  \nВ запросе также указывается название и адрес европейского субъекта.  \n            \nЕдинственным способом идентификации уполномоченного лица является отпечаток сертификата квалифицированного:  \n- сертификат электронной подписи для физических лиц  \n- сертификат электронной печати для субъектов            \nПрава администратора европейского субъекта включают:  \n- **VatEuManage** – управление правами в рамках европейского субъекта  \n- **InvoiceWrite** – выставление счетов-фактур  \n- **InvoiceRead** – просмотр счетов-фактур  \n- **Introspection** – просмотр истории сеансов  \n- **CollectiveIdentifierManage** – управление коллективными идентификаторами            \nМетод автоматически предоставляет все указанные выше права без необходимости их указания в запросе.            \n> Подробнее:\n> - [Предоставление прав](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadanie-uprawnie%C5%84-administratora-podmiotu-unijnego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возвращению ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Требуемое разрешение**: `CredentialsManage`.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -4847,7 +5051,7 @@
           "Предоставление прав доступа"
         ],
         "summary": "Предоставление прав представителя субъекта ЕС",
-        "description": "Метод позволяет предоставить указанному в запросе субъекту или физическому лицу права на выставление и/или просмотр счетов-фактур в контексте текущего контекста. \n            \nЕдинственным способом идентификации уполномоченного лица является отпечаток сертификата квалифицированного удостоверения: \n- сертификат электронной подписи для физических лиц \n- сертификат электронной печати для субъектов \n            \nВ запросе определяемые предоставляемые права из набора: \n- **InvoiceWrite** – выставление счетов-фактур \n- **InvoiceRead** – просмотр счетов-фактур \n            \nМетод позволяет выбрать любую комбинацию указанных выше прав.\n\n> Подробнее:\n> - [Предоставление прав](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadawanie-uprawnie%C5%84-reprezentanta-podmiotu-unijnego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Требуемое разрешение**: `VatUeManage`.",
+        "description": "Метод позволяет предоставить указанному в запросе субъекту или физическому лицу права на выставление и/или просмотр счетов-фактур в контексте сложного текущего контекста.  \n\nЕдинственным способом идентификации уполномоченного является отпечаток сертификата квалифицированного:  \n- сертификат электронной подписи для физических лиц  \n- сертификат электронной печати для субъектов  \n\nВ запросе определяются предоставляемые права из набора:  \n- **InvoiceWrite** – выставление счетов-фактур  \n- **InvoiceRead** – просмотр счетов-фактур  \n- **CollectiveIdentifierManage** – управление коллективными идентификаторами  \n\nМетод позволяет выбрать любую комбинацию из указанных выше прав.\n\n> Дополнительная информация:\n> - [Предоставление прав](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#nadanie-uprawnie%C5%84-reprezentanta-podmiotu-unijnego)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Требуемое право**: `VatUeManage`.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -6322,7 +6526,7 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21001               | Нечитаемое содержимое.                                                           | {подробное описание ошибки}                            |\n| 21418               | Переданный токен продолжения имеет неверный формат. |   |\n| 21405 | Ошибка проверки входных данных. | {содержание ошибки от валидатора} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21001               | Нечитаемое содержимое.                                                           | {подробное описание ошибки}           |\n| 21418               | Переданный токен продолжения имеет неверный формат. |   |\n| 21405 | Ошибка проверки входных данных. | {содержимое ошибки от валидатора} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -7012,7 +7216,7 @@
           "Статус отправки и UPO"
         ],
         "summary": "Получение UPO счёта-фактуры из сессии на основании номера KSeF",
-        "description": "Возвращает UPO счета, отправленного в сеансе на основе его номера KSeF.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Required one of the permissions**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
+        "description": "Возвращает УПО счета-фактуры, отправленной в сессии, на основе ее номера KSeF.\n> Дополнительная информация:\n> - Схема УПО:\n>   - [upo v4.3](https://github.com/CIRFMF/ksef-api/blob/main/faktury/upo/schemy/upo-v4-3.xsd)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Требуется одно из прав**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
         "parameters": [
           {
             "name": "referenceNumber",
@@ -7141,7 +7345,7 @@
           "Статус отправки и UPO"
         ],
         "summary": "Получение UPO счёта-фактуры из сессии на основе референсного номера счёта-фактуры",
-        "description": "Возвращает UPO счета, отправленного в сеансе на основе его номера KSeF.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Required one of the permissions**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
+        "description": "Возвращает УПО счета-фактуры, отправленной в сессии, на основе ее референсного номера.\n> Дополнительная информация:\n> - Схема УПО:\n>   - [upo v4.3](https://github.com/CIRFMF/ksef-api/blob/main/faktury/upo/schemy/upo-v4-3.xsd)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Требуется одно из прав**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
         "parameters": [
           {
             "name": "referenceNumber",
@@ -7270,7 +7474,7 @@
           "Статус отправки и UPO"
         ],
         "summary": "Получение UPO для сессии",
-        "description": "Возвращает XML, содержащий совокупное UPO для сеанса.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Required one of the permissions**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
+        "description": "Возвращает XML, содержащий сводное UPO для сессии.\n> Дополнительная информация:\n> - Схема UPO:\n>   - [upo v4.3](https://github.com/CIRFMF/ksef-api/blob/main/faktury/upo/schemy/upo-v4-3.xsd)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Требуется одно из разрешений**: `InvoiceWrite`, `Introspection`, `PefInvoiceWrite`, `EnforcementOperations`.",
         "parameters": [
           {
             "name": "referenceNumber",
@@ -7399,7 +7603,7 @@
           "Токены KSeF"
         ],
         "summary": "Генерация нового токена",
-        "description": "Возвращает токен, который может быть использован для аутентификации в KSeF.\n\nТокен может быть сгенерирован только в контексте NIP или внутреннего идентификатора. Возвращается только один раз. Становится активным в момент, когда его статус изменяется на `Active`.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).",
+        "description": "**Устаревание:** операция устарела и будет отменена 30.09.2027. Заменяет ее новая редакция: [`POST /tokens/rev2`](/docs/v2/index.html#tag/Tokeny-KSeF/paths/~1tokens~1rev2/post).\n\nВозвращает токен, который может быть использован для аутентификации в KSeF.\n\nТокен может быть сгенерирован только в контексте NIP или внутреннего идентификатора. Он возвращается только один раз. Он становится активным в момент, когда его статус изменится на `Active`.\n            \nТокен, сгенерированный с 07.11.2026, действителен в течение 90 дней с момента генерации, если он не будет ранее аннулирован.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).",
         "requestBody": {
           "content": {
             "application/json": {
@@ -7432,6 +7636,18 @@
                 "schema": {
                   "$ref": "#/components/schemas/SystemWarning"
                 }
+              },
+              "Deprecation": {
+                "description": "Момент, с которого операция устарела (RFC 9745), в формате `@<unix-timestamp>`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "Момент отключения операции (RFC 8594), в формате HTTP-date. С этого момента операция возвращает `410 Gone`.",
+                "schema": {
+                  "type": "string"
+                }
               }
             },
             "content": {
@@ -7448,6 +7664,411 @@
           },
           "400": {
             "description": "| ExceptionCode       | ExceptionDescription                                       | Details |\n|---------------------|------------------------------------------------------------|---------|\n| 21001               | Нечитаемое содержимое.                                                           | {подробное описание ошибки}                            |\n| 26001               | Невозможно предоставить токену разрешения, которых у вас нет.  | Информация о отсутствующих разрешениях. |\n| 26002               | Невозможно сгенерировать токен для текущего типа контекста.  | Информация о текущем и разрешенных типах контекста. |\n| 21405 | Ошибка проверки входных данных. | {текст ошибки от валидатора} |",
+            "headers": {
+              "Deprecation": {
+                "description": "Момент, с которого операция устарела (RFC 9745), в формате `@<unix-timestamp>`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "Момент отключения операции (RFC 8594), в формате HTTP-date. С этого момента операция возвращает `410 Gone`.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblemDetails"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Gone",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoneProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "| | req / s | req / min | req / h | группа\n| --- | --- | --- | --- | --- |\n| **Лимиты количества запросов** | 10 | 30 | 120 | other\n",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetryAfter"
+                }
+              },
+              "Deprecation": {
+                "description": "Момент, с которого операция устарела (RFC 9745), в формате `@<unix-timestamp>`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "Момент отключения операции (RFC 8594), в формате HTTP-date. С этого момента операция возвращает `410 Gone`.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Too Many Requests"
+          }
+        },
+        "deprecated": true,
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "x-rate-limits": {
+          "perSecond": 10,
+          "perMinute": 30,
+          "perHour": 120
+        },
+        "x-sunset": "2027-09-30",
+        "x-successor": "POST /tokens/rev2"
+      },
+      "get": {
+        "tags": [
+          "Токены KSeF"
+        ],
+        "summary": "Получение списка сгенерированных токенов",
+        "description": "**Устаревание:** операция устарела и будет отменена 30.09.2027. Заменяет ее новая редакция: [`GET /tokens/rev2`](/docs/v2/index.html#tag/Tokeny-KSeF/paths/~1tokens~1rev2/get).\n\nВозвращает список метаданных токенов. Диапазон результатов зависит от способа аутентификации и разрешений вызывающего субъекта.\n\nЕсли субъект обладает разрешением **CredentialsManage** или **CredentialsRead**, \nсервис возвращает все токены, сгенерированные в данном контексте независимо от метода аутентификации. \n\nЕсли субъект не обладает ни одним из вышеупомянутых разрешений, диапазон результатов ограничен: \n- Для субъекта, аутентифицированного токеном, возвращается только токен, использованный для аутентификации.\n- Для остальных методов аутентификации возвращаются токены,  \nавтором которых является вызывающий субъект – с учетом связи NIP–PESEL.\n            \nСтатусы токенов, введенные в `rev2`, отображаются на предыдущие:\n- `NotYetActive` → `Active`,\n- `AwaitingApproval` → `Active`,\n- `ApprovalExpired` → `Revoked`,\n- `Expired` → `Revoked`.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Сортировка:**\n\n- dateCreated (Desc)",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Статус токенов для возврата. При отсутствии параметра возвращаются все токены. Параметр можно передавать несколько раз.\n| Значение | Описание |\n| --- | --- |\n| Pending | Токен создан, но ещё находится в процессе активации и назначения прав. Не может быть использован для аутентификации. |\n| Active | Токен активен и может быть использован для аутентификации. |\n| Revoking | Токен находится в процессе отзыва. Не может быть использован для аутентификации. |\n| Revoked | Токен отозван и не может быть использован для аутентификации. |\n| Failed | Не удалось активировать токен. Необходимо сгенерировать новый токен, текущий не может быть использован для аутентификации. |\n",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/AuthenticationTokenStatus"
+              }
+            }
+          },
+          {
+            "name": "description",
+            "in": "query",
+            "description": "Позволяет фильтровать токены по описанию. Значение параметра ищется в описании токена (операция не чувствительна к регистру). Необходимо указать не менее 3 символов.",
+            "schema": {
+              "minLength": 3,
+              "type": "string"
+            }
+          },
+          {
+            "name": "authorIdentifier",
+            "in": "query",
+            "description": "Позволяет фильтровать токены по их создателю. Значение параметра ищется в идентификаторе (операция не чувствительна к регистру). Необходимо указать не менее 3 символов.",
+            "schema": {
+              "minLength": 3,
+              "type": "string"
+            }
+          },
+          {
+            "name": "authorIdentifierType",
+            "in": "query",
+            "description": "Позволяет фильтровать токены по их создателю. Значение параметра определяет тип идентификатора, в котором будет выполняться поиск строки, переданной в параметре `authorIdentifier`.\n| Значение | Описание |\n| --- | --- |\n| Nip | NIP. |\n| Pesel | PESEL. |\n| Fingerprint | Отпечаток сертификата. |\n",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/TokenAuthorIdentifierType"
+                }
+              ]
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Размер страницы результатов.",
+            "schema": {
+              "maximum": 100,
+              "minimum": 10,
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "name": "x-continuation-token",
+            "in": "header",
+            "description": "Token для получения следующей страницы результатов.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-System-Warning": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemWarning"
+                }
+              },
+              "Deprecation": {
+                "description": "Момент, с которого операция устарела (RFC 9745), в формате `@<unix-timestamp>`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "Момент отключения операции (RFC 8594), в формате HTTP-date. С этого момента операция возвращает `410 Gone`.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryTokensResponse"
+                },
+                "example": {
+                  "continuationToken": "W3sidG9rZW4iOiIrUklEOn4zeHd0QUlqZUc5VkhCQUFBQUFBQUJBPT0jUlQ6MSNUUkM6MTAjSVNWOjIjSUVPOjY1NTY3I1FDRjo4I0ZQQzpBZ2dBQUFBQUFCQUFBQUFBQUFBQUVBQUFBQUFBQUFBUUFBQUVBRWVFMllFPSIsInJhbmdlIjp7Im1pbiI6IjA1QzFERjIxOUY5OTIwIiwibWF4IjoiRkYifX1d",
+                  "tokens": [
+                    {
+                      "referenceNumber": "20251001-EC-2DD3AFF000-A6B7F19A95-11",
+                      "authorIdentifier": {
+                        "type": "Nip",
+                        "value": "5265877635"
+                      },
+                      "contextIdentifier": {
+                        "type": "Nip",
+                        "value": "5265877635"
+                      },
+                      "description": "Выставление и просмотр счетов-фактур.",
+                      "requestedPermissions": [
+                        "InvoiceRead",
+                        "InvoiceWrite"
+                      ],
+                      "dateCreated": "2025-10-01T13:20:52.9919681+00:00",
+                      "status": "Active",
+                      "statusDetails": []
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21001               | Нечитаемое содержимое.                                                           | {подробное описание ошибки}                            |\n| 21418               | Переданный токен продолжения имеет неверный формат. |   |\n| 21405 | Ошибка проверки входных данных. | {содержание ошибки от валидатора} |",
+            "headers": {
+              "Deprecation": {
+                "description": "Момент, с которого операция устарела (RFC 9745), в формате `@<unix-timestamp>`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "Момент отключения операции (RFC 8594), в формате HTTP-date. С этого момента операция возвращает `410 Gone`.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblemDetails"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Gone",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoneProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "| | req / s | req / min | req / h | группа\n| --- | --- | --- | --- | --- |\n| **Лимиты количества запросов** | 10 | 30 | 120 | other\n",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetryAfter"
+                }
+              },
+              "Deprecation": {
+                "description": "Момент, с которого операция устарела (RFC 9745), в формате `@<unix-timestamp>`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "Момент отключения операции (RFC 8594), в формате HTTP-date. С этого момента операция возвращает `410 Gone`.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Too Many Requests"
+          }
+        },
+        "deprecated": true,
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "x-rate-limits": {
+          "perSecond": 10,
+          "perMinute": 30,
+          "perHour": 120
+        },
+        "x-sort": [
+          {
+            "field": "dateCreated",
+            "direction": "Desc"
+          }
+        ],
+        "x-sunset": "2027-09-30",
+        "x-successor": "GET /tokens/rev2"
+      }
+    },
+    "/tokens/rev2": {
+      "post": {
+        "tags": [
+          "Токены KSeF"
+        ],
+        "summary": "Генерация нового токена с определенным сроком действия (rev2)",
+        "description": "Возвращает токен, который можно использовать для аутентификации в KSeF. Токен возвращается только один раз и может быть сгенерирован только в контексте NIP или внутреннего идентификатора. Для аутентификации его можно использовать только после получения статуса `Active`.\n            \nПериод действия токена определяется свойствами `validFrom` и `validTo`:\n* `validFrom` может быть установлен не позднее чем через 60 дней после начала генерации токена. Если не указано, принимает значение, соответствующее моменту инициации.\n* `validTo` может быть установлен не позднее чем через 365 дней после `validFrom`. Если не указано, период действия составляет 90 дней с `validFrom`.\n            \nЕсли период действия еще не начался, токен, который был утвержден или не требует утверждения, имеет статус `NotYetActive`. Каждый токен имеет независимый период действия. Истечение срока действия или отзыв токена, использованного для аутентификации сеанса, не влияет на действительность нового токена.\n            \nПервый токен можно сгенерировать только после аутентификации с помощью Национального Узла или подписи в формате XAdES, принятой в процессе аутентификации в KSeF. Последующие токены можно генерировать также в сеансе, аутентифицированном токеном KSeF.\n            \nТокен, сгенерированный после аутентификации с помощью Национального Узла или подписи XAdES, не требует утверждения. Токен, сгенерированный в сеансе, аутентифицированном токеном KSeF, получает статус `AwaitingApproval` и перед использованием должен быть утвержден отдельным endpoint'ом после аутентификации с помощью Национального Узла или подписи XAdES. На утверждение отведено 24 часа с момента присвоения статуса `AwaitingApproval`. После этого времени токен переходит в статус `ApprovalExpired` и больше не может быть утвержден.\n            \nМаксимальное количество токенов в контексте составляет 100. В лимит включаются токены со статусами `Active`, `NotYetActive`, `Pending` и `AwaitingApproval`, независимо от автора и ревизии endpoint'а, с помощью которого они были сгенерированы. Попытка сгенерировать токен сверх лимита завершается ошибкой.\n\n**Заголовки:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "permissions",
+                  "description"
+                ],
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/GenerateTokenRequestRev2"
+                  }
+                ]
+              },
+              "example": {
+                "permissions": [
+                  "InvoiceRead",
+                  "InvoiceWrite"
+                ],
+                "description": "Выставление и просмотр счетов-фактур.",
+                "validFrom": "2026-11-14T09:48:26.8700925+00:00",
+                "validTo": "2026-11-20T09:48:26.8700925+00:00"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted",
+            "headers": {
+              "X-System-Warning": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemWarning"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateTokenResponseRev2"
+                },
+                "example": {
+                  "referenceNumber": "20251010-EC-1DCE3E3000-12ECB5B36E-45",
+                  "token": "20251010-EC-1DCE3E3000-12ECB5B36E-45|internalId-5265877635-12345|919f704466624ce29cd5ac7b65ded5e7cccc112eee314f2aaa76e02cd16df7b9"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "| ExceptionCode | ExceptionDescription | Details |\n|---------------------|----------------------------------------------------------------------|---------|\n| 21001 | Нечитабельное содержимое. | {подробное описание ошибки} |\n| 26001 | Невозможно предоставить токену разрешения, которых у вас нет. | Информация о отсутствующих разрешениях. |\n| 26002 | Невозможно сгенерировать токен для текущего типа контекста. | Информация о текущем и разрешенных типах контекста. |\n| 26006 | Достигнут лимит токенов в контексте. | Достигнут лимит токенов в контексте. Допустимый лимит: {limit}. |\n| 21405 | Ошибка проверки входных данных. | {содержимое ошибки от валидатора} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -7521,17 +8142,17 @@
         "tags": [
           "Токены KSeF"
         ],
-        "summary": "Получение списка сгенерированных токенов",
+        "summary": "Получение списка сгенерированных токенов (rev2)",
         "description": "Возвращает список метаданных токенов. Диапазон результатов зависит от способа аутентификации и прав вызывающего субъекта.\n\nЕсли субъект имеет право **CredentialsManage** или **CredentialsRead**, \nсервис возвращает все токены, сгенерированные в данном контексте, независимо от метода аутентификации. \n\nЕсли субъект не имеет ни одного из указанных прав, диапазон результатов ограничен: \n- Для субъекта, аутентифицированного с помощью токена, возвращается только токен, использованный для аутентификации.\n- Для остальных методов аутентификации возвращаются токены,  \nавтором которых является вызывающий субъект — с учётом связи NIP–PESEL.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Сортировка:**\n\n- dateCreated (Desc)\n\n",
         "parameters": [
           {
             "name": "status",
             "in": "query",
-            "description": "Статус токенов для возврата. При отсутствии параметра возвращаются все токены. Параметр можно передавать несколько раз.\n| Значение | Описание |\n| --- | --- |\n| Pending | Токен создан, но ещё находится в процессе активации и назначения прав. Не может быть использован для аутентификации. |\n| Active | Токен активен и может быть использован для аутентификации. |\n| Revoking | Токен находится в процессе отзыва. Не может быть использован для аутентификации. |\n| Revoked | Токен отозван и не может быть использован для аутентификации. |\n| Failed | Не удалось активировать токен. Необходимо сгенерировать новый токен, текущий не может быть использован для аутентификации. |\n",
+            "description": "Статусы токенов для возврата. В случае отсутствия параметра возвращаются все токены. Параметр можно передать несколько раз.\n| Значение | Описание |\n| --- | --- |\n| Pending | Токен создан, но еще находится в процессе активации и предоставления разрешений. Он еще не может использоваться для аутентификации. |\n| Active | Токен активен и может использоваться для аутентификации. |\n| Revoking | Токен находится в процессе аннулирования. Он больше не может использоваться для аутентификации. |\n| Revoked | Токен был аннулирован и не может использоваться для аутентификации. |\n| Failed | Не удалось активировать токен. Необходимо сгенерировать новый токен, текущий не может использоваться для аутентификации. |\n| NotYetActive | Токен был успешно сгенерирован, но срок его действия еще не начался. |\n| AwaitingApproval | Токен был сгенерирован с помощью токена KSeF и ожидает утверждения. До утверждения он не может использоваться для аутентификации. |\n| ApprovalExpired | Прошло 24 часа ожидания утверждения. Токен больше не может быть утвержден или использоваться для аутентификации. Необходимо повторно инициировать генерацию нового токена. |\n| Expired | Срок действия токена истек. |",
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/components/schemas/AuthenticationTokenStatus"
+                "$ref": "#/components/schemas/TokenStatusFilterRev2"
               }
             }
           },
@@ -7560,9 +8181,27 @@
             "schema": {
               "allOf": [
                 {
-                  "$ref": "#/components/schemas/TokenAuthorIdentifierType"
+                  "$ref": "#/components/schemas/TokenAuthorIdentifierTypeFilterRev2"
                 }
               ]
+            }
+          },
+          {
+            "name": "validFrom",
+            "in": "query",
+            "description": "Позволяет фильтровать токены по дате начала периода действия. Возвращаются токены, у которых `validFrom` совпадает с указанной датой или наступает позже.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "validTo",
+            "in": "query",
+            "description": "Позволяет фильтровать токены по дате окончания периода действия. Возвращаются токены, у которых `validTo` совпадает с указанной датой или наступает раньше.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
             }
           },
           {
@@ -7599,29 +8238,50 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/QueryTokensResponse"
+                  "$ref": "#/components/schemas/QueryTokensResponseRev2"
                 },
                 "example": {
                   "continuationToken": "W3sidG9rZW4iOiIrUklEOn4zeHd0QUlqZUc5VkhCQUFBQUFBQUJBPT0jUlQ6MSNUUkM6MTAjSVNWOjIjSUVPOjY1NTY3I1FDRjo4I0ZQQzpBZ2dBQUFBQUFCQUFBQUFBQUFBQUVBQUFBQUFBQUFBUUFBQUVBRWVFMllFPSIsInJhbmdlIjp7Im1pbiI6IjA1QzFERjIxOUY5OTIwIiwibWF4IjoiRkYifX1d",
                   "tokens": [
                     {
-                      "referenceNumber": "20251001-EC-2DD3AFF000-A6B7F19A95-11",
+                      "referenceNumber": "20270115-EC-2DD3AFF000-A6B7F19A95-6E",
                       "authorIdentifier": {
-                        "type": "Nip",
+                        "type": {
+                          "code": "Nip",
+                          "rawCode": "Nip",
+                          "displayName": "Nip"
+                        },
                         "value": "5265877635"
                       },
                       "contextIdentifier": {
-                        "type": "Nip",
+                        "type": {
+                          "code": "Nip",
+                          "rawCode": "Nip",
+                          "displayName": "Nip"
+                        },
                         "value": "5265877635"
                       },
                       "description": "Выставление и просмотр счетов-фактур.",
                       "requestedPermissions": [
-                        "InvoiceRead",
-                        "InvoiceWrite"
+                        {
+                          "code": "InvoiceRead",
+                          "rawCode": "InvoiceRead",
+                          "displayName": "Przeglądanie faktur"
+                        },
+                        {
+                          "code": "InvoiceWrite",
+                          "rawCode": "InvoiceWrite",
+                          "displayName": "Wystawianie faktur"
+                        }
                       ],
-                      "dateCreated": "2025-10-01T13:20:52.9919681+00:00",
-                      "status": "Active",
-                      "statusDetails": []
+                      "dateCreated": "2027-01-15T13:20:52.9919681+00:00",
+                      "validFrom": "2027-01-15T13:20:52.9919681+00:00",
+                      "validTo": "2027-04-15T13:20:52.9919681+00:00",
+                      "status": {
+                        "code": "Active",
+                        "rawCode": "Active",
+                        "displayName": "Token aktywny"
+                      }
                     }
                   ]
                 }
@@ -7712,7 +8372,7 @@
           "Токены KSeF"
         ],
         "summary": "Получение статуса токена",
-        "description": "\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).",
+        "description": "**Отмена:** операция устарела и будет отменена 30.09.2027. Заменена новой ревизией: [`GET /tokens/rev2/{referenceNumber}`](/docs/v2/index.html#tag/Tokeny-KSeF/paths/~1tokens~1rev2~1%7BreferenceNumber%7D/get).\n\nСтатусы токенов, введенные в `rev2`, отображаются на существующие:\n- `NotYetActive` → `Active`,\n- `AwaitingApproval` → `Active`,\n- `ApprovalExpired` → `Revoked`,\n- `Expired` → `Revoked`.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).",
         "parameters": [
           {
             "name": "referenceNumber",
@@ -7731,6 +8391,18 @@
               "X-System-Warning": {
                 "schema": {
                   "$ref": "#/components/schemas/SystemWarning"
+                }
+              },
+              "Deprecation": {
+                "description": "Момент, с которого операция устарела (RFC 9745), в формате `@<unix-timestamp>`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "Момент отключения операции (RFC 8594), в формате HTTP-date. С этого момента операция возвращает `410 Gone`.",
+                "schema": {
+                  "type": "string"
                 }
               }
             },
@@ -7763,7 +8435,145 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode | ExceptionDescription | Details |\n|-|-|-|\n| 21405 | Ошибка валидации входных данных. | {содержание ошибки от валидатора} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21409               | Токен с указанным идентификатором не существует. | Токен с референсным номером {referenceNumber} не найден.  |\n| 21405 | Ошибка валидации входных данных. | {содержание ошибки от валидатора} |",
+            "headers": {
+              "Deprecation": {
+                "description": "Момент, с которого операция устарела (RFC 9745), в формате `@<unix-timestamp>`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "Момент отключения операции (RFC 8594), в формате HTTP-date. С этого момента операция возвращает `410 Gone`.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblemDetails"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Gone",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoneProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "| | req / s | req / min | req / h | группа\n| --- | --- | --- | --- | --- |\n| **Лимиты количества запросов** | 10 | 30 | 120 | other\n",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetryAfter"
+                }
+              },
+              "Deprecation": {
+                "description": "Момент, с которого операция устарела (RFC 9745), в формате `@<unix-timestamp>`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "Момент отключения операции (RFC 8594), в формате HTTP-date. С этого момента операция возвращает `410 Gone`.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Too Many Requests"
+          }
+        },
+        "deprecated": true,
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "x-rate-limits": {
+          "perSecond": 10,
+          "perMinute": 30,
+          "perHour": 120
+        },
+        "x-sunset": "2027-09-30",
+        "x-successor": "GET /tokens/rev2/{referenceNumber}"
+      },
+      "delete": {
+        "tags": [
+          "Токены KSeF"
+        ],
+        "summary": "Отзыв токена",
+        "description": "Отменяет токен с указанным референсным номером. Диапазон токенов, доступных для отмены, зависит от способа аутентификации и прав вызывающего субъекта.\n\nЕсли субъект имеет разрешение **CredentialsManage**, \nон может отменить любой активный токен в данном контексте независимо от метода аутентификации.\n\nЕсли субъект не имеет вышеуказанного разрешения, диапазон отмены ограничен: \n- Для субъекта, аутентифицированного токеном, возможно отменить только токен, использованный для аутентификации. \n- Для других методов аутентификации субъект может отменить токены,  \nкоторыми он является автором – с учетом связи NIP–PESEL.\n            \nОтмененный токен больше не позволит аутентифицироваться с его помощью. Отмена не может быть отменена.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).",
+        "parameters": [
+          {
+            "name": "referenceNumber",
+            "in": "path",
+            "description": "Референсный номер токена KSeF.",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/ReferenceNumber"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content",
+            "headers": {
+              "X-System-Warning": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemWarning"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21409               | Токен с указанным идентификатором не существует. | Токен с референсным номером {referenceNumber} не найден.  |\n| 26004               | Статус токена не позволяет выполнить операцию. | Статус {status} токена {referenceNumber} не позволяет его отменить.  |\n| 21405 | Ошибка валидации входных данных. | {содержание ошибки от валидатора} |",
             "content": {
               "application/json": {
                 "schema": {
@@ -7832,13 +8642,163 @@
           "perMinute": 30,
           "perHour": 120
         }
-      },
-      "delete": {
+      }
+    },
+    "/tokens/rev2/{referenceNumber}": {
+      "get": {
         "tags": [
           "Токены KSeF"
         ],
-        "summary": "Отзыв токена",
-        "description": "Аннулирует токен с указанным референс-номером. Перечень токенов, доступных для аннулирования, зависит от способа аутентификации и прав субъекта, выполняющего вызов.\n\nЕсли субъект обладает правом **CredentialsManage**, \nон может аннулировать любой активный токен в данном контексте независимо от метода аутентификации.\n\nЕсли субъект не обладает указанным правом, область аннулирования ограничена: \n- Для субъекта, аутентифицированного с помощью токена, возможно аннулирование исключительно токена, использованного для аутентификации. \n- Для остальных методов аутентификации субъект может аннулировать токены,  \nавтором которых он является — с учётом связи NIP–PESEL.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка данного заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).",
+        "summary": "Получение статуса токена (rev2)",
+        "description": "\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).",
+        "parameters": [
+          {
+            "name": "referenceNumber",
+            "in": "path",
+            "description": "Референсный номер токена KSeF.",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/ReferenceNumber"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-System-Warning": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemWarning"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenStatusResponseRev2"
+                },
+                "example": {
+                  "referenceNumber": "20251001-EC-220B0CE000-E228129563-96",
+                  "authorIdentifier": {
+                    "type": {
+                      "code": "Nip",
+                      "rawCode": "Nip",
+                      "displayName": "Nip"
+                    },
+                    "value": "7762811692"
+                  },
+                  "contextIdentifier": {
+                    "type": {
+                      "code": "Nip",
+                      "rawCode": "Nip",
+                      "displayName": "Nip"
+                    },
+                    "value": "5265877635"
+                  },
+                  "description": "Выставление и просмотр счетов-фактур.",
+                  "requestedPermissions": [
+                    {
+                      "code": "InvoiceRead",
+                      "rawCode": "InvoiceRead",
+                      "displayName": "Przeglądanie faktur"
+                    },
+                    {
+                      "code": "InvoiceWrite",
+                      "rawCode": "InvoiceWrite",
+                      "displayName": "Wystawianie faktur"
+                    }
+                  ],
+                  "dateCreated": "2026-11-10T12:23:56.0154302+00:00",
+                  "validFrom": "2026-11-14T09:48:26.8700925+00:00",
+                  "validTo": "2026-11-20T09:48:26.8700925+00:00",
+                  "status": {
+                    "code": "Pending",
+                    "rawCode": "Pending",
+                    "displayName": "Token w trakcie aktywacji"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21409               | Токен с указанным идентификатором не существует. | Токен с референсным номером {referenceNumber} не найден.  |\n| 21405 | Ошибка валидации входных данных. | {содержание ошибки от валидатора} |",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "| | req / s | req / min | req / h | группа\n| --- | --- | --- | --- | --- |\n| **Лимиты количества запросов** | 10 | 30 | 120 | other\n",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetryAfter"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Too Many Requests"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "x-rate-limits": {
+          "perSecond": 10,
+          "perMinute": 30,
+          "perHour": 120
+        }
+      }
+    },
+    "/tokens/{referenceNumber}/approve": {
+      "post": {
+        "tags": [
+          "Токены KSeF"
+        ],
+        "summary": "Подтверждение токена",
+        "description": "Подтверждает токен в статусе `AwaitingApproval`, указанный по номеру ссылки. Подтверждение требуется только для токена, генерация которого была инициирована в `rev2` после аутентификации токеном KSeF. До подтверждения токен не может быть использован для аутентификации. Токены, сгенерированные после аутентификации другим методом или через предыдущие конечные точки, не требуют подтверждения.\n            \nНа подтверждение токена отведено 24 часа с момента присвоения статуса `AwaitingApproval`. По истечении этого времени токен автоматически переходит в статус `ApprovalExpired` и больше не может быть подтвержден или использован для аутентификации. Для получения нового токена требуется повторная инициализация генерации.\n            \nПодтвердить токен может:\n* субъект, обладающий правами владельца (`Owner`),\n* субъект с правом `CredentialsManage`,\n* владелец токена, если он обладает всеми правами, предусмотренными для этого токена.\n            \nВладельцем и автором токена является субъект, инициировавший его генерацию, указанный в `authorIdentifier`. Подтверждение токена другим субъектом не меняет его автора. При подтверждении в качестве владельца идентификация подтверждающего должна соответствовать типу и значению `authorIdentifier`.\n            \nПодтверждение токена другого субъекта требует прав владельца (`Owner`) или права `CredentialsManage` в данном контексте.\n            \nПодтверждение требует аутентификации с помощью Национального Узла или подписи в формате XAdES, принимаемой в процессе аутентификации в KSeF.\n            \nПосле подтверждения токен переходит из статуса `AwaitingApproval` в `Active` или `NotYetActive`, в зависимости от того, начался ли его период действия.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).",
         "parameters": [
           {
             "name": "referenceNumber",
@@ -7862,7 +8822,108 @@
             }
           },
           "400": {
-            "description": "| ExceptionCode | ExceptionDescription | Details |\n|-|-|-|\n| 21405 | Ошибка валидации входных данных. | {содержание ошибки от валидатора} |",
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     | \n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21409               | Токен с указанным идентификатором не существует. | Токен с номером ссылки {referenceNumber} не найден.  |\n| 26001               | Невозможно предоставить токену права, которых у вас нет.  | Информация об отсутствующих правах. |\n| 26004               | Статус токена не позволяет выполнить операцию. | Статус {status} токена {referenceNumber} не позволяет его подтвердить.  |\n| 26005               | Невозможно подтвердить токен для использованного метода аутентификации. | Подтверждение токена требует аутентификации методом, отличным от токена KSeF. |\n| 21405 | Ошибка проверки входных данных. | {текст ошибки из валидатора} |",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "| | req / s | req / min | req / h | группа\n| --- | --- | --- | --- | --- |\n| **Лимиты количества запросов** | 10 | 30 | 120 | other\n",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetryAfter"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Too Many Requests"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "x-rate-limits": {
+          "perSecond": 10,
+          "perMinute": 30,
+          "perHour": 120
+        }
+      }
+    },
+    "/testdata/tokens/{referenceNumber}/expire-approval": {
+      "post": {
+        "tags": [
+          "Токены KSeF"
+        ],
+        "summary": "Истечение срока подтверждения токена",
+        "description": "Перемещает указанный токен KSeF в текущем контексте из статуса `AwaitingApproval` в статус `ApprovalExpired`, симулируя истечение времени, отведенного на его утверждение. **Только для тестовых сред.**\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возвращению ошибок в формате **Problem Details** (`application/problem+json`).",
+        "parameters": [
+          {
+            "name": "referenceNumber",
+            "in": "path",
+            "description": "Референсный номер токена KSeF.",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/ReferenceNumber"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content",
+            "headers": {
+              "X-System-Warning": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemWarning"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "| ExceptionCode       | ExceptionDescription                                | Details                                                     |\n|---------------------|-----------------------------------------------------|-------------------------------------------------------------|\n| 21409               | Токен с указанным идентификатором не существует. | Токен с номером ссылки {referenceNumber} не найден.  |\n| 26004               | Статус токена не позволяет выполнить операцию. | Статус {status} токена {referenceNumber} не позволяет истечь сроку его утверждения.  |",
             "content": {
               "application/json": {
                 "schema": {
@@ -8332,7 +9393,7 @@
           "Получение доступа"
         ],
         "summary": "Получение статуса аутентификации",
-        "description": "Проверяет текущий статус операции аутентификации для указанного токена.\n\nСпособ аутентификации: `AuthenticationToken`, полученный при начале операции аутентификации.\nОперация доступна в течение 7 дней.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).",
+        "description": "**Отмена:** операция устарела и будет отменена 15.06.2027. Заменяет ее новая ревизия: [`GET /auth/rev2/{referenceNumber}`](/docs/v2/index.html#tag/Uzyskiwanie-dostepu/paths/~1auth~1rev2~1%7BreferenceNumber%7D/get).\n\nПроверяет текущий статус операции аутентификации для указанного токена.\n\nСпособ аутентификации: `AuthenticationToken`, полученный при начале операции аутентификации.\nОперация доступна в течение 7 дней.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возвращению ошибок в формате **Problem Details** (`application/problem+json`).",
         "parameters": [
           {
             "name": "referenceNumber",
@@ -8351,6 +9412,18 @@
               "X-System-Warning": {
                 "schema": {
                   "$ref": "#/components/schemas/SystemWarning"
+                }
+              },
+              "Deprecation": {
+                "description": "Момент, с которого операция устарела (RFC 9745), в формате `@<unix-timestamp>`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "Момент отключения операции (RFC 8594), в формате HTTP-date. С этого момента операция возвращает `410 Gone`.",
+                "schema": {
+                  "type": "string"
                 }
               }
             },
@@ -8380,12 +9453,12 @@
                       }
                     }
                   },
-                  "Kod 400 | Uwierzytelnianie zakończone niepowodzeniem | Nieważny certyfikat": {
+                  "Kod 460 | Uwierzytelnianie zakończone niepowodzeniem | Nieważny certyfikat": {
                     "value": {
                       "startDate": "0001-01-01T00:00:00+00:00",
                       "authenticationMethod": "Token",
                       "status": {
-                        "code": 400,
+                        "code": 460,
                         "description": "Аутентификация завершилась неудачей",
                         "details": [
                           "Nieważny certyfikat."
@@ -8393,12 +9466,12 @@
                       }
                     }
                   },
-                  "Kod 400 | Uwierzytelnianie zakończone niepowodzeniem | Błąd weryfikacji łańcucha certyfikatów": {
+                  "Kod 460 | Uwierzytelnianie zakończone niepowodzeniem | Błąd weryfikacji łańcucha certyfikatów": {
                     "value": {
                       "startDate": "0001-01-01T00:00:00+00:00",
                       "authenticationMethod": "Token",
                       "status": {
-                        "code": 400,
+                        "code": 460,
                         "description": "Аутентификация завершилась неудачей",
                         "details": [
                           "Błąd weryfikacji łańcucha certyfikatów."
@@ -8406,12 +9479,12 @@
                       }
                     }
                   },
-                  "Kod 400 | Uwierzytelnianie zakończone niepowodzeniem | Niezaufany łańcuch certyfikatów": {
+                  "Kod 460 | Uwierzytelnianie zakończone niepowodzeniem | Niezaufany łańcuch certyfikatów": {
                     "value": {
                       "startDate": "0001-01-01T00:00:00+00:00",
                       "authenticationMethod": "Token",
                       "status": {
-                        "code": 400,
+                        "code": 460,
                         "description": "Аутентификация завершилась неудачей",
                         "details": [
                           "Niezaufany łańcuch certyfikatów."
@@ -8419,12 +9492,12 @@
                       }
                     }
                   },
-                  "Kod 400 | Uwierzytelnianie zakończone niepowodzeniem | Certyfikat odwołany": {
+                  "Kod 460 | Uwierzytelnianie zakończone niepowodzeniem | Certyfikat odwołany": {
                     "value": {
                       "startDate": "0001-01-01T00:00:00+00:00",
                       "authenticationMethod": "Token",
                       "status": {
-                        "code": 400,
+                        "code": 460,
                         "description": "Аутентификация завершилась неудачей",
                         "details": [
                           "Certyfikat odwołany."
@@ -8432,12 +9505,12 @@
                       }
                     }
                   },
-                  "Kod 400 | Uwierzytelnianie zakończone niepowodzeniem | Niepoprawny certyfikat": {
+                  "Kod 460 | Uwierzytelnianie zakończone niepowodzeniem | Niepoprawny certyfikat": {
                     "value": {
                       "startDate": "0001-01-01T00:00:00+00:00",
                       "authenticationMethod": "Token",
                       "status": {
-                        "code": 400,
+                        "code": 460,
                         "description": "Аутентификация завершилась неудачей",
                         "details": [
                           "Niepoprawny certyfikat."
@@ -8449,6 +9522,325 @@
                     "value": {
                       "startDate": "0001-01-01T00:00:00+00:00",
                       "authenticationMethod": "Token",
+                      "status": {
+                        "code": 500,
+                        "description": "Неизвестная ошибка ({statusCode})"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "| ExceptionCode       | ExceptionDescription                           | Details                                                                     | \n|---------------------|------------------------------------------------|-----------------------------------------------------------------------------|\n| 21304               | Аутентификация отсутствует.                         | Операция аутентификации с референсным номером {referenceNumber} не найдена. |",
+            "headers": {
+              "Deprecation": {
+                "description": "Момент, с которого операция устарела (RFC 9745), в формате `@<unix-timestamp>`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "Момент отключения операции (RFC 8594), в формате HTTP-date. С этого момента операция возвращает `410 Gone`.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblemDetails"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Gone",
+            "headers": {
+              "Deprecation": {
+                "description": "Момент, с которого операция устарела (RFC 9745), в формате `@<unix-timestamp>`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "Момент отключения операции (RFC 8594), в формате HTTP-date. С этого момента операция возвращает `410 Gone`.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoneProblemDetails"
+                },
+                "example": {
+                  "title": "Gone",
+                  "status": 410,
+                  "instance": "{{uri_path}}",
+                  "detail": "Operacja wygasła i nie jest już dostępna.",
+                  "timestamp": "2025-07-11T12:23:56.0154302+00:00",
+                  "traceId": "673843e023c432286660bc0501a3af44"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "| | req / s | req / min | req / h | группа\n| --- | --- | --- | --- | --- |\n| **Лимиты количества запросов** | 60 | - | - | -\n",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetryAfter"
+                }
+              },
+              "Deprecation": {
+                "description": "Момент, с которого операция устарела (RFC 9745), в формате `@<unix-timestamp>`.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "Момент отключения операции (RFC 8594), в формате HTTP-date. С этого момента операция возвращает `410 Gone`.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsResponse"
+                }
+              },
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TooManyRequestsProblemDetails"
+                }
+              }
+            },
+            "x-summary": "Too Many Requests"
+          }
+        },
+        "deprecated": true,
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "x-rate-limits": {
+          "perSecond": 60
+        },
+        "x-sunset": "2027-06-15",
+        "x-successor": "GET /auth/rev2/{referenceNumber}"
+      }
+    },
+    "/auth/rev2/{referenceNumber}": {
+      "get": {
+        "tags": [
+          "Получение доступа"
+        ],
+        "summary": "Получение статуса аутентификации (rev2)",
+        "description": "Проверяет текущий статус операции аутентификации для указанного токена.\n\nСпособ аутентификации: `AuthenticationToken`, полученный при начале операции аутентификации.\nОперация доступна в течение 7 дней.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).",
+        "parameters": [
+          {
+            "name": "referenceNumber",
+            "in": "path",
+            "description": "Референсный номер токена, полученного при инициализации операции аутентификации.",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/ReferenceNumber"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-System-Warning": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemWarning"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationOperationStatusResponseRev2"
+                },
+                "examples": {
+                  "Kod 100 | Uwierzytelnianie w toku": {
+                    "value": {
+                      "startDate": "2025-10-11T12:23:56.0154302+00:00",
+                      "authenticationMethodInfo": {
+                        "category": {
+                          "code": "XadesSignature",
+                          "rawCode": "XadesSignature",
+                          "displayName": "Podpis XAdES"
+                        },
+                        "code": "xades.qualified-seal",
+                        "displayName": "Pieczęć kwalifikowana"
+                      },
+                      "status": {
+                        "code": 100,
+                        "description": "Аутентификация в процессе"
+                      }
+                    }
+                  },
+                  "Kod 200 | Uwierzytelnianie zakończone sukcesem": {
+                    "value": {
+                      "startDate": "2025-10-11T12:23:56.0154302+00:00",
+                      "authenticationMethodInfo": {
+                        "category": {
+                          "code": "XadesSignature",
+                          "rawCode": "XadesSignature",
+                          "displayName": "Podpis XAdES"
+                        },
+                        "code": "xades.qualified-seal",
+                        "displayName": "Pieczęć kwalifikowana"
+                      },
+                      "status": {
+                        "code": 200,
+                        "description": "Аутентификация выполнена успешно"
+                      }
+                    }
+                  },
+                  "Kod 460 | Uwierzytelnianie zakończone niepowodzeniem | Nieważny certyfikat": {
+                    "value": {
+                      "startDate": "2025-10-11T12:23:56.0154302+00:00",
+                      "authenticationMethodInfo": {
+                        "category": {
+                          "code": "XadesSignature",
+                          "rawCode": "XadesSignature",
+                          "displayName": "Podpis XAdES"
+                        },
+                        "code": "xades.qualified-seal",
+                        "displayName": "Pieczęć kwalifikowana"
+                      },
+                      "status": {
+                        "code": 460,
+                        "description": "Аутентификация завершилась неудачей",
+                        "details": [
+                          "Nieważny certyfikat."
+                        ]
+                      }
+                    }
+                  },
+                  "Kod 460 | Uwierzytelnianie zakończone niepowodzeniem | Błąd weryfikacji łańcucha certyfikatów": {
+                    "value": {
+                      "startDate": "2025-10-11T12:23:56.0154302+00:00",
+                      "authenticationMethodInfo": {
+                        "category": {
+                          "code": "XadesSignature",
+                          "rawCode": "XadesSignature",
+                          "displayName": "Podpis XAdES"
+                        },
+                        "code": "xades.qualified-seal",
+                        "displayName": "Pieczęć kwalifikowana"
+                      },
+                      "status": {
+                        "code": 460,
+                        "description": "Аутентификация завершилась неудачей",
+                        "details": [
+                          "Błąd weryfikacji łańcucha certyfikatów."
+                        ]
+                      }
+                    }
+                  },
+                  "Kod 460 | Uwierzytelnianie zakończone niepowodzeniem | Niezaufany łańcuch certyfikatów": {
+                    "value": {
+                      "startDate": "2025-10-11T12:23:56.0154302+00:00",
+                      "authenticationMethodInfo": {
+                        "category": {
+                          "code": "XadesSignature",
+                          "rawCode": "XadesSignature",
+                          "displayName": "Podpis XAdES"
+                        },
+                        "code": "xades.qualified-seal",
+                        "displayName": "Pieczęć kwalifikowana"
+                      },
+                      "status": {
+                        "code": 460,
+                        "description": "Аутентификация завершилась неудачей",
+                        "details": [
+                          "Niezaufany łańcuch certyfikatów."
+                        ]
+                      }
+                    }
+                  },
+                  "Kod 460 | Uwierzytelnianie zakończone niepowodzeniem | Certyfikat odwołany": {
+                    "value": {
+                      "startDate": "2025-10-11T12:23:56.0154302+00:00",
+                      "authenticationMethodInfo": {
+                        "category": {
+                          "code": "XadesSignature",
+                          "rawCode": "XadesSignature",
+                          "displayName": "Podpis XAdES"
+                        },
+                        "code": "xades.qualified-seal",
+                        "displayName": "Pieczęć kwalifikowana"
+                      },
+                      "status": {
+                        "code": 460,
+                        "description": "Аутентификация завершилась неудачей",
+                        "details": [
+                          "Certyfikat odwołany."
+                        ]
+                      }
+                    }
+                  },
+                  "Kod 460 | Uwierzytelnianie zakończone niepowodzeniem | Niepoprawny certyfikat": {
+                    "value": {
+                      "startDate": "2025-10-11T12:23:56.0154302+00:00",
+                      "authenticationMethodInfo": {
+                        "category": {
+                          "code": "XadesSignature",
+                          "rawCode": "XadesSignature",
+                          "displayName": "Podpis XAdES"
+                        },
+                        "code": "xades.qualified-seal",
+                        "displayName": "Pieczęć kwalifikowana"
+                      },
+                      "status": {
+                        "code": 460,
+                        "description": "Аутентификация завершилась неудачей",
+                        "details": [
+                          "Niepoprawny certyfikat."
+                        ]
+                      }
+                    }
+                  },
+                  "Kod 500 | Nieznany błąd": {
+                    "value": {
+                      "startDate": "2025-10-11T12:23:56.0154302+00:00",
                       "status": {
                         "code": 500,
                         "description": "Неизвестная ошибка ({statusCode})"
@@ -10627,7 +12019,7 @@
           "Поиск предоставленных прав доступа"
         ],
         "summary": "Получение списка прав администраторов или представителей субъектов ЕС, уполномоченных на самовыставление счетов",
-        "description": "Метод позволяет прочитать права администраторов или представителей субъектов ЕС:\n- Если контекстом входа является NIP, можно прочитать права администраторов субъектов ЕС, связанных с субъектом текущего контекста, то есть таких, для которых первый составной части контекста равен NIP контекста входа.\n- Если контекст входа является составным (NIP-VAT ЕС), можно получить все права администраторов и представителей субъекта в текущем составном контексте.\n\nПрава, возвращаемые операцией, включают:\n- **VatUeManage** – управление правами в рамках субъекта ЕС\n- **InvoiceWrite** – выставление счетов-фактур\n- **InvoiceRead** – просмотр счетов-фактур\n- **Introspection** – просмотр истории сессий\n\nОтвет может быть отфильтрован на основе следующих параметров:\n- **vatUeIdentifier** – идентификатор субъекта ЕС\n- **authorizedFingerprintIdentifier** – отпечаток сертификата уполномоченного лица или субъекта\n- **permissionTypes** – список типов запрашиваемых прав\n\n#### Пагинация результатов\nЗапрос возвращает **одну страницу результатов** с номером и размером, указанными в пути.\n- При первом вызове следует установить параметр `pageOffset = 0`.\n- Если доступна следующая страница результатов, в ответе появится флаг **`hasMore`**.\n- В этом случае можно повторно вызвать запрос с следующим номером страницы.\n\n > Дополнительная информация:\n > - [Получение списка прав](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-uprawnie%C5%84-administrator%C3%B3w-lub-reprezentant%C3%B3w-podmiot%C3%B3w-unijnych-uprawnionych-do-samofakturowania)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Сортировка:**\n- startDate (Desc)\n- id (Asc)\n\n**Требуется одно из прав**: `CredentialsManage`, `CredentialsRead`, `VatUeManage`.",
+        "description": " Метод позволяет прочитать права администраторов или представителей европейских юридических лиц:  \n - Если контекст входа - NIP, можно прочитать права администраторов европейских юридических лиц, связанных с субъектом текущего контекста, то есть тех, для которых первый составной элемент контекста равен NIP контекста входа.  \n - Если контекст входа является составным (NIP-UE VAT), можно получить все права администраторов и представителей субъекта в текущем составном контексте.\n\n Права, возвращаемые операцией, включают:  \n - **VatUeManage** - управление правами в рамках европейского юридического лица  \n - **InvoiceWrite** - выставление счетов-фактур  \n - **InvoiceRead** - просмотр счетов-фактур  \n - **Introspection** - просмотр истории сессий  \n - **CollectiveIdentifierManage** - управление коллективными идентификаторами\n\n Ответ может быть отфильтрован на основе следующих параметров:  \n - **vatUeIdentifier** - идентификатор европейского юридического лица  \n - **authorizedFingerprintIdentifier** - отпечаток сертификата уполномоченного лица или субъекта  \n - **permissionTypes** - список типов запрашиваемых прав\n\n#### Пагинация результатов\nЗапрос возвращает **одну страницу результатов** с номером и размером, указанными в пути.\n- При первом вызове следует установить параметр `pageOffset = 0`.  \n- Если доступна следующая страница результатов, в ответе появится флаг **`hasMore`**.  \n- В этом случае можно повторно вызвать запрос с следующим номером страницы.\n \n > Дополнительная информация:\n > - [Получение списка прав](https://github.com/CIRFMF/ksef-api/blob/main/uprawnienia.md#pobranie-listy-uprawnie%C5%84-administrator%C3%B3w-lub-reprezentant%C3%B3w-podmiot%C3%B3w-unijnych-uprawnionych-do-samofakturowania)\n\n**Headers:**\n\n`X-Error-Format: problem-details` - установка этого заголовка приводит к возврату ошибок в формате **Problem Details** (`application/problem+json`).\n\n**Сортировка:**\n- startDate (Desc)\n- id (Asc)\n\n**Требуется одно из следующих прав**: `CredentialsManage`, `CredentialsRead`, `VatUeManage`.",
         "parameters": [
           {
             "name": "pageOffset",
@@ -11243,7 +12635,74 @@
                 "$ref": "#/components/schemas/StatusInfo"
               }
             ],
-            "description": "Информация о текущем статусе.\n| Code | Description | Details |\n| --- | --- | --- |\n| 100 | Аутентификация в процессе | - |\n| 200 | Аутентификация завершена успешно | - |\n| 415 | Аутентификация завершена неудачно | Отсутствуют назначенные права доступа |\n| 425 | Аутентификация аннулирована | Аутентификация и связанные refresh токены были аннулированы пользователем |\n| 450 | Аутентификация завершена неудачно из-за неверного токена | Недействительный авторизационный запрос |\n| 450 | Аутентификация завершена неудачно из-за неверного токена | Недействительный токен |\n| 450 | Аутентификация завершена неудачно из-за неверного токена | Недействительное время токена |\n| 450 | Аутентификация завершена неудачно из-за неверного токена | Токен аннулирован |\n| 450 | Аутентификация завершена неудачно из-за неверного токена | Токен неактивен |\n| 450 | Аутентификация завершена неудачно из-за неверного токена | Недействительное шифрование токена |\n| 450 | Аутентификация завершена неудачно из-за неверного токена | Недействительная кодировка токена |\n| 450 | Аутентификация завершена неудачно из-за неверного токена | Токен не может быть использован в контексте {contextIdentifier} |\n| 460 | Аутентификация завершена неудачно из-за ошибки сертификата | Недействительный сертификат |\n| 460 | Аутентификация завершена неудачно из-за ошибки сертификата | Ошибка проверки цепочки сертификатов |\n| 460 | Аутентификация завершена неудачно из-за ошибки сертификата | Ненадёжная цепочка сертификатов |\n| 460 | Аутентификация завершена неудачно из-за ошибки сертификата | Сертификат отозван |\n| 460 | Аутентификация завершена неудачно из-за ошибки сертификата | Сертификат приостановлен |\n| 460 | Аутентификация завершена неудачно из-за ошибки сертификата | Некорректный сертификат |\n| 470 | Аутентификация завершена неудачно | Попытка использования методов авторизации умершего лица |\n| 480 | Аутентификация заблокирована | Подозрение на инцидент безопасности. Свяжитесь с Министерством финансов через форму обращения. |\n| 500 | Неизвестная ошибка | - |\n| 550 | Операция была отменена системой | Обработка была прервана по внутренним причинам системы. Попробуйте снова |"
+            "description": "Информация о текущем статусе.\n| Code | Description | Details |\n| --- | --- | --- |\n| 100 | Аутентификация в процессе | - |\n| 200 | Аутентификация успешно завершена | - |\n| 415 | Аутентификация не удалась | Отсутствуют назначенные разрешения |\n| 425 | Аутентификация отменена | Аутентификация и связанные с ней токены обновления были отменены пользователем |\n| 450 | Аутентификация не удалась из-за неверного токена | Неверное авторизационное требование |\n| 450 | Аутентификация не удалась из-за неверного токена | Неверный токен |\n| 450 | Аутентификация не удалась из-за неверного токена | Неверное время токена |\n| 450 | Аутентификация не удалась из-за неверного токена | Токен отменен |\n| 450 | Аутентификация не удалась из-за неверного токена | Токен неактивен |\n| 450 | Аутентификация не удалась из-за неверного токена | Токен просрочен |\n| 450 | Аутентификация не удалась из-за неверного токена | Неверное шифрование токена |\n| 450 | Аутентификация не удалась из-за неверного токена | Неверное кодирование токена |\n| 450 | Аутентификация не удалась из-за неверного токена | Токен не может быть использован в контексте {contextIdentifier} |\n| 460 | Аутентификация не удалась из-за ошибки сертификата | Недействительный сертификат |\n| 460 | Аутентификация не удалась из-за ошибки сертификата | Ошибка проверки цепочки сертификатов |\n| 460 | Аутентификация не удалась из-за ошибки сертификата | Недоверенная цепочка сертификатов |\n| 460 | Аутентификация не удалась из-за ошибки сертификата | Сертификат отозван |\n| 460 | Аутентификация не удалась из-за ошибки сертификата | Сертификат приостановлен |\n| 460 | Аутентификация не удалась из-за ошибки сертификата | Неправильный сертификат |\n| 470 | Аутентификация не удалась | Попытка использования методов авторизации умершего лица |\n| 480 | Аутентификация заблокирована | Подозрение на инцидент безопасности. Свяжитесь с Министерством финансов через форму заявки. |\n| 500 | Неизвестная ошибка | - |\n| 550 | Операция отменена системой | Обработка была прервана по внутренним причинам системы. Попробуйте снова |"
+          },
+          "isTokenRedeemed": {
+            "type": "boolean",
+            "description": "Был ли уже выдан refresh токен, связанный с данной аутентификацией.",
+            "nullable": true
+          },
+          "lastTokenRefreshDate": {
+            "type": "string",
+            "description": "Дата последнего обновления токена.",
+            "format": "date-time",
+            "nullable": true
+          },
+          "refreshTokenValidUntil": {
+            "type": "string",
+            "description": "Срок действия refresh токена (если он не будет аннулирован ранее).",
+            "format": "date-time",
+            "nullable": true
+          },
+          "referenceNumber": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ReferenceNumber"
+              }
+            ],
+            "description": "Референс-номер сессии аутентификации."
+          },
+          "isCurrent": {
+            "type": "boolean",
+            "description": "Связана ли сессия с текущим используемым токеном.",
+            "readOnly": true
+          }
+        }
+      },
+      "AuthenticationListItemRev2": {
+        "required": [
+          "authenticationMethodInfo",
+          "referenceNumber",
+          "startDate",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "startDate": {
+            "type": "string",
+            "description": "Дата начала операции аутентификации.",
+            "format": "date-time"
+          },
+          "authenticationMethodInfo": {
+            "required": [
+              "category",
+              "code",
+              "displayName"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuthenticationMethodInfoRev2"
+              }
+            ],
+            "description": "Использованный метод аутентификации."
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StatusInfo"
+              }
+            ],
+            "description": "Информация о текущем статусе.\n| Code | Description | Details |\n| --- | --- | --- |\n| 100 | Аутентификация в процессе | - |\n| 200 | Аутентификация успешно завершена | - |\n| 415 | Аутентификация не удалась | Отсутствуют назначенные разрешения |\n| 425 | Аутентификация отменена | Аутентификация и связанные с ней токены обновления были отменены пользователем |\n| 450 | Аутентификация не удалась из-за неверного токена | Неверное авторизационное требование |\n| 450 | Аутентификация не удалась из-за неверного токена | Неверный токен |\n| 450 | Аутентификация не удалась из-за неверного токена | Неверное время токена |\n| 450 | Аутентификация не удалась из-за неверного токена | Токен отменен |\n| 450 | Аутентификация не удалась из-за неверного токена | Токен неактивен |\n| 450 | Аутентификация не удалась из-за неверного токена | Токен просрочен |\n| 450 | Аутентификация не удалась из-за неверного токена | Неверное шифрование токена |\n| 450 | Аутентификация не удалась из-за неверного токена | Неверное кодирование токена |\n| 450 | Аутентификация не удалась из-за неверного токена | Токен не может быть использован в контексте {contextIdentifier} |\n| 460 | Аутентификация не удалась из-за ошибки сертификата | Недействительный сертификат |\n| 460 | Аутентификация не удалась из-за ошибки сертификата | Ошибка проверки цепочки сертификатов |\n| 460 | Аутентификация не удалась из-за ошибки сертификата | Недоверенная цепочка сертификатов |\n| 460 | Аутентификация не удалась из-за ошибки сертификата | Сертификат отозван |\n| 460 | Аутентификация не удалась из-за ошибки сертификата | Сертификат приостановлен |\n| 460 | Аутентификация не удалась из-за ошибки сертификата | Неправильный сертификат |\n| 470 | Аутентификация не удалась | Попытка использования методов авторизации умершего лица |\n| 480 | Аутентификация заблокирована | Подозрение на инцидент безопасности. Свяжитесь с Министерством финансов через форму заявки. |\n| 500 | Неизвестная ошибка | - |\n| 550 | Операция отменена системой | Обработка была прервана по внутренним причинам системы. Попробуйте снова |"
           },
           "isTokenRedeemed": {
             "type": "boolean",
@@ -11297,6 +12756,26 @@
           }
         }
       },
+      "AuthenticationListResponseRev2": {
+        "required": [
+          "items"
+        ],
+        "type": "object",
+        "properties": {
+          "continuationToken": {
+            "type": "string",
+            "description": "Токен для получения следующей страницы результатов. Если пустой, следующих страниц нет.",
+            "nullable": true
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuthenticationListItemRev2"
+            },
+            "description": "Список сессий аутентификации."
+          }
+        }
+      },
       "AuthenticationMethod": {
         "enum": [
           "Token",
@@ -11319,6 +12798,44 @@
         ],
         "type": "string",
         "description": "| Значение | Описание |\n| --- | --- |\n| XadesSignature | Аутентификация с помощью подписи Xades. |\n| NationalNode | Аутентификация через Национальный узел (login.gov.pl). |\n| Token | Аутентификация токеном. |\n| Other | Аутентификация другим методом. |\n"
+      },
+      "AuthenticationMethodCategoryRev2": {
+        "required": [
+          "code",
+          "displayName",
+          "rawCode"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuthenticationMethodCategoryRev2Code"
+              }
+            ],
+            "description": "Код словарного значения.\n| Code | DisplayName | Opis |\n| --- | --- | --- |\n| XadesSignature | Подпись XAdES | Аутентификация с помощью подписи XAdES. |\n| NationalNode | Национальный узел | Аутентификация с помощью Национального узла. |\n| Token | Токен | Аутентификация с помощью токена. |\n| FutureValue |  | Категория метода аутентификации неизвестна на момент выпуска            текущей версии модели.            Фактический код категории доступен в поле `rawCode`,            а ее название - в поле `displayName`. |"
+          },
+          "rawCode": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Оригинальный код словарного значения."
+          },
+          "displayName": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Название, предназначенное для представления пользователю."
+          }
+        }
+      },
+      "AuthenticationMethodCategoryRev2Code": {
+        "enum": [
+          "XadesSignature",
+          "NationalNode",
+          "Token",
+          "FutureValue"
+        ],
+        "type": "string",
+        "description": "| Code | DisplayName | Opis |\n| --- | --- | --- |\n| XadesSignature | Подпись XAdES | Аутентификация с помощью подписи XAdES. |\n| NationalNode | Национальный узел | Аутентификация с помощью Национального узла. |\n| Token | Токен | Аутентификация с помощью токена. |\n| FutureValue |  | Категория метода аутентификации неизвестна на момент выпуска            текущей версии модели.            Фактический код категории доступен в поле `rawCode`,            а её имя - в поле `displayName`. |"
       },
       "AuthenticationMethodInfo": {
         "required": [
@@ -11344,6 +12861,32 @@
             "type": "string",
             "description": "Название метода аутентификации для отображения пользователю.",
             "readOnly": true
+          }
+        }
+      },
+      "AuthenticationMethodInfoRev2": {
+        "required": [
+          "category",
+          "code",
+          "displayName"
+        ],
+        "type": "object",
+        "properties": {
+          "category": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuthenticationMethodCategoryRev2"
+              }
+            ],
+            "description": "Категория метода аутентификации."
+          },
+          "code": {
+            "type": "string",
+            "description": "Код метода аутентификации."
+          },
+          "displayName": {
+            "type": "string",
+            "description": "Название метода аутентификации для отображения пользователю."
           }
         }
       },
@@ -11389,7 +12932,60 @@
                 "$ref": "#/components/schemas/StatusInfo"
               }
             ],
-            "description": "Информация о текущем статусе.\n| Code | Description | Details |\n| --- | --- | --- |\n| 100 | Аутентификация в процессе | - |\n| 200 | Аутентификация завершена успешно | - |\n| 415 | Аутентификация завершена неудачно | Отсутствуют назначенные права доступа |\n| 425 | Аутентификация аннулирована | Аутентификация и связанные refresh токены были аннулированы пользователем |\n| 450 | Аутентификация завершена неудачно из-за неверного токена | Недействительный авторизационный запрос |\n| 450 | Аутентификация завершена неудачно из-за неверного токена | Недействительный токен |\n| 450 | Аутентификация завершена неудачно из-за неверного токена | Недействительное время токена |\n| 450 | Аутентификация завершена неудачно из-за неверного токена | Токен аннулирован |\n| 450 | Аутентификация завершена неудачно из-за неверного токена | Токен неактивен |\n| 450 | Аутентификация завершена неудачно из-за неверного токена | Недействительное шифрование токена |\n| 450 | Аутентификация завершена неудачно из-за неверного токена | Недействительная кодировка токена |\n| 450 | Аутентификация завершена неудачно из-за неверного токена | Токен не может быть использован в контексте {contextIdentifier} |\n| 460 | Аутентификация завершена неудачно из-за ошибки сертификата | Недействительный сертификат |\n| 460 | Аутентификация завершена неудачно из-за ошибки сертификата | Ошибка проверки цепочки сертификатов |\n| 460 | Аутентификация завершена неудачно из-за ошибки сертификата | Ненадёжная цепочка сертификатов |\n| 460 | Аутентификация завершена неудачно из-за ошибки сертификата | Сертификат отозван |\n| 460 | Аутентификация завершена неудачно из-за ошибки сертификата | Сертификат приостановлен |\n| 460 | Аутентификация завершена неудачно из-за ошибки сертификата | Некорректный сертификат |\n| 470 | Аутентификация завершена неудачно | Попытка использования методов авторизации умершего лица |\n| 480 | Аутентификация заблокирована | Подозрение на инцидент безопасности. Свяжитесь с Министерством финансов через форму обращения. |\n| 500 | Неизвестная ошибка | - |\n| 550 | Операция была отменена системой | Обработка была прервана по внутренним причинам системы. Попробуйте снова |"
+            "description": "Информация о текущем статусе.\n| Code | Description | Details |\n| --- | --- | --- |\n| 100 | Аутентификация в процессе | - |\n| 200 | Аутентификация успешно завершена | - |\n| 415 | Аутентификация не удалась | Отсутствуют назначенные разрешения |\n| 425 | Аутентификация отменена | Аутентификация и связанные с ней токены обновления были отменены пользователем |\n| 450 | Аутентификация не удалась из-за неверного токена | Неверное авторизационное требование |\n| 450 | Аутентификация не удалась из-за неверного токена | Неверный токен |\n| 450 | Аутентификация не удалась из-за неверного токена | Неверное время токена |\n| 450 | Аутентификация не удалась из-за неверного токена | Токен отменен |\n| 450 | Аутентификация не удалась из-за неверного токена | Токен неактивен |\n| 450 | Аутентификация не удалась из-за неверного токена | Токен просрочен |\n| 450 | Аутентификация не удалась из-за неверного токена | Неверное шифрование токена |\n| 450 | Аутентификация не удалась из-за неверного токена | Неверное кодирование токена |\n| 450 | Аутентификация не удалась из-за неверного токена | Токен не может быть использован в контексте {contextIdentifier} |\n| 460 | Аутентификация не удалась из-за ошибки сертификата | Недействительный сертификат |\n| 460 | Аутентификация не удалась из-за ошибки сертификата | Ошибка проверки цепочки сертификатов |\n| 460 | Аутентификация не удалась из-за ошибки сертификата | Недоверенная цепочка сертификатов |\n| 460 | Аутентификация не удалась из-за ошибки сертификата | Сертификат отозван |\n| 460 | Аутентификация не удалась из-за ошибки сертификата | Сертификат приостановлен |\n| 460 | Аутентификация не удалась из-за ошибки сертификата | Неправильный сертификат |\n| 470 | Аутентификация не удалась | Попытка использования методов авторизации умершего лица |\n| 480 | Аутентификация заблокирована | Подозрение на инцидент безопасности. Свяжитесь с Министерством финансов через форму заявки. |\n| 500 | Неизвестная ошибка | - |\n| 550 | Операция отменена системой | Обработка была прервана по внутренним причинам системы. Попробуйте снова |"
+          },
+          "isTokenRedeemed": {
+            "type": "boolean",
+            "description": "Был ли уже выдан refresh токен, связанный с данной аутентификацией.",
+            "nullable": true
+          },
+          "lastTokenRefreshDate": {
+            "type": "string",
+            "description": "Дата последнего обновления токена.",
+            "format": "date-time",
+            "nullable": true
+          },
+          "refreshTokenValidUntil": {
+            "type": "string",
+            "description": "Срок действия refresh токена (если он не будет аннулирован ранее).",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
+      "AuthenticationOperationStatusResponseRev2": {
+        "required": [
+          "authenticationMethodInfo",
+          "startDate",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "startDate": {
+            "type": "string",
+            "description": "Дата начала операции аутентификации.",
+            "format": "date-time"
+          },
+          "authenticationMethodInfo": {
+            "required": [
+              "category",
+              "code",
+              "displayName"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuthenticationMethodInfoRev2"
+              }
+            ],
+            "description": "Использованный метод аутентификации."
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StatusInfo"
+              }
+            ],
+            "description": "Информация о текущем статусе.\n| Code | Description | Details |\n| --- | --- | --- |\n| 100 | Аутентификация в процессе | - |\n| 200 | Аутентификация успешно завершена | - |\n| 415 | Аутентификация не удалась | Отсутствуют назначенные разрешения |\n| 425 | Аутентификация отменена | Аутентификация и связанные с ней токены обновления были отменены пользователем |\n| 450 | Аутентификация не удалась из-за неверного токена | Неверное авторизационное требование |\n| 450 | Аутентификация не удалась из-за неверного токена | Неверный токен |\n| 450 | Аутентификация не удалась из-за неверного токена | Неверное время токена |\n| 450 | Аутентификация не удалась из-за неверного токена | Токен отменен |\n| 450 | Аутентификация не удалась из-за неверного токена | Токен неактивен |\n| 450 | Аутентификация не удалась из-за неверного токена | Токен просрочен |\n| 450 | Аутентификация не удалась из-за неверного токена | Неверное шифрование токена |\n| 450 | Аутентификация не удалась из-за неверного токена | Неверное кодирование токена |\n| 450 | Аутентификация не удалась из-за неверного токена | Токен не может быть использован в контексте {contextIdentifier} |\n| 460 | Аутентификация не удалась из-за ошибки сертификата | Недействительный сертификат |\n| 460 | Аутентификация не удалась из-за ошибки сертификата | Ошибка проверки цепочки сертификатов |\n| 460 | Аутентификация не удалась из-за ошибки сертификата | Недоверенная цепочка сертификатов |\n| 460 | Аутентификация не удалась из-за ошибки сертификата | Сертификат отозван |\n| 460 | Аутентификация не удалась из-за ошибки сертификата | Сертификат приостановлен |\n| 460 | Аутентификация не удалась из-за ошибки сертификата | Неправильный сертификат |\n| 470 | Аутентификация не удалась | Попытка использования методов авторизации умершего лица |\n| 480 | Аутентификация заблокирована | Подозрение на инцидент безопасности. Свяжитесь с Министерством финансов через форму заявки. |\n| 500 | Неизвестная ошибка | - |\n| 550 | Операция отменена системой | Обработка была прервана по внутренним причинам системы. Попробуйте снова |"
           },
           "isTokenRedeemed": {
             "type": "boolean",
@@ -11996,13 +13592,16 @@
         "type": "string"
       },
       "CertificateSubjectLimitsOverride": {
+        "required": [
+          "maxCertificates"
+        ],
         "type": "object",
         "properties": {
           "maxCertificates": {
             "minimum": 0,
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "description": "Максимальное количество активных сертификатов.",
+            "format": "int32"
           }
         }
       },
@@ -12835,7 +14434,8 @@
         "required": [
           "batchSession",
           "collectiveIdentifier",
-          "onlineSession"
+          "onlineSession",
+          "tokens"
         ],
         "type": "object",
         "properties": {
@@ -12875,6 +14475,17 @@
               }
             ],
             "description": "Лимиты для коллективных идентификаторов."
+          },
+          "tokens": {
+            "required": [
+              "maxTokens"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TokensEffectiveContextLimits"
+              }
+            ],
+            "description": "Лимиты для токенов KSeF."
           }
         }
       },
@@ -12994,13 +14605,16 @@
         }
       },
       "EnrollmentSubjectLimitsOverride": {
+        "required": [
+          "maxEnrollments"
+        ],
         "type": "object",
         "properties": {
           "maxEnrollments": {
             "minimum": 0,
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "description": "Максимальное количество активных запросов на сертификат.",
+            "format": "int32"
           }
         }
       },
@@ -14042,7 +15656,8 @@
       "EuEntityPermissionType": {
         "enum": [
           "InvoiceWrite",
-          "InvoiceRead"
+          "InvoiceRead",
+          "CollectiveIdentifierManage"
         ],
         "type": "string"
       },
@@ -14130,7 +15745,8 @@
           "VatUeManage",
           "InvoiceWrite",
           "InvoiceRead",
-          "Introspection"
+          "Introspection",
+          "CollectiveIdentifierManage"
         ],
         "type": "string"
       },
@@ -14435,7 +16051,63 @@
           }
         }
       },
+      "GenerateTokenRequestRev2": {
+        "required": [
+          "description",
+          "permissions"
+        ],
+        "type": "object",
+        "properties": {
+          "permissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TokenPermissionType"
+            },
+            "description": "Разрешения, назначенные токену."
+          },
+          "description": {
+            "maxLength": 256,
+            "minLength": 5,
+            "type": "string",
+            "description": "Описание токена."
+          },
+          "validFrom": {
+            "type": "string",
+            "description": "Дата начала периода действия токена. Может быть не позднее 60 дней после начала генерации токена. Если не указана, принимается значение, соответствующее моменту инициации.",
+            "format": "date-time",
+            "nullable": true
+          },
+          "validTo": {
+            "type": "string",
+            "description": "Дата истечения срока действия токена. Может быть не позднее 365 дней после `validFrom`. Если не указана, срок действия составляет 90 дней с `validFrom`.",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
       "GenerateTokenResponse": {
+        "required": [
+          "referenceNumber",
+          "token"
+        ],
+        "type": "object",
+        "properties": {
+          "referenceNumber": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ReferenceNumber"
+              }
+            ],
+            "description": "Референсный номер токена KSeF."
+          },
+          "token": {
+            "maxLength": 160,
+            "type": "string",
+            "description": "Токен KSeF."
+          }
+        }
+      },
+      "GenerateTokenResponseRev2": {
         "required": [
           "referenceNumber",
           "token"
@@ -17576,6 +19248,125 @@
           }
         }
       },
+      "QueryTokensResponseItemRev2": {
+        "required": [
+          "authorIdentifier",
+          "contextIdentifier",
+          "dateCreated",
+          "description",
+          "referenceNumber",
+          "requestedPermissions",
+          "status",
+          "validFrom",
+          "validTo"
+        ],
+        "type": "object",
+        "properties": {
+          "referenceNumber": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ReferenceNumber"
+              }
+            ],
+            "description": "Референсный номер токена KSeF."
+          },
+          "authorIdentifier": {
+            "required": [
+              "type",
+              "value"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TokenAuthorIdentifierTypeCodeRev2Identifier"
+              }
+            ],
+            "description": "Идентификатор лица, сгенерировавшего token."
+          },
+          "contextIdentifier": {
+            "required": [
+              "type",
+              "value"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TokenContextIdentifierTypeCodeRev2Identifier"
+              }
+            ],
+            "description": "Идентификатор контекста, в котором был сгенерирован token и к которому он предоставляет доступ."
+          },
+          "description": {
+            "maxLength": 256,
+            "minLength": 5,
+            "type": "string",
+            "description": "Описание токена."
+          },
+          "requestedPermissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TokenPermissionRev2"
+            },
+            "description": "Разрешения, назначенные токену."
+          },
+          "dateCreated": {
+            "type": "string",
+            "description": "Дата и время создания токена.",
+            "format": "date-time"
+          },
+          "lastUseDate": {
+            "type": "string",
+            "description": "Дата последнего использования токена.",
+            "format": "date-time",
+            "nullable": true
+          },
+          "validFrom": {
+            "type": "string",
+            "description": "Дата начала периода действия токена.",
+            "format": "date-time"
+          },
+          "validTo": {
+            "type": "string",
+            "description": "Дата истечения срока действия токена.",
+            "format": "date-time"
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TokenStatusRev2"
+              }
+            ],
+            "description": "Статус токена."
+          },
+          "failure": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TokenFailureRev2"
+              }
+            ],
+            "description": "Информация о причине неудачной активации токена.\nПоле заполняется только для статуса `Failed`.",
+            "nullable": true
+          }
+        }
+      },
+      "QueryTokensResponseRev2": {
+        "required": [
+          "tokens"
+        ],
+        "type": "object",
+        "properties": {
+          "continuationToken": {
+            "type": "string",
+            "description": "Токен для получения следующей страницы результатов. Если пустой, следующих страниц нет.",
+            "nullable": true
+          },
+          "tokens": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QueryTokensResponseItemRev2"
+            },
+            "description": "Список токенов аутентификации."
+          }
+        }
+      },
       "QueryType": {
         "enum": [
           "Granted",
@@ -18124,6 +19915,9 @@
             ]
           },
           "enrollment": {
+            "required": [
+              "maxEnrollments"
+            ],
             "allOf": [
               {
                 "$ref": "#/components/schemas/EnrollmentSubjectLimitsOverride"
@@ -18132,6 +19926,9 @@
             "nullable": true
           },
           "certificate": {
+            "required": [
+              "maxCertificates"
+            ],
             "allOf": [
               {
                 "$ref": "#/components/schemas/CertificateSubjectLimitsOverride"
@@ -18917,6 +20714,77 @@
         "type": "string",
         "description": "| Значение | Описание |\n| --- | --- |\n| Nip | NIP. |\n| Pesel | PESEL. |\n| Fingerprint | Отпечаток сертификата. |\n"
       },
+      "TokenAuthorIdentifierTypeCodeRev2": {
+        "enum": [
+          "Nip",
+          "Pesel",
+          "Fingerprint",
+          "FutureValue"
+        ],
+        "type": "string",
+        "description": "| Code | DisplayName | Opis |\n| --- | --- | --- |\n| Nip | NIP | Налоговый идентификационный номер (NIP). |\n| Pesel | PESEL | Номер PESEL. |\n| Fingerprint | Отпечаток сертификата | Отпечаток сертификата. |\n| FutureValue |  | Тип идентификатора автора неизвестен в текущей редакции операции.            Фактический код доступен в поле `rawCode`. |"
+      },
+      "TokenAuthorIdentifierTypeCodeRev2Identifier": {
+        "required": [
+          "type",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "type": {
+            "required": [
+              "code",
+              "rawCode",
+              "displayName"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TokenAuthorIdentifierTypeCodeRev2IdentifierType"
+              }
+            ],
+            "description": "Информация о типе идентификатора."
+          },
+          "value": {
+            "type": "string",
+            "description": "Значение идентификатора."
+          }
+        }
+      },
+      "TokenAuthorIdentifierTypeCodeRev2IdentifierType": {
+        "required": [
+          "code",
+          "displayName",
+          "rawCode"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TokenAuthorIdentifierTypeCodeRev2"
+              }
+            ],
+            "description": "| Code | DisplayName | Opis |\n| --- | --- | --- |\n| Nip | NIP | Налоговый идентификационный номер (NIP). |\n| Pesel | PESEL | Номер PESEL. |\n| Fingerprint | Отпечаток сертификата | Отпечаток сертификата. |\n| FutureValue |  | Тип идентификатора автора неизвестен в текущей редакции операции.            Фактический код доступен в поле `rawCode`. |"
+          },
+          "rawCode": {
+            "type": "string",
+            "description": "Фактический, стабильный код типа идентификатора."
+          },
+          "displayName": {
+            "type": "string",
+            "description": "Название типа идентификатора, предназначенное для представления пользователю."
+          }
+        }
+      },
+      "TokenAuthorIdentifierTypeFilterRev2": {
+        "enum": [
+          "Nip",
+          "Pesel",
+          "Fingerprint"
+        ],
+        "type": "string",
+        "description": "| Значение | Описание |\n| --- | --- |\n| Nip | NIP. |\n| Pesel | PESEL. |\n| Fingerprint | Отпечаток сертификата. |\n"
+      },
       "TokenAuthorIdentifierTypeIdentifier": {
         "required": [
           "type",
@@ -18948,6 +20816,69 @@
         "type": "string",
         "description": "| Значение | Описание |\n| --- | --- |\n| Nip | NIP. |\n| InternalId | Внутренний идентификатор. |\n| NipVatUe | Двусоставной идентификатор, состоящий из номера NIP и номера VAT-UE: `{nip}-{vat_ue}`. |\n| PeppolId | Идентификатор поставщика услуг Peppol. |\n"
       },
+      "TokenContextIdentifierTypeCodeRev2": {
+        "enum": [
+          "Nip",
+          "InternalId",
+          "NipVatUe",
+          "PeppolId",
+          "FutureValue"
+        ],
+        "type": "string",
+        "description": "| Code | DisplayName | Opis |\n| --- | --- | --- |\n| Nip | NIP | Налоговый идентификационный номер (NIP). |\n| InternalId | Внутренний идентификатор | Внутренний идентификатор. |\n| NipVatUe | NIP VAT-UE | Двухкомпонентный идентификатор, состоящий из номера NIP            и номера VAT-UE: `{nip}-{vat_ue}`. |\n| PeppolId | Идентификатор поставщика услуг Peppol | Идентификатор поставщика услуг Peppol. |\n| FutureValue |  | Тип идентификатора контекста неизвестен в текущей редакции операции.            Фактический код доступен в поле `rawCode`. |"
+      },
+      "TokenContextIdentifierTypeCodeRev2Identifier": {
+        "required": [
+          "type",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "type": {
+            "required": [
+              "code",
+              "rawCode",
+              "displayName"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TokenContextIdentifierTypeCodeRev2IdentifierType"
+              }
+            ],
+            "description": "Информация о типе идентификатора."
+          },
+          "value": {
+            "type": "string",
+            "description": "Значение идентификатора."
+          }
+        }
+      },
+      "TokenContextIdentifierTypeCodeRev2IdentifierType": {
+        "required": [
+          "code",
+          "displayName",
+          "rawCode"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TokenContextIdentifierTypeCodeRev2"
+              }
+            ],
+            "description": "Код типа идентификатора.\n| Code | DisplayName | Описание |\n| --- | --- | --- |\n| Nip | NIP | Налоговый идентификационный номер (NIP). |\n| InternalId | Внутренний идентификатор | Внутренний идентификатор. |\n| NipVatUe | NIP VAT-UE | Двухкомпонентный идентификатор, состоящий из номера NIP            и номера VAT-UE: `{nip}-{vat_ue}`. |\n| PeppolId | Идентификатор поставщика услуг Peppol | Идентификатор поставщика услуг Peppol. |\n| FutureValue |  | Тип идентификатора контекста неизвестен в текущей версии операции.            Реальный код доступен в поле `rawCode`. |"
+          },
+          "rawCode": {
+            "type": "string",
+            "description": "Фактический, стабильный код типа идентификатора."
+          },
+          "displayName": {
+            "type": "string",
+            "description": "Название типа идентификатора, предназначенное для представления пользователю."
+          }
+        }
+      },
       "TokenContextIdentifierTypeIdentifier": {
         "required": [
           "type",
@@ -18969,6 +20900,33 @@
           }
         }
       },
+      "TokenFailureRev2": {
+        "required": [
+          "code",
+          "description"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Код ошибки.\n            \n| Code | Описание |\n| --- | --- |\n| token.permission-grant-failed | Не удалось предоставить права токену |\n| token.context-limit-exceeded | Превышен лимит токенов в контексте |\n| token.unknown-error | Произошла неизвестная ошибка|"
+          },
+          "description": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Описание ошибки для представления пользователю."
+          },
+          "details": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Дополнительные детали ошибки.",
+            "nullable": true
+          }
+        }
+      },
       "TokenInfo": {
         "required": [
           "token",
@@ -18987,6 +20945,48 @@
           }
         }
       },
+      "TokenPermissionCodeRev2": {
+        "enum": [
+          "InvoiceRead",
+          "InvoiceWrite",
+          "CredentialsRead",
+          "CredentialsManage",
+          "SubunitManage",
+          "EnforcementOperations",
+          "Introspection",
+          "CollectiveIdentifierManage",
+          "FutureValue"
+        ],
+        "type": "string"
+      },
+      "TokenPermissionRev2": {
+        "required": [
+          "code",
+          "displayName",
+          "rawCode"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TokenPermissionCodeRev2"
+              }
+            ],
+            "description": "Право токена.\n            \n| Code | DisplayName |\n| --- | --- |\n| InvoiceRead | Просмотр счетов-фактур |\n| InvoiceWrite | Выставление счетов-фактур |\n| CredentialsRead | Просмотр прав доступа |\n| CredentialsManage | Управление правами доступа |\n| SubunitManage | Управление дочерними подразделениями |\n| EnforcementOperations | Выполнение исполнительных операций |\n| Introspection | Просмотр истории сессий и генерация UPO |\n| CollectiveIdentifierManage | Управление коллективными идентификаторами |\n| FutureValue | Право доступа неизвестно в текущей версии операции. Реальный код права доступа доступен в поле `rawCode`. |"
+          },
+          "rawCode": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Реальный, стабильный код права доступа."
+          },
+          "displayName": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Название права доступа для представления пользователю."
+          }
+        }
+      },
       "TokenPermissionType": {
         "enum": [
           "InvoiceRead",
@@ -18999,6 +20999,21 @@
           "CollectiveIdentifierManage"
         ],
         "type": "string"
+      },
+      "TokenStatusFilterRev2": {
+        "enum": [
+          "Pending",
+          "Active",
+          "Revoking",
+          "Revoked",
+          "Failed",
+          "NotYetActive",
+          "AwaitingApproval",
+          "ApprovalExpired",
+          "Expired"
+        ],
+        "type": "string",
+        "description": "| Значение | Описание |\n| --- | --- |\n| Pending | Токен был создан, но еще находится в процессе активации и предоставления прав доступа. Он еще не может быть использован для аутентификации. |\n| Active | Токен активен и может быть использован для аутентификации. |\n| Revoking | Токен находится в процессе аннулирования. Он больше не может быть использован для аутентификации. |\n| Revoked | Токен был аннулирован и не может быть использован для аутентификации. |\n| Failed | Не удалось активировать токен. Необходимо сгенерировать новый токен, текущий не может быть использован для аутентификации. |\n| NotYetActive | Токен был успешно сгенерирован, но срок его действия еще не начался. |\n| AwaitingApproval | Токен был сгенерирован с помощью токена KSeF и ожидает утверждения. До утверждения он не может быть использован для аутентификации. |\n| ApprovalExpired | Прошло 24 часа ожидания утверждения. Токен больше не может быть утвержден или использован для аутентификации. Необходимо повторно инициировать генерацию нового токена. |\n| Expired | Срок действия токена истек. |"
       },
       "TokenStatusResponse": {
         "required": [
@@ -19083,6 +21098,163 @@
             },
             "description": "Дополнительная информация о статусе, возвращаемая в случае ошибок.",
             "nullable": true
+          }
+        }
+      },
+      "TokenStatusResponseRev2": {
+        "required": [
+          "authorIdentifier",
+          "contextIdentifier",
+          "dateCreated",
+          "description",
+          "referenceNumber",
+          "requestedPermissions",
+          "status",
+          "validFrom",
+          "validTo"
+        ],
+        "type": "object",
+        "properties": {
+          "referenceNumber": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ReferenceNumber"
+              }
+            ],
+            "description": "Референсный номер токена KSeF."
+          },
+          "authorIdentifier": {
+            "required": [
+              "type",
+              "value"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TokenAuthorIdentifierTypeCodeRev2Identifier"
+              }
+            ],
+            "description": "Идентификатор лица, сгенерировавшего token."
+          },
+          "contextIdentifier": {
+            "required": [
+              "type",
+              "value"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TokenContextIdentifierTypeCodeRev2Identifier"
+              }
+            ],
+            "description": "Идентификатор контекста, в котором был сгенерирован token и к которому он предоставляет доступ."
+          },
+          "description": {
+            "maxLength": 256,
+            "minLength": 5,
+            "type": "string",
+            "description": "Описание токена."
+          },
+          "requestedPermissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TokenPermissionRev2"
+            },
+            "description": "Разрешения, назначенные токену."
+          },
+          "dateCreated": {
+            "type": "string",
+            "description": "Дата и время создания токена.",
+            "format": "date-time"
+          },
+          "lastUseDate": {
+            "type": "string",
+            "description": "Дата последнего использования токена.",
+            "format": "date-time",
+            "nullable": true
+          },
+          "validFrom": {
+            "type": "string",
+            "description": "Дата начала периода действия токена.",
+            "format": "date-time"
+          },
+          "validTo": {
+            "type": "string",
+            "description": "Дата истечения срока действия токена.",
+            "format": "date-time"
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TokenStatusRev2"
+              }
+            ],
+            "description": "Статус токена."
+          },
+          "failure": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TokenFailureRev2"
+              }
+            ],
+            "description": "Информация о причине неудачной активации токена.\nПоле заполняется только для статуса `Failed`.",
+            "nullable": true
+          }
+        }
+      },
+      "TokenStatusRev2": {
+        "required": [
+          "code",
+          "displayName",
+          "rawCode"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TokenStatusRev2Code"
+              }
+            ],
+            "description": "Код словарного значения.\n| Code | DisplayName | Описание |\n| --- | --- | --- |\n| Pending | Токен в процессе активации | Токен был создан, но идет его активация и назначение прав. Он еще не может быть использован для аутентификации. |\n| Active | Активный токен | Токен активен и может быть использован для аутентификации. |\n| Revoking | Токен в процессе аннулирования | Токен находится в процессе аннулирования. Он больше не может быть использован для аутентификации. |\n| Revoked | Аннулированный токен | Токен был аннулирован и не может быть использован для аутентификации. |\n| Failed | Активация токена завершилась неудачей | Не удалось активировать токен. Необходимо сгенерировать новый токен. Текущий токен не может быть использован для аутентификации. |\n| NotYetActive | Токен еще не активен | Токен был успешно сгенерирован, но срок его действия еще не начался. |\n| AwaitingApproval | Токен ожидает утверждения | Токен был сгенерирован с помощью токена KSeF и ожидает утверждения. До утверждения он не может быть использован для аутентификации. |\n| ApprovalExpired | Истек срок утверждения токена | Прошло 24 часа ожидания утверждения. Токен больше не может быть утвержден или использован для аутентификации. Необходимо повторно инициировать генерацию нового токена. |\n| Expired | Токен истек | Срок действия токена истек. |\n| FutureValue |  | Статус токена неизвестен на момент выпуска текущей версии модели. Фактический код статуса доступен в поле `rawCode`, а его название в поле `displayName`. |"
+          },
+          "rawCode": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Оригинальный код словарного значения."
+          },
+          "displayName": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Название, предназначенное для представления пользователю."
+          }
+        }
+      },
+      "TokenStatusRev2Code": {
+        "enum": [
+          "Pending",
+          "Active",
+          "Revoking",
+          "Revoked",
+          "Failed",
+          "NotYetActive",
+          "AwaitingApproval",
+          "ApprovalExpired",
+          "Expired",
+          "FutureValue"
+        ],
+        "type": "string",
+        "description": "| Code | DisplayName | Описание |\n| --- | --- | --- |\n| Pending | Токен в процессе активации | Токен был создан, но идет его активация и предоставление прав. Он еще не может использоваться для аутентификации. |\n| Active | Активный токен | Токен активен и может использоваться для аутентификации. |\n| Revoking | Токен в процессе аннулирования | Токен находится в процессе аннулирования. Он больше не может использоваться для аутентификации. |\n| Revoked | Аннулированный токен | Токен был аннулирован и не может использоваться для аутентификации. |\n| Failed | Активация токена завершилась неудачей | Не удалось активировать токен. Необходимо сгенерировать новый токен. Текущий токен не может использоваться для аутентификации. |\n| NotYetActive | Токен еще не активен | Токен был успешно сгенерирован, но срок его действия еще не начался. |\n| AwaitingApproval | Токен ожидает утверждения | Токен был сгенерирован с помощью токена KSeF и ожидает утверждения. До утверждения он не может использоваться для аутентификации. |\n| ApprovalExpired | Истек срок утверждения токена | Прошло 24 часа ожидания утверждения. Токен больше не может быть утвержден или использоваться для аутентификации. Необходимо повторно инициировать генерацию нового токена. |\n| Expired | Токен истек | Срок действия токена истек. |\n| FutureValue | | Статус токена неизвестен на момент выпуска текущей версии модели. Фактический код статуса доступен в поле `rawCode`, а его название в поле `displayName`. |"
+      },
+      "TokensEffectiveContextLimits": {
+        "required": [
+          "maxTokens"
+        ],
+        "type": "object",
+        "properties": {
+          "maxTokens": {
+            "minimum": 0,
+            "type": "integer",
+            "description": "Максимальное количество токенов KSeF в контексте, учитываемых в лимите.",
+            "format": "int32"
           }
         }
       },

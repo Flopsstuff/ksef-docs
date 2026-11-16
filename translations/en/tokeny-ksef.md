@@ -1,8 +1,8 @@
 ---
 original: tokeny-ksef.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 6fb819b
-last_translated: 2026-03-05
+source_commit: ccc26b0
+last_translated: 2026-11-16
 ---
 
 > **Translation.** Original: [tokeny-ksef.md](https://github.com/CIRFMF/ksef-docs/blob/main/tokeny-ksef.md)
@@ -67,7 +67,7 @@ KSeF token metadata can be retrieved and filtered using the call:<br>
 GET [/tokens](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Tokeny-KSeF/paths/~1tokens/get)
 
 C# example:
-[KSeF.Client.Tests.Core\E2E\KsefToken\KsefTokenE2ETests.cs](https://github.com/CIRFMF/ksef-client-csharp/blob/main/KSeF.Client.Tests.Core/E2E/KsefToken/KsefTokenE2ETests.cs)
+[KSeF.Client.Tests.Core\E2E\KsefToken\KsefTokenE2ETests.cs](https://github.com/CIRFMF/ksef-client-csharp/blob/main/KSeF.Client.Tests.Core/E2E\KsefToken\KsefTokenE2ETests.cs)
 ```csharp
 QueryKsefTokensResponse singleResult = await KsefClient.QueryKsefTokensAsync(
     AccessToken,
@@ -106,7 +106,7 @@ GET [/tokens/\{referenceNumber\}](https://api-test.ksef.mf.gov.pl/docs/v2/index.
 ```referenceNumber``` is the unique token identifier that can be obtained during its creation or from the token list.
 
 C# example:
-[KSeF.Client.Tests.Core\E2E\KsefToken\KsefTokenE2ETests.cs](https://github.com/CIRFMF/ksef-client-csharp/blob/main/KSeF.Client.Tests.Core/E2E/KsefToken/KsefTokenE2ETests.cs)
+[KSeF.Client.Tests.Core\E2E\KsefToken\KsefTokenE2ETests.cs](https://github.com/CIRFMF/ksef-client-csharp/blob/main/KSeF.Client.Tests.Core/E2E\KsefToken\KsefTokenE2ETests.cs)
 ```csharp
 AuthenticationKsefToken token = await ksefClient.GetKsefTokenAsync(referenceNumber, accessToken, cancellationToken);
 ```
@@ -125,7 +125,7 @@ DELETE [/tokens/\{referenceNumber\}](https://api-test.ksef.mf.gov.pl/docs/v2/ind
 ```referenceNumber``` is the unique identifier of the token we want to revoke.
 
 C# example:
-[KSeF.Client.Tests.Core\E2E\KsefToken\KsefTokenE2ETests.cs](https://github.com/CIRFMF/ksef-client-csharp/blob/main/KSeF.Client.Tests.Core/E2E/KsefToken/KsefTokenE2ETests.cs)
+[KSeF.Client.Tests.Core\E2E\KsefToken\KsefTokenE2ETests.cs](https://github.com/CIRFMF/ksef-client-csharp/blob/main/KSeF.Client.Tests.Core/E2E\KsefToken\KsefTokenE2ETests.cs)
 ```csharp
 await ksefClient.RevokeKsefTokenAsync(referenceNumber, accessToken, cancellationToken);
 ```
