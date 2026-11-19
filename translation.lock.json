@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "ccc26b0530826e042763fd19a8822eb9a70dd004",
+  "sourceCommit": "d4460b6c77616c423924254d8be1cbc2858027c6",
   "languages": {
     "ru": {
       "srodowiska.md": {
@@ -119,8 +119,8 @@
         "translatedAt": "2026-04-04T18:17:39.378Z"
       },
       "api-changelog.md": {
-        "sourceHash": "9ecabb83180f8426407b867bc941ed6bd8d3c1955a67b647acf41f8cae1f4423",
-        "translatedAt": "2026-11-16T17:32:07.995Z"
+        "sourceHash": "45a4240d32bd57bd1fc1b9a5bee749bd60b54f02ec09c92ae2e5d151d6aac25d",
+        "translatedAt": "2026-11-19T16:54:51.060Z"
       },
       "faktury/sesje/sesja-sprawdzenie-stanu-i-pobranie-upo.md": {
         "sourceHash": "7c888c889b120d6922785c77c1691004654d8818d5d0b94c9bc5f531bb6e8be8",
@@ -253,8 +253,8 @@
         "translatedAt": "2026-04-04T18:24:09.552Z"
       },
       "api-changelog.md": {
-        "sourceHash": "9ecabb83180f8426407b867bc941ed6bd8d3c1955a67b647acf41f8cae1f4423",
-        "translatedAt": "2026-11-16T17:39:49.638Z"
+        "sourceHash": "45a4240d32bd57bd1fc1b9a5bee749bd60b54f02ec09c92ae2e5d151d6aac25d",
+        "translatedAt": "2026-11-19T16:58:09.101Z"
       },
       "bezpieczenstwo/klucze-publiczne-do-szyfrowania.md": {
         "sourceHash": "02024e6ef459c5d6d7795ff4082d54a0386312f4ffa472a24c1f794c68333676",
@@ -383,8 +383,8 @@
         "translatedAt": "2026-08-27T18:43:22.661Z"
       },
       "api-changelog.md": {
-        "sourceHash": "9ecabb83180f8426407b867bc941ed6bd8d3c1955a67b647acf41f8cae1f4423",
-        "translatedAt": "2026-11-16T17:47:33.962Z"
+        "sourceHash": "45a4240d32bd57bd1fc1b9a5bee749bd60b54f02ec09c92ae2e5d151d6aac25d",
+        "translatedAt": "2026-11-19T17:03:18.249Z"
       },
       "uprawnienia.md": {
         "sourceHash": "e54588888d56d0ffc6e629f9a6e334a9fcd4a3adf5a5dde3d348e9574bf8a4f1",

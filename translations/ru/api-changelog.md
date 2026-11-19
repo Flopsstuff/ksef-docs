@@ -1,20 +1,11 @@
 ---
 original: api-changelog.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: ccc26b0
-last_translated: 2026-11-16
+source_commit: d4460b6
+last_translated: 2026-11-19
 ---
 
 > **Translation.** Original: [api-changelog.md](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)
-
-
-
-
-
-
-
-
-
 
 ## Изменения в API 2.0
 
@@ -52,13 +43,17 @@ last_translated: 2026-11-16
   - предоставления прав представителя европейского юридического лица (POST `/permissions/eu-entities/grants`),
   - поиска предоставленных разрешений (POST `/permissions/query/eu-entities/grants`). 
 
+- **Коллективные идентификаторы**  
+  Поправлена валидация номера KSeF в GET `/collective-identifiers/ksef/{ksefNumber}`. Неверная контрольная сумма приводит к возврату `400 Bad Request` с кодом `21405` ("Błąd walidacji danych wejściowych").
+
 - **OpenAPI**
-  - В ответах для устаревших endpoint-ов добавлены заголовки `Deprecation` и `Sunset`, указывающие соответственно момент пометки операции как устаревшей и момент ее отключения. После отключения операция будет возвращать `410 Gone`.
+  - Добавлены в ответах для устаревающих endpoint-ов заголовки `Deprecation` и `Sunset`, указывающие соответственно момент пометки операции как устаревшей и момент ее отключения. После отключения операция будет возвращать `410 Gone`.
   - Исправлены примеры ответа GET `/auth/{referenceNumber}`: ошибки сертификатов имеют код `460` вместо `400`.
   - Небольшие обновления описаний и примеров.
 
 - **Тестовые данные**  
-  В запросе POST `/testdata/limits/subject/certificate` свойства `enrollment.maxEnrollments` и `certificate.maxCertificates` помечены как обязательные.
+  - В запросе POST `/testdata/limits/subject/certificate` свойства `enrollment.maxEnrollments` и `certificate.maxCertificates` помечены как обязательные.
+  - Исправлено отозвание согласия на выставление счетов с вложением через POST `/testdata/attachment/revoke` без указания `expectedEndDate`. В этом случае GET `/permissions/attachments/status` правильно возвращает `isAttachmentAllowed: false`.
 
 ### Версия 2.9.0
 | Среда | Дата внедрения |
@@ -73,7 +68,6 @@ last_translated: 2026-11-16
 - **OpenAPI**  
   Дополнена документация ответов об ошибками кодом `21001` (Нечитаемое содержимое) с подробностями {`подробное описание ошибки`}. Изменение носит документационный характер; код возвращался API и ранее.
 
-
 ### Версия 2.8.1
 | Среда | Дата внедрения |
 | ---------- | -------------: |
@@ -83,20 +77,18 @@ last_translated: 2026-11-16
 
 - **Коллективные идентификаторы**  
   - Расширена обработка ошибок при генерации ИЗ (POST `/collective-identifiers`): уточнен код `71001` и добавлены коды `71004` для счетов разных продавцов и `71005` для повторяющегося номера KSeF в запросе.
-  - Дополнена обработка ошибок в endpoint-ах GET `/collective-identifiers/ksef/{ksefNumber}`, POST `/collective-identifiers/query` и POST `/collective-identifiers/invoices` кодом `21418` ("Переданный токен продолжения недействителен").
+  - Дополнена обработка ошибок в endpoint-ах GET `/collective-identifiers/ksef/{ksefNumber}`, POST `/collective-identifiers/query` и POST `/collective-identifiers/invoices` кодом `21418` ("Przesłany token kontynuacji jest nieprawidłowy").
 
 - **Разрешения**  
   - Расширены POST `/permissions/entities/grants` и POST `/permissions/indirect/grants` возможностью предоставления разрешения `CollectiveIdentifierManage`.
   - Расширена ответ POST `/permissions/query/entities/grants` значением `CollectiveIdentifierManage` в `permissionScope`.
-
-
 
 ### Версия 2.8.0
 | Среда | Дата внедрения |
 | ---------- | -------------: |
 | **TEST**   |     14.09.2026 |
 | **DEMO**   |     15.09.2026 |
-| **PRD**    |     23.09.2026 |
+| **PROD**   |     23.09.2026 |
 
 - **Ограничения API**  
   - Операции закрытия сессии выделены в отдельные группы лимитов, и их значения увеличены до уровня в два раза выше, чем лимиты для операций открытия сессии:
@@ -120,17 +112,14 @@ last_translated: 2026-11-16
 - **Тестовые данные**  
   Дополнена документация ответа `400 Bad Request` для POST и DELETE `/testdata/limits/context/session` стандартным кодом ошибки `21405` ("Ошибка валидации входных данных").
 
-
-
-
 ### Версия 2.7.1
 | Среда | Дата внедрения |
 | ---------- | -------------: |
 | **TEST**   |     26.08.2026 |
 | **DEMO**   |     15.09.2026 |
-| **PRD**    |     23.09.2026 |
+| **PROD**   |     23.09.2026 |
 
-- **Сводные идентификаторы**  
+- **Коллективные идентификаторы**  
   - Изменен endpoint GET `/collective-identifiers/{collectiveIdentifierNumber}/invoices` на POST `/collective-identifiers/invoices`. Метод принимает список до 10 сводных идентификаторов вместо одного номера. Ответ дополнен `collectiveIdentifierNumber`, увеличен максимальный `pageSize` с 200 до 500, endpoint включен в API limits и добавлен пример ответа.
   - Увеличены API limits с `10/60/120` до `20/120/240` для всех endpoint'ов группы `collectiveIdentifier`.
   - Добавлены примеры ответов.
@@ -147,16 +136,12 @@ last_translated: 2026-11-16
 - **OpenAPI**  
   Дополнено описание `X-System-Warning` о способе тестирования предупреждений с использованием заголовка `X-Test-System-Warning`.
 
-
-
-
-
 ### Версия 2.7.0
 | Среда | Дата внедрения |
 | ---------- | -------------: |
-| **TEST**   |     21.07.2027 |
+| **TEST**   |     21.07.2026 |
 | **DEMO**   |     - |
-| **PRD**    |     - |
+| **PROD**   |     - |
 
 - **Коллективные идентификаторы**  
   Добавлена поддержка коллективных идентификаторов и новое разрешение `CollectiveIdentifierManage`, необходимое для выполнения операций с ИЗ.
@@ -167,17 +152,12 @@ last_translated: 2026-11-16
 - **OpenAPI**  
   Унифицированы описания требуемых разрешений: когда достаточно иметь одно из нескольких разрешений, используется формулировка "Требуется одно из разрешений", а в случае единичного разрешения — "Требуется разрешение". Изменение носит документационный характер; поведение API остается без изменений.
 
-
-
-
-
-
 ### Версия 2.6.1
 | Среда | Дата внедрения |
 | ---------- | -------------: |
 | **TEST**   |     10.06.2026 |
 | **DEMO**   |     11.06.2026 |
-| **PRD**    |     16.06.2026 |
+| **PROD**   |     16.06.2026 |
 
 - **Получение статуса аутентификации (GET `/auth/{referenceNumber})`**  
   Унифицированы сообщения в поле `details` для статуса `450` («Аутентификация завершена неудачей из‑за неверного токена») — содержимое теперь возвращается на польском языке, в соответствии с документацией. Кроме того, дополнена документация несколькими вариантами `details`, которые встречались в ответах API, но ранее не были описаны.
@@ -188,21 +168,14 @@ last_translated: 2026-11-16
 - **OpenAPI**  
   Обновлены ссылки на документацию: CIRFMF/ksef-docs → CIRFMF/ksef-api.
 
-
-
-
-
-
-
 ### Версия 2.6.0
-
-| Среда | Дата развертывания |
+| Среда | Дата внедрения |
 | ---------- | -------------: |
 | **TEST**   |     19.05.2026 |
 | **DEMO**   |     21.05.2026 |
-| **PRD**    |     26.05.2026 |
+| **PROD**   |     26.05.2026 |
 
-- **Пакетная отправка (POST `/sessions/batch`) и экспорт пакета накладных (POST `/invoices/exports`)**  
+- **Пакетная отправка (POST `/sessions/batch`) и экспорт пакета счетов (POST `/invoices/exports`)**  
   Добавлен тип сжатия `TarGz` как альтернатива `Zip`. Формат `TarGz` рекомендуется из-за возможности достижения лучшего коэффициента сжатия для пакетов, содержащих много похожих XML-документов. Типом сжатия по умолчанию остается `Zip` для сохранения совместимости.
 
 - **Технические предупреждения (`X-System-Warning`)**  
@@ -212,20 +185,12 @@ last_translated: 2026-11-16
   - Унифицированы регулярные выражения для IP-адресов (`Ip4Address`, `Ip4Range`, `Ip4Mask`) в POST `/auth/ksef-token` - применены те же паттерны, что и в схеме AuthTokenRequest 2.1.
   - Дополнено недостающее описание для `InvoiceMetadataThirdSubject` ("Идентификатор третьего субъекта.").
 
-
-
-
-
-
-
-
-
 ### Версия 2.5.0
-| Среда | Дата развертывания |
+| Среда | Дата внедрения |
 | ---------- | -------------: |
 | **TEST**   |     06.05.2026 |
 | **DEMO**   |     07.05.2026 |
-| **PRD**    |     11.05.2026 |
+| **PROD**   |     11.05.2026 |
 
 - **Публичные ключи KSeF (ротация и выбор ключей)**  
   Введена передача селектора `publicKeyId` в запросах к операциям, в которых клиент шифрует данные публичным ключом KSeF - это позволяет однозначно идентифицировать используемый ключ и обеспечить корректную и автоматическую обработку ре-сертификации/ротации. Расширение касается endpoints: 
@@ -241,28 +206,18 @@ last_translated: 2026-11-16
   - В схеме 2.1 обновлены регулярные выражения для IP-адресов (`Ip4Address`, `Ip4Range`, `Ip4Mask`), чтобы они соответствовали типичным парсерам.
 
 - **Лимиты API**  
-  Выравнены лимиты API по умолчанию в среде TEST со значениями, действующими в PRD. В среде TEST по-прежнему доступны endpoints из группы `/testdata/rate-limits`, позволяющие тестировать нестандартные профили лимитов.
+  Выравнены лимиты API по умолчанию в среде TEST со значениями, действующими в PROD. В среде TEST по-прежнему доступны endpoints из группы `/testdata/rate-limits`, позволяющие тестировать нестандартные профили лимитов.
 
 - **OpenAPI**  
   - Дополнены описания параметра `certificateSerialNumber` форматом и ограничениями (`minLength/maxLength: 16`, `pattern: ^[0-9A-F]{16}$`). Изменение носит документационный характер - не вводит дополнительную валидацию на стороне API и не изменяет поведение endpoints (например, POST `/certificates/retrieve`).
   - Удалены значения, связанные с накладными RR, ранее помеченные как deprecated (в том числе `InvoiceQueryFormType.RR`).
 
-
-
-
-
-
-
-
-
 ### Версия 2.4.0
-
-| Среда | Дата развертывания | Примечания                                                            |
+| Среда | Дата внедрения | Примечания                                                            |
 | ---------- | -------------: | ---------------------------------------------------------------- |
 | **TEST**   |     10.04.2026 | —                                                                |
 | **DEMO**   |     13.04.2026 | —                                                                |
-| **PRD**    |     16.04.2026 | Ужесточение валидации XML начнет действовать с **16.07.2026**. |
-
+| **PROD**   |     16.04.2026 | Ужесточение валидации XML начнет действовать с **16.07.2026**. |
 
 - **Токены KSeF**
   - Разрешено выполнение операций с токеном, используемым для аутентификации, без дополнительных разрешений:
@@ -302,15 +257,7 @@ last_translated: 2026-11-16
     - req/s: с 4 до 8,
     - req/min: с 8 до 16.
 
-
-
-
-
-
-
-
 ### Версия 2.3.0
-
 - **Отправка заявки на сертификацию (POST /certificates/enrollments)**  
   Увеличены лимиты для идентификаторов PESEL и fingerprint:  
   - количество заявок на сертификат KSeF: с 6 до 12,
@@ -321,7 +268,7 @@ last_translated: 2026-11-16
   - Уточнено значение поля `Value` для схемы `FA_RR (1) 1-1E`: вместо `RR` следует передавать `FA_RR` (в соответствии со значением `TKodFormularza` в XSD).
 
 - **Получение счетов-фактур**   
-  - Расширена поддержка `formType` для счетов-фактур `RR` значением `FA_RR` (согласованно с механизмом отправки счетов-фактур). В среде TEST принимаются `RR` (до 30.03) и `FA_RR`, в то время как в PRD будет приниматься исключительно `FA_RR`.
+  - Расширена поддержка `formType` для счетов-фактур `RR` значением `FA_RR` (согласованно с механизмом отправки счетов-фактур). В среде TEST принимаются `RR` (до 30.03) и `FA_RR`, в то время как в PROD будет приниматься исключительно `FA_RR`.
   - Включена возможность поиска счетов-фактур по отрицательным суммам в фильтре `amount` - допускаются отрицательные значения в `amount.from` и `amount.to`.
 
 - **Экспорт пакета счетов-фактур (POST `/invoices/exports`)**  
@@ -334,32 +281,13 @@ last_translated: 2026-11-16
   - Исправлено определение `securitySchemes.Bearer` - установлено `scheme`: `bearer` (с маленькой буквы), в соответствии со спецификацией.  
   - Незначительные обновления описаний и примеров.
 
-
-
-
-
-
-
-
-
 ### Версия 2.2.1
-
 - **Отправка счетов**  
   Добавлена новая версия (`1-1E`) схемы `FA_RR (1)`.  
   Схема `FA_RR (1) 1-0E` будет поддерживаться на среде TEST до 23.04.
-  Схема `FA_RR (1) 1-1E` будет действовать на среде PRD с 01.04.  
-
-
-
-
-
-
-
-
-
+  Схема `FA_RR (1) 1-1E` будет действовать на среде PROD с 01.04.  
 
 ### Версия 2.2.0
-
 - **Разрешения**  
   Добавлен новый endpoint (POST `/permissions/query/entities/grants`), позволяющий получить список разрешений на обработку счетов в текущем контексте (возвращаемые разрешения: `InvoiceWrite`, `InvoiceRead` - предоставленные другим субъектом).
 
@@ -374,17 +302,7 @@ last_translated: 2026-11-16
 - **Экспорт пакета счетов (POST `/invoices/exports`).**  
   Исправлено генерирование файла `_metadata.json` в пакете экспорта - при большом количестве счетов файл мог быть ранее обрезан (некорректный JSON).
 
-
-
-
-
-
-
-
-
-
 ### Версия 2.1.2
-
 - **Отправка счетов**  
   Добавлена поддержка счетов RR ([схема_RR(1)_v1-0E](/faktury/schemy/RR/schemat_RR(1)_v1-0E.xsd)).
 
@@ -397,34 +315,14 @@ last_translated: 2026-11-16
 - **OpenAPI**  
   Удален `additionalProperties`: `false` в выбранных моделях. Изменение упорядочивает спецификацию и делает контракт более гибким - допускает возможность появления дополнительных свойств в запросах или ответах (например, в рамках расширений). Добавление нового свойства не рассматривается как нарушение контракта; клиенты API должны игнорировать неизвестные свойства.
 
-
-
-
-
-
-
-
-
-
 ### Версия 2.1.1
-
 - **Аутентификация**  
   - **Получение статуса аутентификации (GET `/auth/{referenceNumber}`)** и **Получение списка активных сессий (GET `/auth/sessions`)**  
   Дополнено определение `authenticationMethodInfo` - помечены свойства `category`, `code` и `displayName` как `required` в модели ответа.
   - **Аутентификация с использованием подписи XAdES (POST `/auth/xades-signature`)**  
-  Добавлена возможность предварительного включения новых требований валидации XAdES на средах DEMO и PRD через заголовок: `X-KSeF-Feature`: `enforce-xades-compliance`.  
-
-
-
-
-
-
-
-
-
+  Добавлена возможность предварительного включения новых требований валидации XAdES на средах DEMO и PROD через заголовок: `X-KSeF-Feature`: `enforce-xades-compliance`.  
 
 ### Версия 2.1.0
-
 - **Аутентификация**  
   - Добавлена интеграция с Национальным узлом (login.gov.pl). Endpoint, используемый для этой интеграции, не является публично доступным (метод аутентификации предназначен исключительно для государственных приложений).
   - **Получение статуса аутентификации (GET `/auth/{referenceNumber}`)** и **Получение списка активных сессий (GET `/auth/sessions`)**  
@@ -437,27 +335,17 @@ last_translated: 2026-11-16
 
   - **Аутентификация с использованием подписи XAdES (POST `/auth/xades-signature`)**  
     Унифицирована и ужесточена валидация [подписи XAdES](/auth/podpis-xades.md) в процессе аутентификации, так чтобы принимались исключительно подписи, соответствующие требованиям профилей XAdES.  
-    Новые требования уже действуют на среде TEST. На средах DEMO и PRD начнут действовать **16 марта 2026** (рекомендуется проверка интеграции на TEST перед этой датой).
+    Новые требования уже действуют на среде TEST. На средах DEMO и PROD начнут действовать **16 марта 2026** (рекомендуется проверка интеграции на TEST перед этой датой).
 
 - **Тестовые данные**  
-  Добавлены новые endpointy:
+  Добавлены новые endpoints:
     - POST `/testdata/context/block` - "Блокирует возможность аутентификации для указанного контекста. Аутентификация завершится ошибкой 480.",
     - POST `/testdata/context/unblock` - разблокирует возможность аутентификации для текущего контекста.  
 
 - **OpenAPI**  
   Мелкие обновления описаний.
 
-
-
-
-
-
-
-
-
-
 ### Версия 2.0.1
-
 - **Разрешения**
   - Получение списка собственных разрешений (POST `/permissions/query/personal/grants`).  
     - Исправлена логика возврата списка "Мои разрешения" для владельца контекста - в результатах возвращаются также субъектные разрешения на выставление и просмотр счетов (`InvoiceWrite`, `InvoiceRead`), предоставленные **без права** дальнейшей передачи `canDelegate = false`. Ранее список возвращал только те, у которых есть право на дальнейшую передачу.
@@ -478,17 +366,7 @@ last_translated: 2026-11-16
 - **OpenAPI**  
   Мелкие обновления описаний.
 
-
-
-
-
-
-
-
-
-
 ### Версия 2.0.0
-
 - **UPO**  
   Согласно анонсу из RC6.0, с `2025-12-22` по умолчанию возвращается версия UPO v4-3.
 
@@ -549,17 +427,7 @@ last_translated: 2026-11-16
   - Уточнены описания свойств типа `byte` - значения передаются как двоичные данные, закодированные в формате `Base64`.
   - Исправлены опечатки в спецификации.
 
-
-
-
-
-
-
-
-
-
 ### Версия 2.0.0 RC6.1
-
 - **Новая адресация сред**  
   Предоставление новых адресов. Изменения в разделе [среды KSeF API 2.0](srodowiska.md).
 
@@ -609,20 +477,10 @@ last_translated: 2026-11-16
   - GET `/sessions/{referenceNumber}/invoices`
   - GET `/sessions/{referenceNumber}/invoices/failed`
 
-
-
-
-
-
-
-
-
-
 ### Версия 2.0.0 RC6.0
-
 - **Лимиты API**  
-  - На среде **TE** (тестовая) включена и определена политика [лимитов api](limity/limity-api.md) со значениями в 10 раз выше, чем на **PRD**; подробности: ["Лимиты на средах"](/limity/limity-api.md#limity-na-środowiskach).
-  - На среде **TR** (DEMO) включены [лимиты api](limity/limity-api.md) со значениями, идентичными **PRD**. Значения реплицируются с продакшна; подробности: ["Лимиты на средах"](/limity/limity-api.md#limity-na-środowiskach).
+  - На среде **TE** (тестовая) включена и определена политика [лимитов api](limity/limity-api.md) со значениями в 10 раз выше, чем на **PROD**; подробности: ["Лимиты на средах"](/limity/limity-api.md#limity-na-środowiskach).
+  - На среде **TR** (DEMO) включены [лимиты api](limity/limity-api.md) со значениями, идентичными **PROD**. Значения реплицируются с продакшна; подробности: ["Лимиты на средах"](/limity/limity-api.md#limity-na-środowiskach).
   - Добавлен endpoint POST `/testdata/rate-limits/production` - устанавливает в текущем контексте значения лимитов api согласно производственному профилю. Доступен только на среде **TE**.
   
 - **Экспорт пакета счетов (POST `/invoices/exports`). Получение списка метаданных счетов (POST `/invoices/query/metadata`)**   
@@ -639,7 +497,7 @@ last_translated: 2026-11-16
     - `TE`: Ministerstwo Finansów - środowisko testowe (TE),
     - `TR`: Ministerstwo Finansów - środowisko przedprodukcyjne (TR).
     
-    `PRD`: без изменений - Ministerstwo Finansów.  
+    `PROD`: без изменений - Ministerstwo Finansów.  
   - В настоящее время по умолчанию возвращается UPO v4-2. Чтобы получить UPO v4-3, необходимо добавить заголовок: `X-KSeF-Feature: upo-v4-3` при открытии сессии (online/пакетной).
   - С `2025-12-22` версией по умолчанию будет UPO v4-3.
   - XSD UPO v4-3: [schema](/faktury/upo/schemy/upo-v4-3.xsd).
@@ -684,17 +542,7 @@ last_translated: 2026-11-16
   - Уточнен формат свойства `PublicKeyCertificate`, представляющего двоичные данные, закодированные в `Base64`, установлен format: `byte`.
   - Внесены мелкие языковые и пунктуационные коррекции в поля `description`.
 
-
-
-
-
-
-
-
-
-
 ### Версия 2.0.0 RC5.7
-
 - **Открытие пакетной сессии (POST `/sessions/batch`)**  
   Помечено в модели запроса `BatchFilePartInfo.fileName` как `deprecated` (планируемое удаление: 2025-12-05).
 
@@ -707,17 +555,7 @@ last_translated: 2026-11-16
   - Обновлены описания свойств (`invoiceMetadataAuthorizedSubject.role`, `invoiceMetadataBuyer`, `invoiceMetadataThirdSubject.role`, `buyerIdentifier`).
   - Обновлены regex patterns для `vatUeIdentifier`, `authorizedFingerprintIdentifier`, `internalId`, `nipVatUe`, `peppolId`.
 
-
-
-
-
-
-
-
-
-
 ### Версия 2.0.0 RC5.6
-
 - **Получение статуса сессии (GET `/sessions/{referenceNumber}`)**  
   Добавлено в ответе поле `UpoPageResponse.downloadUrlExpirationDate` - дата и время истечения адреса получения UPO; после этого момента `downloadUrl` больше не активен.
 
@@ -742,17 +580,7 @@ last_translated: 2026-11-16
   - Определена общая схема `PermissionId` (string, 36 символов) и применена во всех местах: в параметрах и в свойствах ответов.
   - Добавлены регулярные выражения для выбранных текстовых полей.
 
-
-
-
-
-
-
-
-
-
 ### Версия 2.0.0 RC5.5
-
 - **Получение текущих лимитов API (GET `/api/v2/rate-limits`)**  
   Добавлен endpoint, возвращающий эффективные лимиты вызовов API в структуре `perSecond`/`perMinute`/`perHour` для отдельных областей (включая `onlineSession`, `batchSession`, `invoiceSend`, `invoiceStatus`, `invoiceExport`, `invoiceDownload`, `other`).
 
@@ -793,17 +621,7 @@ last_translated: 2026-11-16
   - GET `/sessions/{referenceNumber}/invoices`
   - GET `/sessions/{referenceNumber}/invoices/failed`
 
-
-
-
-
-
-
-
-
-
 ### Версия 2.0.0 RC5.4
-
 - **Получение списка метаданных счетов (POST /invoices/query/metadata)**  
   - Добавлен параметр `sortOrder`, позволяющий определить направление сортировки результатов.
 
@@ -820,17 +638,7 @@ last_translated: 2026-11-16
   - Уточнены определения массивов параметров в query; применен `style: form`. Множественные значения следует передавать через повтор параметра, например `?statuses=InProgress&statuses=Succeeded`. Документационное изменение, без влияния на работу API.
   - Обновлены описания свойств (`partUploadRequests`, `encryptedSymmetricKey`, `initializationVector`).
 
-
-
-
-
-
-
-
-
-
 ### Версия 2.0.0 RC5.3
-
 - **Экспорт пакета счетов (POST `/invoices/exports`)**  
   Добавлена возможность включения файла `_metadata.json` в пакет экспорта. Файл имеет форму объекта JSON с массивом `invoices`, содержащим объекты `InvoiceMetadata` (модель, возвращаемая POST `/invoices/query/metadata`).
   Включение (preview): в заголовок запроса нужно добавить `X-KSeF-Feature`: `include-metadata`.
@@ -903,156 +711,7 @@ last_translated: 2026-11-16
   - Удален атрибут `required` из свойства `pageSize` в запросе GET `/sessions` ("Получение списка сессий").
   - Обновлены примеры (example) в определениях endpoints.
 
-
-
-
-
-
-
-
-
-
 ### Версия 2.0.0 RC5.2
 - **Разрешения** 
   - "Предоставление разрешений администратора подчиненного субъекта" (POST `/permissions/subunits/grants`)  
-  Добавлено свойство `subunitName` ("Название подчиненного подразделения") в запросе. Поле обязательно, когда подчиненное подразделение идентифицируется внутренним идентификатором.
-  - "Получение списка разрешений администраторов подразделений и подчиненных субъектов" (POST `/permissions/query/subunits/grants`)  
-  Добавлено в ответе свойство `subunitName` ("Название подчиненного подразделения").
-  - "Получение списка разрешений на работу в KSeF, предоставленных физическим лицам или субъектам" (POST `permissions/query/persons/grants`)  
-    Удалено из результатов разрешение типа `Owner`. Разрешение `Owner` присваивается системно физическому лицу и не подлежит предоставлению, поэтому не должно появляться в списке предоставленных разрешений.
-  - "Получение списка собственных разрешений" (POST `/permissions/query/personal/grants`)  
-    Расширен enum фильтра `PersonalPermissionType` значением `VatUeManage`.
-
-- **Лимиты**  
-  - Добавлены endpoints для проверки установленных лимитов (контекст, аутентифицированный субъект):
-    - GET `/limits/context`
-    - GET `/limits/subject`
-  - Добавлены endpoints для управления лимитами (контекст, аутентифицированный субъект) в тестовой среде:
-    - POST/DELETE `/testdata/limits/context/session`
-    - POST/DELETE `/testdata/limits/subject/certificate`
-  - Обновлены [Лимиты](limity/limity.md).
-
-- **Статус счета**  
-  Добавлено свойство `invoicingMode` в модели ответа. Обновлена документация: [Автоматическое определение режима отправки offline](offline/automatyczne-okreslanie-trybu-offline.md).
-
-- **OpenAPI**
-  - Уточнены ограничения для свойств типа integer в requests путем добавления атрибутов `minimum` / `exclusiveMinimum`, `maximum` / `exclusiveMaximum` и значений по умолчанию `default`.
-  - Обновлены примеры (example) в определениях endpoints.
-  - Уточнены описания endpoints.
-  - Добавлен атрибут `required` для обязательных свойств в запросах и ответах.
-
-
-
-
-
-
-
-
-
-
-### Версия 2.0.0 RC5.1
-
-- **Получение списка метаданных сертификатов (POST /certificates/query)**  
-  Изменено представление идентификатора субъекта с пары свойств `subjectIdentifier` + `subjectIdentifierType` на составной объект `subjectIdentifier` { `type`, `value` }.
-
-- **Получение списка метаданных счетов (POST /invoices/query/metadata)**
-  - Изменено представление выбранных идентификаторов с пар свойств тип + value на составные объекты { type, value }: 
-    - `invoiceMetadataBuyer.identifier` + `invoiceMetadataBuyer.identifierType` на составной объект `invoiceMetadataBuyerIdentifier` { `type`, `value` },
-    - `invoiceMetadataThirdSubject.identifier` + `invoiceMetadataThirdSubject.identifierType` на составной объект `InvoiceMetadataThirdSubjectIdentifier` { `type`, `value` }.
-  - Удалены `obsoleted` свойства `Identitifer` из объектов `InvoiceMetadataSeller` и `InvoiceMetadataAuthorizedSubject`.
-  - Изменено свойство `invoiceQuerySeller` на `sellerNip` в фильтре запроса.
-  - Изменено свойство `invoiceQueryBuyer` на `invoiceQueryBuyerIdentifier` со свойствами { `type`, `value` } в фильтре запроса.
-
-- **Разрешения**  
-  Изменено представление выбранных идентификаторов с пар свойств тип + value на составные объекты { type, value }: 
-    - "Получение списка собственных разрешений" (POST `/permissions/query/personal/grants`):  
-      - `contextIdentifier` + `contextIdentifierType` -> `contextIdentifier` { `type`, `value` },
-      - `authorizedIdentifier` + `authorizedIdentifierType` -> `authorizedIdentifier` { `type`, `value` },
-      - `targetIdentifier` + `targetIdentifierType` -> `targetIdentifier` { type, value }.  
-    - "Получение списка разрешений на работу в KSeF, предоставленных физическим лицам или субъектам" (POST `/permissions/query/persons/grants`),
-      - `contextIdentifier` + `contextIdentifierType` -> `contextIdentifier` { `type`, `value` },
-      - `authorizedIdentifier` + `authorizedIdentifierType` -> `authorizedIdentifier` { `type`, `value` },
-      - `targetIdentifier` + `targetIdentifierType` -> `targetIdentifier` { `type`, `value` },
-      - `authorIdentifier` + `authorIdentifierType` -> `authorIdentifier` { `type`, `value` }.    
-    - "Получение списка разрешений администраторов подразделений и подчиненных субъектов" (POST `/permissions/query/subunits/grants`):
-      - `authorizedIdentifier` + `authorizedIdentifierType` -> `authorizedIdentifier` { `type`, `value` },
-      - `subunitIdentifier` + `subunitIdentifierType` -> `subunitIdentifier` { `type`, `value` },
-      - `authorIdentifier` + `authorIdentifierType` -> `authorIdentifier` { `type`, `value` }.
-    - "Получение списка ролей субъекта" (POST `/permissions/query/entities/roles`):
-      - `parentEntityIdentifier` + `parentEntityIdentifierType` -> `parentEntityIdentifier` { `type`, `value` }.
-    - "Получение списка подчиненных субъектов" (POST `/permissions/query/subordinate-entities/roles`):
-      - `subordinateEntityIdentifier` + `subordinateEntityIdentifierType` -> `subordinateEntityIdentifier` { `type`, `value` }.
-    - "Получение списка субъектных разрешений на обработку счетов" (POST `/permissions/query/authorizations/grants`):
-      - `authorizedEntityIdentifier` + `authorizedEntityIdentifierType` -> `authorizedEntityIdentifier` { `type`, `value` },
-      - `authorizingEntityIdentifier` + `authorizingEntityIdentifierType` -> `authorizingEntityIdentifier` { `type`, `value` },
-      - `authorIdentifier` + `authorIdentifierType` -> `authorIdentifier` { `type`, `value` }
-    - "Получение списка разрешений администраторов или представителей субъектов ЕС, уполномоченных на самовыставление" (POST `/permissions/query/eu-entities/grants`):
-      - `authorIdentifier` + `authorIdentifierType` -> `authorIdentifier` { `type`, `value` }        
-
-- **Предоставление разрешений администратора субъекта ЕС (POST permissions/eu-entities/administration/grants)**  
-  Изменено название свойства в запросе с `subjectName` на `euEntityName`.
-
-- **Аутентификация с использованием токена KSeF**  
-  Удалены избыточные значения enum `None`, `AllPartners` в свойстве `contextIdentifier.type` запроса POST `/auth/ksef-token`.
-
-- **Токены KSeF**  
-  - Унифицирована модель ответа GET `/tokens`: свойства `authorIdentifier.type`, `authorIdentifier.value`, `contextIdentifier.type`, `contextIdentifier.value` всегда возвращаются (required, non-nullable),
-  - Удалены избыточные значения enum `None`, `AllPartners` в свойствах `authorIdentifier.type` и `contextIdentifier.type` в модели ответа GET `/tokens` ("Получение списка сгенерированных токенов").
-
-- **Пакетная сессия**  
-  Удален избыточный код ошибки `21401`	- "Документ не соответствует схеме (json)".
-
-- **Получение статуса сессии (GET /sessions/{referenceNumber})**  
-  - Добавлен код ошибки `420` - "Превышен лимит счетов в сессии".
-
-- **Получение метаданных счетов (GET `/invoices/query/metadata`)**  
-  - Добавлено в ответе (всегда возвращаемое) свойство `isTruncated` (boolean) – "Определяет, был ли результат обрезан из-за превышения лимита количества счетов (10 000)",
-  - Помечено свойство `amount.type` в фильтре запроса как обязательное.
-
-- **Экспорт пакета счетов: задание (POST `/invoices/exports`)**
-  - Помечено свойство `operationReferenceNumber` в модели ответа как всегда возвращаемое,
-  - Помечено свойство `amount.type` в фильтре запроса как обязательное.
-
-- **Получение списка разрешений на работу в KSeF, предоставленных физическим лицам или субъектам (POST /permissions/query/persons/grants)**  
-  - Добавлен `contextIdentifier` в фильтре запроса и в модели ответа.
-
-- **OpenAPI**  
-  Удален неиспользуемый `operationId` из спецификации. Упорядочивающее изменение.
-
-
-
-
-
-
-
-
-
-
-### Версия 2.0.0 RC5
-
-- **Обработка счетов PEF и поставщиков услуг Peppol**
-  - Добавлена поддержка счетов `PEF`, отправляемых поставщиком услуг Peppol. Новые возможности не изменяют прежние поведения KSeF для других форматов, являются расширением API.
-  - Введен новый тип контекста аутентификации: `PeppolId`, позволяющий работать в контексте поставщика услуг Peppol.
-  - Автоматическая регистрация поставщика: при первой аутентификации поставщика услуг Peppol (с использованием выделенного сертификата) происходит его автоматическая регистрация в системе.
-  - Добавлен endpoint GET `/peppol/query` ("Список поставщиков услуг Peppol"), возвращающий зарегистрированных поставщиков.
-  - Обновлены правила доступа для открытия и закрытия сессии, отправка счетов требует разрешения `PefInvoiceWrite`.
-  - Добавлены новые схемы счетов: `FA_PEF (3)`, `FA_KOR_PEF (3)`,
-  - Расширен `ContextIdentifier` о `PeppolId` в xsd `AuthTokenRequest`.
-
-- **UPO**
-  - Добавлен элемент `Uwierzytelnienie`, который упорядочивает данные из заголовка UPO и расширяет их дополнительной информацией; заменяет прежние `IdentyfikatorPodatkowyPodmiotu` и `SkrotZlozonejStruktury`.
-  - `Uwierzytelnienie` содержит:
-    - `IdKontekstu` – идентификатор контекста аутентификации,
-    - доказательство аутентификации (в зависимости от метода): 
-      - `NumerReferencyjnyTokenaKSeF` - идентификатор токена аутентификации в системе KSeF,
-      - `SkrotDokumentuUwierzytelniajacego` - значение функции хеша документа аутентификации в полученном системой виде (включая электронную подпись).
-  - В эл
-
-
-
-
-
-
-
-
-
+  Добавлено свойство `subunitName` ("Название подчиненного подразделения") в запрос
