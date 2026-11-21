@@ -100,6 +100,28 @@ export interface CompleteOptions {
   timeoutMs?: number;
   /** Called when a model fails and the next one in the chain is about to be tried. */
   onFallback?: (failed: string, next: string, error: string) => void;
+  /**
+   * Optional output check. Return a problem description to reject the text —
+   * the model is then treated as failed and the next one in the chain is tried.
+   */
+  validate?: (text: string) => string | null;
+  /**
+   * Accept a response cut off at `maxTokens` or an empty one (default: false).
+   * Only for probes (`yarn check`, benchmark) where any reply proves the model
+   * works; translation callers must never accept a partial text.
+   */
+  allowIncomplete?: boolean;
+}
+
+/**
+ * Thrown when a model's reply is unusable: cut off at the output-token limit,
+ * empty, or rejected by the caller's `validate` hook.
+ */
+export class IncompleteOutputError extends Error {
+  constructor(model: string, reason: string) {
+    super(`${model}: incomplete output (${reason})`);
+    this.name = "IncompleteOutputError";
+  }
 }
 
 function errMessage(err: any): string {
@@ -121,7 +143,16 @@ export async function streamComplete(opts: CompleteOptions): Promise<LlmResult> 
   let lastErr: any;
   for (let i = 0; i < models.length; i++) {
     try {
-      return await streamOne(opts, models[i]);
+      const result = await streamOne(opts, models[i]);
+      if (!opts.allowIncomplete) {
+        if (result.stopReason === "max_tokens") {
+          throw new IncompleteOutputError(result.model, `hit max_tokens=${opts.maxTokens}, ${result.usage.output} tokens generated`);
+        }
+        if (!result.text.trim()) throw new IncompleteOutputError(result.model, "empty response");
+      }
+      const problem = opts.validate?.(result.text);
+      if (problem) throw new IncompleteOutputError(result.model, problem);
+      return result;
     } catch (err) {
       lastErr = err;
       if (i < models.length - 1) opts.onFallback?.(models[i], models[i + 1], errMessage(err));
@@ -130,8 +161,10 @@ export async function streamComplete(opts: CompleteOptions): Promise<LlmResult> 
   throw lastErr;
 }
 
+type RawResult = LlmResult & { stopReason: "max_tokens" | "other" };
+
 /** Single-model streaming completion (one attempt, no fallback). */
-async function streamOne(opts: CompleteOptions, model: string): Promise<LlmResult> {
+async function streamOne(opts: CompleteOptions, model: string): Promise<RawResult> {
   const { client, provider, system, userContent, maxTokens, timeoutMs = 300_000 } = opts;
 
   if (provider === "openrouter") {
@@ -153,15 +186,19 @@ async function streamOne(opts: CompleteOptions, model: string): Promise<LlmResul
     let text = "";
     let input = 0;
     let output = 0;
+    let finish: string | null = null;
     for await (const chunk of stream) {
       const delta = chunk.choices?.[0]?.delta?.content;
       if (delta) text += delta;
+      finish = chunk.choices?.[0]?.finish_reason ?? finish;
       if (chunk.usage) {
         input = chunk.usage.prompt_tokens ?? input;
         output = chunk.usage.completion_tokens ?? output;
       }
     }
-    return { text, usage: { input, output }, model };
+    // "length" = cut off at max_tokens (reasoning models spend part of the
+    // budget on hidden reasoning, so this can happen with little visible text).
+    return { text, usage: { input, output }, model, stopReason: finish === "length" ? "max_tokens" : "other" };
   }
 
   // anthropic & bedrock — Messages API
@@ -180,5 +217,6 @@ async function streamOne(opts: CompleteOptions, model: string): Promise<LlmResul
     text,
     usage: { input: msg.usage?.input_tokens ?? 0, output: msg.usage?.output_tokens ?? 0 },
     model,
+    stopReason: msg.stop_reason === "max_tokens" ? "max_tokens" : "other",
   };
 }

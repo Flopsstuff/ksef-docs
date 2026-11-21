@@ -4,6 +4,8 @@
   "scripts": {
     "check": "ts-node scripts/check-provider.ts",
     "test:tm": "ts-node scripts/test-tm.ts",
+    "test:sections": "ts-node scripts/test-sections.ts",
+    "check:translations": "ts-node scripts/check-translations.ts",
     "benchmark:free": "ts-node scripts/benchmark-free.ts",
     "translate:compare": "ts-node scripts/translate-compare.ts",
     "sync": "ts-node scripts/sync.ts",

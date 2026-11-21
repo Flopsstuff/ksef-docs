@@ -106,6 +106,7 @@ async function probeOnce(client: any, model: string, timeoutMs: number): Promise
       userContent: PROBE_TEXT,
       maxTokens: 512,
       timeoutMs,
+      allowIncomplete: true, // a probe: any reply proves the model works
     });
     return { ok: text.trim().length > 0, ms: Date.now() - started, output: usage.output, text: text.trim() };
   } catch (err: any) {

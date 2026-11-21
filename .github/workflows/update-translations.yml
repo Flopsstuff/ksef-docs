@@ -66,6 +66,12 @@ jobs:
             yarn translate --lang=all --outdated
           fi
 
+      # Belt and braces: translate.ts refuses to write an incomplete translation,
+      # but fail loudly if any file in translations/ is still structurally broken.
+      - name: Audit translation completeness
+        if: steps.check.outputs.has_updates == 'true' || inputs.force
+        run: yarn check:translations
+
       - name: Commit and push
         if: steps.check.outputs.has_updates == 'true' || inputs.force
         run: |

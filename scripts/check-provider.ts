@@ -63,6 +63,7 @@ async function main() {
       userContent: "Faktura została pomyślnie przyjęta przez Krajowy System e-Faktur i otrzymała numer KSeF.",
       maxTokens: 512,
       timeoutMs: 30_000,
+      allowIncomplete: true, // a probe: any reply proves the model works
       onFallback: (failed, next, error) => console.warn(`   ⚠️ ${failed} failed (${error}); trying ${next}`),
     });
     const ms = Date.now() - started;

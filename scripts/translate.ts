@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import { execFileSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import matter from "gray-matter";
@@ -14,7 +15,9 @@ import {
   formatError,
   FileInfo,
 } from "./lib";
-import { Provider, PROVIDERS, resolveModelChain, createClient, streamComplete } from "./llm";
+import { Provider, PROVIDERS, resolveModelChain, createClient, streamComplete, IncompleteOutputError } from "./llm";
+import { checkTranslation, stripBanner, stripWrapperTags } from "./validate";
+import { planSections, makeBatches, norm } from "./sections";
 
 // Make .env authoritative: override variables already present in the shell
 // environment (e.g. an ANTHROPIC_API_KEY exported in the user's profile).
@@ -91,31 +94,84 @@ function getFilesToTranslate(lang: string, all: boolean, outdated: boolean, file
   return statuses.filter((s) => s.status === "outdated" || s.status === "new");
 }
 
-interface ChangelogSection {
-  version: string;
-  text: string;
+/**
+ * Files at least this large (or api-changelog.md) are translated section by
+ * section in batches instead of in one request: a whole-file reply would not fit
+ * the output-token limit (a ~85 KB changelog needs far more than 16K tokens),
+ * and unchanged sections can be reused verbatim instead of being re-generated.
+ */
+const SECTIONED_MIN_BYTES = 24 * 1024;
+/** Max source size of one batch of sections sent in a single request. */
+const BATCH_MAX_BYTES = 12 * 1024;
+const MAX_TOKENS = 16000;
+
+const toLF = (s: string) => s.replace(/\r\n?/g, "\n");
+
+function readSourceCommit(translationPath: string): string | null {
+  const raw = fs.readFileSync(translationPath, "utf-8");
+  const m = raw.match(/^source_commit:\s*["']?([0-9a-f]{7,40})["']?\s*$/m);
+  return m ? m[1] : null;
 }
 
-function parseChangelogSections(content: string): { header: string; sections: ChangelogSection[] } {
-  const lines = content.split("\n");
-  let header = "";
-  const sections: ChangelogSection[] = [];
-  let current: { version: string; lines: string[] } | null = null;
-
-  for (const line of lines) {
-    const match = line.match(/^### .+?(\d+\.\d+\.\d+)/);
-    if (match) {
-      if (current) sections.push({ version: current.version, text: current.lines.join("\n") });
-      current = { version: match[1], lines: [line] };
-    } else if (current) {
-      current.lines.push(line);
-    } else {
-      header += line + "\n";
-    }
+/** The original file as it was at `commit` (what the existing translation was made from). */
+function originalAt(commit: string, file: string): string | null {
+  try {
+    return toLF(
+      execFileSync("git", ["-C", ORIGINAL_DIR, "show", `${commit}:${file}`], {
+        encoding: "utf-8",
+        stdio: ["ignore", "pipe", "ignore"],
+        maxBuffer: 64 * 1024 * 1024,
+      }),
+    );
+  } catch {
+    return null;
   }
-  if (current) sections.push({ version: current.version, text: current.lines.join("\n") });
+}
 
-  return { header, sections };
+
+async function translateSectioned(
+  ctx: TranslateCtx,
+  file: string,
+  originalContent: string,
+  existingTranslation: string,
+  translationPath: string,
+): Promise<string> {
+  const { lang, langName } = ctx;
+  const commit = existingTranslation ? readSourceCommit(translationPath) : null;
+  const oldContent = commit ? originalAt(commit, file) : null;
+  if (existingTranslation && !oldContent) {
+    console.warn(`  ⚠️ ${file} -> ${lang}: original at source_commit ${commit ?? "?"} not found; translating all sections`);
+  }
+  const { sections, result, refFor } = planSections(originalContent, oldContent, existingTranslation);
+  const batches = makeBatches(sections, result, BATCH_MAX_BYTES);
+
+  const reused = sections.filter((s, i) => norm(s.text) && result[i] !== undefined).length;
+  const todo = batches.reduce((n, b) => n + b.length, 0);
+  console.log(`  Translating ${file} -> ${lang} by sections: ${todo} to translate in ${batches.length} batch(es), ${reused} reused...`);
+
+  for (let b = 0; b < batches.length; b++) {
+    const idx = batches[b];
+    const source = idx.map((i) => norm(sections[i].text)).join("\n\n");
+    const refs = idx.map(refFor).filter((t): t is string => !!t);
+    let userMessage =
+      `Translate the following markdown fragment from Polish to ${langName}. ` +
+      `It is a consecutive part of a longer document; translate all of it, keeping every heading and code block.\n\n` +
+      `File: ${file}\n\n<original>\n${source}\n</original>`;
+    if (refs.length > 0) {
+      userMessage += `\n\nHere is the previous translation of these sections for reference (update it to match the current original):\n\n<previous_translation>\n${refs.map(norm).join("\n\n")}\n</previous_translation>`;
+    }
+    const kb = (Buffer.byteLength(source, "utf-8") / 1024).toFixed(1);
+    console.log(`    batch ${b + 1}/${batches.length}: ${idx.length} section(s), ${kb} KB`);
+    const { text } = await streamComplete({
+      client: ctx.client, provider: ctx.provider, model: ctx.model, system: ctx.systemPrompt,
+      userContent: userMessage, maxTokens: MAX_TOKENS, onFallback: ctx.onFallback(file),
+      validate: (t) => checkTranslation(source, stripWrapperTags(t)).join("; ") || null,
+    });
+    // The batch is stored on its first section; the rest are covered by it.
+    idx.forEach((i, j) => (result[i] = j === 0 ? stripWrapperTags(text) : ""));
+  }
+
+  return result.map((t) => norm(t!)).filter(Boolean).join("\n\n") + "\n";
 }
 
 interface TranslateResult {
@@ -124,76 +180,66 @@ interface TranslateResult {
   translatedAt: string;
 }
 
-async function translateFile(
-  client: any,
-  provider: Provider,
-  model: string | string[],
-  systemPrompt: string,
-  lang: string,
-  file: string,
-  sourceCommit: string
-): Promise<TranslateResult> {
-  const onFallback = (failed: string, next: string, error: string) =>
-    console.warn(`  ⚠️ ${file} -> ${lang}: ${failed} failed (${error}); trying ${next}`);
+interface TranslateCtx {
+  client: any;
+  provider: Provider;
+  model: string | string[];
+  systemPrompt: string;
+  lang: string;
+  langName: string;
+  sourceCommit: string;
+  onFallback: (file: string) => (failed: string, next: string, error: string) => void;
+}
+
+async function translateFile(ctx: TranslateCtx, file: string): Promise<TranslateResult> {
+  const { lang, langName } = ctx;
   const originalPath = path.join(ORIGINAL_DIR, file);
   const translationPath = path.join(TRANSLATIONS_DIR, lang, file);
-  const originalContent = fs.readFileSync(originalPath, "utf-8");
+  // The lock hashes the raw bytes; translation works on LF text (some upstream
+  // files use CRLF, translations are LF).
+  const rawOriginal = fs.readFileSync(originalPath, "utf-8");
+  const originalContent = toLF(rawOriginal);
 
   let existingTranslation = "";
   if (fs.existsSync(translationPath)) {
-    const parsed = matter(fs.readFileSync(translationPath, "utf-8"));
-    existingTranslation = parsed.content;
+    existingTranslation = stripBanner(matter(fs.readFileSync(translationPath, "utf-8")).content);
   }
 
-  const langName = LANG_NAMES[lang] || lang;
+  const bytes = Buffer.byteLength(originalContent, "utf-8");
+  let translatedContent: string | undefined;
 
-  // Try incremental changelog translation
-  if (file === "api-changelog.md" && existingTranslation) {
-    const originalParsed = parseChangelogSections(originalContent);
-    const translationParsed = parseChangelogSections(existingTranslation);
-    const existingVersions = new Set(translationParsed.sections.map((s) => s.version));
-    const newSections = originalParsed.sections.filter((s) => !existingVersions.has(s.version));
-
-    if (newSections.length > 0 && newSections.length < originalParsed.sections.length) {
-      const newContent = newSections.map((s) => s.text).join("\n\n");
-      const newKb = (Buffer.byteLength(newContent, "utf-8") / 1024).toFixed(1);
-      const newVersions = newSections.map((s) => s.version).join(", ");
-      console.log(`  Translating ${file} -> ${lang} incrementally (${newSections.length} new version(s): ${newVersions}, ${newKb} KB)...`);
-
-      const userMessage = `Translate the following changelog sections from Polish to ${langName}. These are new sections to be added to an existing translation.\n\nFile: ${file}\n\n<new_sections>\n${newContent}\n</new_sections>`;
-
-      const { text: translatedNew } = await streamComplete({
-        client, provider, model, system: systemPrompt, userContent: userMessage, maxTokens: 16000, onFallback,
+  if (file !== "api-changelog.md" && bytes < SECTIONED_MIN_BYTES) {
+    let userMessage = `Translate the following document from Polish to ${langName}.\n\nFile: ${file}\n\n<original>\n${originalContent}\n</original>`;
+    if (existingTranslation) {
+      userMessage += `\n\nHere is the previous translation for reference (update it to match the current original):\n\n<previous_translation>\n${existingTranslation}\n</previous_translation>`;
+    }
+    const lines = originalContent.split("\n").length;
+    console.log(`  Translating ${file} -> ${lang} (${lines} lines, ${(bytes / 1024).toFixed(1)} KB)...`);
+    try {
+      const { text } = await streamComplete({
+        client: ctx.client, provider: ctx.provider, model: ctx.model, system: ctx.systemPrompt,
+        userContent: userMessage, maxTokens: MAX_TOKENS, onFallback: ctx.onFallback(file),
+        validate: (t) => checkTranslation(originalContent, stripWrapperTags(t)).join("; ") || null,
       });
-
-      // Merge: existing header (without banner) + new sections + existing sections
-      // Strip the "> **Translation.**" banner line from header since writeTranslation adds it
-      const cleanHeader = translationParsed.header
-        .replace(/^> \*\*Translation\.\*\*.*\n\n?/m, "");
-      const translatedContent =
-        cleanHeader + translatedNew.trim() + "\n\n" +
-        translationParsed.sections.map((s) => s.text).join("\n\n") + "\n";
-
-      return writeTranslation(translationPath, file, sourceCommit, translatedContent, originalContent);
+      translatedContent = stripWrapperTags(text) + "\n";
+    } catch (err) {
+      if (!(err instanceof IncompleteOutputError)) throw err;
+      console.warn(`  ⚠️ ${file} -> ${lang}: whole-file translation incomplete (${err.message}); retrying by sections`);
     }
   }
 
-  let userMessage = `Translate the following document from Polish to ${langName}.\n\nFile: ${file}\n\n<original>\n${originalContent}\n</original>`;
-
-  if (existingTranslation) {
-    userMessage += `\n\nHere is the previous translation for reference (update it to match the current original):\n\n<previous_translation>\n${existingTranslation}\n</previous_translation>`;
+  if (translatedContent === undefined) {
+    translatedContent = await translateSectioned(ctx, file, originalContent, existingTranslation, translationPath);
   }
 
-  const lines = originalContent.split("\n").length;
-  const kb = (Buffer.byteLength(originalContent, "utf-8") / 1024).toFixed(1);
-  console.log(`  Translating ${file} -> ${lang} (${lines} lines, ${kb} KB)...`);
+  // Last line of defence: never write (or lock) a translation that is not
+  // structurally complete — the file stays outdated and is retried next run.
+  const problems = checkTranslation(originalContent, translatedContent);
+  if (problems.length > 0) {
+    throw new Error(`translation rejected as incomplete: ${problems.join("; ")}`);
+  }
 
-  const { text } = await streamComplete({
-    client, provider, model, system: systemPrompt, userContent: userMessage, maxTokens: 16000, onFallback,
-  });
-  const translatedContent = text + "\n";
-
-  return writeTranslation(translationPath, file, sourceCommit, translatedContent, originalContent);
+  return writeTranslation(translationPath, file, ctx.sourceCommit, translatedContent, rawOriginal);
 }
 
 function writeTranslation(
@@ -272,12 +318,18 @@ async function main() {
   const model = modelChain;
   const sourceCommit = getSubmoduleCommit();
 
+  const ctx: TranslateCtx = {
+    client, provider, model, systemPrompt, lang, langName: LANG_NAMES[lang] || lang, sourceCommit,
+    onFallback: (file) => (failed, next, error) =>
+      console.warn(`  ⚠️ ${file} -> ${lang}: ${failed} failed (${error}); trying ${next}`),
+  };
+
   const results: TranslateResult[] = [];
   let failed = 0;
 
   await runPool(toTranslate, concurrency, async (f) => {
     try {
-      const result = await translateFile(client, provider, model, systemPrompt, lang, f.file, sourceCommit);
+      const result = await translateFile(ctx, f.file);
       results.push(result);
     } catch (err: any) {
       failed++;
