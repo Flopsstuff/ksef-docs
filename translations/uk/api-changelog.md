@@ -2,7 +2,7 @@
 original: api-changelog.md
 source_repo: https://github.com/CIRFMF/ksef-docs
 source_commit: d4460b6
-last_translated: 2026-11-19
+last_translated: 2026-11-21
 ---
 
 > **Translation.** Original: [api-changelog.md](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)
@@ -43,8 +43,8 @@ last_translated: 2026-11-19
   - надання дозволів представника суб'єкта європейського (POST `/permissions/eu-entities/grants`),
   - пошуку наданих дозволів (POST `/permissions/query/eu-entities/grants`). 
 
-- **Колективні ідентифікатори**  
-  Поправлено валідацію номера KSeF в GET `/collective-identifiers/ksef/{ksefNumber}`. Неправильна контрольна сума призводить до повернення `400 Bad Request` з кодом `21405` ("Помилка валідації вхідних даних").
+- **Ідентифікатори колективні**  
+  Виправлено валідацію номера KSeF у GET `/collective-identifiers/ksef/{ksefNumber}`. Неправильна сума контрольна призводить до повернення `400 Bad Request` з кодом `21405` („Помилка валідації вхідних даних").
 
 - **OpenAPI**
   - Додано до відповідей виводимих з експлуатації endpoint-ів заголовки `Deprecation` та `Sunset`, що вказують відповідно на момент позначення операції як застарілої та момент її вимкнення. Після вимкнення операція буде повертати `410 Gone`.
@@ -52,17 +52,17 @@ last_translated: 2026-11-19
   - Незначні оновлення описів та прикладів.
 
 - **Тестові дані**  
-  У запиті POST `/testdata/limits/subject/certificate` властивість `enrollment.maxEnrollments` та `certificate.maxCertificates` позначено як обов'язкові.
-  - Виправлено відкликання згоди на виставлення рахунків-фактур з додатком через POST `/testdata/attachment/revoke` без вказання `expectedEndDate`. У цьому випадку GET `/permissions/attachments/status` правильно повертає `isAttachmentAllowed: false`.
+  - У запиті POST `/testdata/limits/subject/certificate` властивість `enrollment.maxEnrollments` та `certificate.maxCertificates` позначено як обов'язкові.
+  - Виправлено відкликання згоди на виставлення рахунків з додатком через POST `/testdata/attachment/revoke` без вказання `expectedEndDate`. У цьому випадку GET `/permissions/attachments/status` правильно повертає `isAttachmentAllowed: false`.
 
 ### Версія 2.9.0
 | Середовище | Дата впровадження |
 | ---------- | -------------: |
-| **TEST**   |     13.10.2026 |
-| **DEMO**   |     13.10.2026 |
-| **PROD**   |     15.10.2026 |
+| **ТЕСТ**   |     13.10.2026 |
+| **ДЕМО**   |     13.10.2026 |
+| **ПРОД**   |     15.10.2026 |
 
-- **Дозволи**  
+- **Права доступу**  
   Розширено POST `/permissions/query/personal/grants` за рахунок `OwnerPermissionScope`, що повертає права власника.
 
 - **OpenAPI**  
@@ -88,7 +88,7 @@ last_translated: 2026-11-19
 | ---------- | -------------: |
 | **TEST**   |     14.09.2026 |
 | **DEMO**   |     15.09.2026 |
-| **PROD**   |     23.09.2026 |
+| **PRD**    |     23.09.2026 |
 
 - **API ліміти**  
   - Відокремлено операції закриття сесій у окремі групи лімітів і збільшено їх значення до рівня вдвічі вищого, ніж ліміти для операцій відкриття сесій:
@@ -117,7 +117,7 @@ last_translated: 2026-11-19
 | ---------- | -------------: |
 | **TEST**   |     26.08.2026 |
 | **DEMO**   |     15.09.2026 |
-| **PROD**   |     23.09.2026 |
+| **PRD**    |     23.09.2026 |
 
 - **Збірні ідентифікатори**  
   - Змінено endpoint GET `/collective-identifiers/{collectiveIdentifierNumber}/invoices` на POST `/collective-identifiers/invoices`. Метод приймає список до 10 збірних ідентифікаторів замість одного номера. Відповідь розширено на `collectiveIdentifierNumber`, збільшено максимальний `pageSize` з 200 до 500, endpoint охоплено обмеженнями API та додано приклад відповіді.
@@ -139,9 +139,9 @@ last_translated: 2026-11-19
 ### Версія 2.7.0
 | Середовище | Дата впровадження |
 | ---------- | -------------: |
-| **TEST**   |     21.07.2026 |
+| **TEST**   |     21.07.2027 |
 | **DEMO**   |     - |
-| **PROD**   |     - |
+| **PRD**    |     - |
 
 - **Колективні ідентифікатори**  
   Додано підтримку колективних ідентифікаторів та новий дозвіл `CollectiveIdentifierManage`, необхідний для виконання операцій над ІЗ.
@@ -157,7 +157,7 @@ last_translated: 2026-11-19
 | ---------- | -------------: |
 | **TEST**   |     10.06.2026 |
 | **DEMO**   |     11.06.2026 |
-| **PROD**   |     16.06.2026 |
+| **PRD**    |     16.06.2026 |
 
 - **Отримання статусу автентифікації (GET `/auth/{referenceNumber})`**  
   Уніфіковано повідомлення у полі `details` для статусу `450` ("Автентифікація завершилася невдачею через неправильний токен") – тексти тепер повертаються польською мовою, згідно з документацією. Додатково доповнено документацію кількома варіантами `details`, які зустрічалися у відповідях API, але раніше не були описані.
@@ -169,11 +169,12 @@ last_translated: 2026-11-19
   Оновлено посилання на документацію: CIRFMF/ksef-docs → CIRFMF/ksef-api.
 
 ### Версія 2.6.0
+
 | Середовище | Дата впровадження |
-| ---------- | -------------: |
-| **TEST**   |     19.05.2026 |
-| **DEMO**   |     21.05.2026 |
-| **PROD**   |     26.05.2026 |
+| ---------- | ----------------: |
+| **TEST**   |        19.05.2026 |
+| **DEMO**   |        21.05.2026 |
+| **PRD**    |        26.05.2026 |
 
 - **Пакетне надсилання (POST `/sessions/batch`) та експорт пакету рахунків-фактур (POST `/invoices/exports`)**  
   Додано тип стиснення `TarGz` як альтернативу до `Zip`. Формат `TarGz` рекомендується завдяки можливості досягнення кращого коефіцієнта стиснення для пакетів, що містять багато схожих XML-документів. Типом стиснення за замовчуванням залишається `Zip` для збереження сумісності.
@@ -187,10 +188,10 @@ last_translated: 2026-11-19
 
 ### Версія 2.5.0
 | Середовище | Дата впровадження |
-| ---------- | -------------: |
-| **TEST**   |     06.05.2026 |
-| **DEMO**   |     07.05.2026 |
-| **PROD**   |     11.05.2026 |
+| ---------- | ----------------: |
+| **TEST**   |        06.05.2026 |
+| **DEMO**   |        07.05.2026 |
+| **PRD**    |        11.05.2026 |
 
 - **Публічні ключі KSeF (ротація та вибір ключів)**  
   Запроваджено передачу селектора `publicKeyId` у запитах до операцій, у яких клієнт шифрує дані публічним ключем KSeF — це дозволяє однозначно ідентифікувати використаний ключ та забезпечити коректну й автоматичну обробку ре-сертифікації/ротації. Розширення стосується таких endpoint-ів:
@@ -206,18 +207,20 @@ last_translated: 2026-11-19
   - У схемі 2.1 оновлено регулярні вирази для IP-адрес (`Ip4Address`, `Ip4Range`, `Ip4Mask`), щоб вони відповідали поширеним парсерам.
 
 - **Ліміти API**  
-  Ліміти API за замовчуванням у середовищі TEST зрівняно зі значеннями, що діють у PROD. У середовищі TEST як і раніше доступні endpoint-и групи `/testdata/rate-limits`, що дозволяють тестувати нестандартні профілі лімітів.
+  Ліміти API за замовчуванням у середовищі TEST зрівняно зі значеннями, що діють у PRD. У середовищі TEST як і раніше доступні endpoint-и групи `/testdata/rate-limits`, що дозволяють тестувати нестандартні профілі лімітів.
 
 - **OpenAPI**  
   - Доповнено описи параметра `certificateSerialNumber` форматом і обмеженнями (`minLength/maxLength: 16`, `pattern: ^[0-9A-F]{16}$`). Зміна має документаційний характер — не вводить додаткової валідації на боці API і не змінює поведінки endpoint-ів (наприклад, POST `/certificates/retrieve`).
-  - Видалено значення, пов'язані з рахунками-факттурами RR, раніше позначені як deprecated (зокрема `InvoiceQueryFormType.RR`).
+  - Видалено значення, пов'язані з рахунками-фактурами RR, раніше позначені як deprecated (зокрема `InvoiceQueryFormType.RR`).
 
 ### Версія 2.4.0
+
 | Середовище | Дата впровадження | Примітки                                                                                   |
-| ---------- | -------------: | ------------------------------------------------------------------------------------------ |
-| **TEST**   |     10.04.2026 | —                                                                                          |
-| **DEMO**   |     13.04.2026 | —                                                                                          |
-| **PROD**   |     16.04.2026 | Посилення валідації XML набере чинності з **16.07.2026**. |
+| ---------- | ----------------: | ------------------------------------------------------------------------------------------ |
+| **TEST**   |        10.04.2026 | —                                                                                          |
+| **DEMO**   |        13.04.2026 | —                                                                                          |
+| **PRD**    |        16.04.2026 | Посилення валідації XML набере чинності з **16.07.2026**. |
+
 
 - **Токени KSeF**
   - Надано можливість виконувати операції з токеном, використаним для автентифікації, без додаткових прав доступу:
@@ -258,6 +261,7 @@ last_translated: 2026-11-19
     - req/min: з 8 до 16.
 
 ### Версія 2.3.0
+
 - **Відправка заявки на сертифікацію (POST /certificates/enrollments)**  
   Збільшено ліміти для ідентифікаторів PESEL та fingerprint:  
   - кількість заявок на сертифікат KSeF: з 6 до 12,
@@ -268,7 +272,7 @@ last_translated: 2026-11-19
   - Уточнено значення поля `Value` для схеми `FA_RR (1) 1-1E`: замість `RR` необхідно передавати `FA_RR` (відповідно до значення `TKodFormularza` в XSD).
 
 - **Отримання рахунків**   
-  - Розширено підтримку `formType` для рахунків `RR` на значення `FA_RR` (узгоджено з механізмом відправки рахунків). На середовищі TEST приймаються `RR` (до 30.03) та `FA_RR`, натомість на PROD прийматиметься виключно `FA_RR`.
+  - Розширено підтримку `formType` для рахунків `RR` на значення `FA_RR` (узгоджено з механізмом відправки рахунків). На середовищі TEST приймаються `RR` (до 30.03) та `FA_RR`, натомість на PRD прийматиметься виключно `FA_RR`.
   - Дозволено пошук рахунків за від'ємними сумами у фільтрі `amount` - дозволено від'ємні значення в `amount.from` і `amount.to`.
 
 - **Експорт пакету рахунків (POST `/invoices/exports`)**  
@@ -282,12 +286,14 @@ last_translated: 2026-11-19
   - Незначні оновлення описів та прикладів.
 
 ### Версія 2.2.1
+
 - **Надсилання рахунків-фактур**  
   Додано нову версію (`1-1E`) схеми `FA_RR (1)`.  
   Схема `FA_RR (1) 1-0E` буде підтримуватися на середовищі TEST до 23.04.
-  Схема `FA_RR (1) 1-1E` буде обов'язковою на середовищі PROD з 01.04.  
+  Схема `FA_RR (1) 1-1E` буде обов'язковою на середовищі PRD з 01.04.
 
 ### Версія 2.2.0
+
 - **Дозволи**  
   Додано новий endpoint (POST `/permissions/query/entities/grants`), що дозволяє отримати список дозволів для обробки рахунків-фактур у поточному контексті (дозволи, що повертаються: `InvoiceWrite`, `InvoiceRead` - надані іншим суб'єктом).
 
@@ -303,6 +309,7 @@ last_translated: 2026-11-19
   Виправлено генерування файлу `_metadata.json` у пакеті експорту - при великій кількості рахунків-фактур файл міг бути раніше обрізаний (некоректний JSON).
 
 ### Версія 2.1.2
+
 - **Надсилання рахунків-фактур**  
   Додано підтримку рахунків-фактур RR ([схема_RR(1)_v1-0E](/faktury/schemy/RR/schemat_RR(1)_v1-0E.xsd)).
 
@@ -316,13 +323,15 @@ last_translated: 2026-11-19
   Видалено `additionalProperties`: `false` у вибраних моделях. Зміна, що впорядковує специфікацію та робить контракт більш гнучким - допускає можливість появи додаткових властивостей у запитах або відповідях (наприклад, у рамках розширень). Додавання нової властивості не розглядається як порушення контракту; клієнти API повинні ігнорувати невідомі властивості.
 
 ### Версія 2.1.1
+
 - **Аутентифікація**  
   - **Отримання статусу аутентифікації (GET `/auth/{referenceNumber}`)** та **Отримання списку активних сесій (GET `/auth/sessions`)**  
   Доповнено визначення `authenticationMethodInfo` - позначено властивості `category`, `code` та `displayName` як `required` у моделі відповіді.
   - **Аутентифікація з використанням підпису XAdES (POST `/auth/xades-signature`)**  
-  Додано можливість раннього увімкнення нових вимог валідації XAdES на середовищах DEMO і PROD через заголовок: `X-KSeF-Feature`: `enforce-xades-compliance`.
+  Додано можливість раннього увімкнення нових вимог валідації XAdES на середовищах DEMO і PRD через заголовок: `X-KSeF-Feature`: `enforce-xades-compliance`.
 
 ### Версія 2.1.0
+
 - **Аутентифікація**  
   - Додано інтеграцію з Національним Вузлом (login.gov.pl). Endpoint, що використовується для цієї інтеграції, не є публічно доступним (метод аутентифікації призначений виключно для державних додатків).
   - **Отримання статусу аутентифікації (GET `/auth/{referenceNumber}`)** та **Отримання списку активних сесій (GET `/auth/sessions`)**  
@@ -335,7 +344,7 @@ last_translated: 2026-11-19
 
   - **Аутентифікація з використанням підпису XAdES (POST `/auth/xades-signature`)**  
     Уніфіковано та посилено валідацію [підпису XAdES](/auth/podpis-xades.md) в процесі аутентифікації, щоб приймалися виключно підписи, що відповідають вимогам профілів XAdES.  
-    Нові вимоги вже діють на середовищі TEST. На середовищах DEMO і PROD почнуть діяти **16 березня 2026** (рекомендуємо перевірити інтеграцію на TEST до цієї дати).
+    Нові вимоги вже діють на середовищі TEST. На середовищах DEMO і PRD почнуть діяти **16 березня 2026** (рекомендуємо перевірити інтеграцію на TEST до цієї дати).
 
 - **Тестові дані**  
   Додано нові endpoints:
@@ -346,6 +355,7 @@ last_translated: 2026-11-19
   Незначні оновлення описів.
 
 ### Версія 2.0.1
+
 - **Дозволи**
   - Отримання списку власних дозволів (POST `/permissions/query/personal/grants`).  
     - Виправлено логіку повернення списку "Мої дозволи" для власника контексту - в результатах повертаються також суб'єктні дозволи на виставлення та перегляд рахунків-фактур (`InvoiceWrite`, `InvoiceRead`) надані **без права** подальшої передачі `canDelegate = false`. Раніше список повертав лише ті з правом на подальшу передачу.
@@ -367,6 +377,7 @@ last_translated: 2026-11-19
   Незначні оновлення описів.
 
 ### Версія 2.0.0
+
 - **UPO**  
   Згідно з оголошенням з RC6.0, з `2025-12-22` за замовчуванням повертається версія UPO v4-3.
 
@@ -376,7 +387,7 @@ last_translated: 2026-11-19
 - **Закриття пакетної сесії (POST `/sessions/batch/{referenceNumber}/close`)**   
   - Додано код помилки `21208` ("Час очікування на запити upload або finish був перевищений").
 
-- **Отримання рахунка-фактури/UPO**
+- **Отримання рахунку-фактури/UPO**
   - Додано заголовок `x-ms-meta-hash` (хеш `SHA-256`, `Base64`) у відповідях `200` для endpoints:
     - GET `/invoices/ksef/{ksefNumber}`,
     - GET `/sessions/{referenceNumber}/invoices/ksef/{ksefNumber}/upo`,
@@ -428,6 +439,7 @@ last_translated: 2026-11-19
   - Виправлено опечатки в специфікації.
 
 ### Версія 2.0.0 RC6.1
+
 - **Нова адресація середовищ**  
   Надання нових адрес. Зміни в розділі [середовища KSeF API 2.0](srodowiska.md).
 
@@ -478,9 +490,10 @@ last_translated: 2026-11-19
   - GET `/sessions/{referenceNumber}/invoices/failed`
 
 ### Версія 2.0.0 RC6.0
+
 - **Ліміти API**  
-  - На середовищі **TE** (тестове) увімкнено і визначено політику [лімітів api](limity/limity-api.md) зі значеннями в 10 разів вищими ніж на **PROD**; деталі: ["Ліміти на середовищах"](/limity/limity-api.md#limity-na-środowiskach).
-  - На середовищі **TR** (DEMO) увімкнено [ліміти api](limity/limity-api.md) зі значеннями ідентичними як на **PROD**. Значення реплікуються з виробництва; деталі: ["Ліміти на середовищах"](/limity/limity-api.md#limity-na-środowiskach).
+  - На середовищі **TE** (тестове) увімкнено і визначено політику [лімітів api](limity/limity-api.md) зі значеннями в 10 разів вищими ніж на **PRD**; деталі: ["Ліміти на середовищах"](/limity/limity-api.md#limity-na-środowiskach).
+  - На середовищі **TR** (DEMO) увімкнено [ліміти api](limity/limity-api.md) зі значеннями ідентичними як на **PRD**. Значення реплікуються з виробництва; деталі: ["Ліміти на середовищах"](/limity/limity-api.md#limity-na-środowiskach).
   - Додано endpoint POST `/testdata/rate-limits/production` - встановлює в поточному контексті значення лімітів api відповідно до виробничого профілю. Доступний лише на середовищі **TE**.
   
 - **Експорт пакету рахунків-фактур (POST `/invoices/exports`). Отримання списку метаданих рахунків-фактур (POST `/invoices/query/metadata`)**   
@@ -497,7 +510,7 @@ last_translated: 2026-11-19
     - `TE`: Ministerstwo Finansów - środowisko testowe (TE),
     - `TR`: Ministerstwo Finansów - środowisko przedprodukcyjne (TR).
     
-    `PROD`: без змін - Ministerstwo Finansów.  
+    `PRD`: без змін - Ministerstwo Finansów.  
   - Зараз за замовчуванням повертається UPO v4-2. Щоб отримати UPO v4-3, потрібно додати заголовок: `X-KSeF-Feature: upo-v4-3` при відкритті сесії (online/пакетної).
   - З `2025-12-22` версією за замовчуванням буде UPO v4-3.
   - XSD UPO v4-3: [schema](/faktury/upo/schemy/upo-v4-3.xsd).
@@ -536,13 +549,14 @@ last_translated: 2026-11-19
   - До кожного endpoint додано метадані `x-rate-limits` зі значеннями лімітів (`req/s`, `req/min`, `req/h`).
   - Видалено явні властивості `exclusiveMaximum`: `false` і `exclusiveMinimum`: `false` з числових визначень (залишено лише minimum/maximum). Порядкова зміна – без впливу на валідацію (в OpenAPI значення за замовчуванням цих властивостей - `false`).
   - Додано обмеження довжини для властивостей типу string: `minLength`.
-  - Видалено явні налаштування `style`: `form` для параметрів in: query.
+  - Видалено явні налаштування `style`: `form` для параметрів в in: query.
   - Змінено порядок значень enum `BuyerIdentifierType` (зараз: `None`, `Other`, `Nip`, `VatUe`). Порядкова зміна - без впливу на роботу.
   - Виправлено опечатку в описі властивості `KsefNumber`.
   - Уточнено формат властивості `PublicKeyCertificate`, що представляє бінарні дані, закодовані `Base64`, встановлено format: `byte`.
   - Внесено незначні мовні та пунктуаційні корективи в поля `description`.
 
 ### Версія 2.0.0 RC5.7
+
 - **Відкриття пакетної сесії (POST `/sessions/batch`)**  
   Позначено в моделі запиту `BatchFilePartInfo.fileName` як `deprecated` (планується видалення: 2025-12-05).
 
@@ -556,6 +570,7 @@ last_translated: 2026-11-19
   - Оновлено regex шаблони для `vatUeIdentifier`, `authorizedFingerprintIdentifier`, `internalId`, `nipVatUe`, `peppolId`.
 
 ### Версія 2.0.0 RC5.6
+
 - **Отримання статусу сесії (GET `/sessions/{referenceNumber}`)**  
   Додано у відповіді поле `UpoPageResponse.downloadUrlExpirationDate` - дата та час закінчення строку дії адреси отримання UPO; після цього моменту `downloadUrl` вже не активний.
 
@@ -581,6 +596,7 @@ last_translated: 2026-11-19
   - Додано регулярні вирази для вибраних текстових полів.
 
 ### Версія 2.0.0 RC5.5
+
 - **Отримання поточних лімітів API (GET `/api/v2/rate-limits`)**  
   Додано endpoint, що повертає ефективні ліміти викликів API в розкладі `perSecond`/`perMinute`/`perHour` для окремих областей (зокрема `onlineSession`, `batchSession`, `invoiceSend`, `invoiceStatus`, `invoiceExport`, `invoiceDownload`, `other`).
 
@@ -607,4 +623,488 @@ last_translated: 2026-11-19
 
 - **Статус експорту пакету рахунків-фактур (GET `/invoices/exports/{referenceNumber}`)**  
   Уточнено описи полів посилань для завантаження частин пакету:
-  - `url` - "URL-адреса, за якою потрібно надіслати запит на завантаження частини пакету. Посилання генерується динамічно в момент запиту статусу операції експорту. Не підлягає лімітам API і не потребує перед
+  - `url` - "URL-адреса, за якою потрібно надіслати запит на завантаження частини пакету. Посилання генерується динамічно в момент запиту статусу операції експорту. Не підлягає лімітам API і не потребує передавання токена доступу при завантаженні".
+  - `expirationDate` - "Дата та час закінчення строку дії посилання, що дозволяє завантаження частини пакету. Після закінчення цього моменту посилання перестає бути активним".
+
+- **Авторизація**
+  - Розширено правила доступу `SubunitManage` для POST `/permissions/query/persons/grants`: операцію можна виконати, якщо суб'єкт має `CredentialsManage`, `CredentialsRead`, `SubunitManage`.
+  - Надання дозволів непрямим способом (POST `/permissions/indirect/grants`)
+    Оновлено опис властивості `targetIdentifier.description`: уточнено, що відсутність ідентифікатора контексту означає надання непрямого дозволу загального типу.
+
+- **OpenAPI**  
+  Збільшено максимальне значення `pageSize` зі 100 до 500 для endpoints:
+  - GET `/sessions`
+  - GET `/sessions/{referenceNumber}/invoices`
+  - GET `/sessions/{referenceNumber}/invoices/failed`
+
+### Версія 2.0.0 RC5.4
+
+- **Отримання списку метаданых рахунків-фактур (POST /invoices/query/metadata)**  
+  - Додано параметр `sortOrder`, що дозволяє визначити напрямок сортування результатів.
+
+- **Статус сесії**  
+  Видалено помилку, що перешкоджала заповненню цієї властивості у відповідях API щодо рахунків-фактур (поле раніше не поверталося). Значення заповнюється асинхронно в момент постійного запису і може бути тимчасово null.
+
+- **Тестові дані (лише на тестових середовищах)**
+  - Зміна лімітів API для поточного контексту (POST `testdata/rate-limits`)  
+  Додано endpoint, що дозволяє тимчасово перевизначити ефективні ліміти API для поточного контексту. Зміна готує запуск симулятора лімітів на середовищі TE.
+  - Відновлення лімітів за замовчуванням (DELETE `/testdata/rate-limits`)
+  Додано endpoint, що відновлює значення лімітів за замовчуванням для поточного контексту.
+
+- **OpenAPI**  
+  - Уточнено визначення табличних параметрів в query; застосовано `style: form`. Декілька значень потрібно передавати через повторення параметра, наприклад `?statuses=InProgress&statuses=Succeeded`. Документаційна зміна, без впливу на роботу API.
+  - Оновлено описи властивостей (`partUploadRequests`, `encryptedSymmetricKey`, `initializationVector`).
+
+### Версія 2.0.0 RC5.3
+
+- **Експорт пакету рахунків-фактур (POST `/invoices/exports`)**  
+  Додано можливість долучення файлу `_metadata.json` до пакету експорту. Файл має вигляд об'єкта JSON з масивом `invoices`, що містить об'єкти `InvoiceMetadata` (модель, що повертається POST `/invoices/query/metadata`).
+  Увімкнення (preview): до заголовка запиту потрібно додати `X-KSeF-Feature`: `include-metadata`.
+  З 2025-10-27 змінюється поведінка за замовчуванням endpoint - пакет експорту завжди міститиме файл `_metadata.json` (заголовок не буде потрібен).
+
+- **Статус рахунку-фактури**  
+  - У випадку обробки з помилкою, коли можливо було прочитати номер рахунку-фактури (наприклад, код помилки `440` - дублікат рахунку-фактури), відповідь містить властивість `invoiceNumber` з прочитаним номером.
+  - Позначено властивості `invoiceHash`, `referenceNumber` в моделі відповіді як такі, що завжди повертаються.
+
+- **Стандартизація одиниць розміру (MB, SI)**  
+  Уніфіковано запис лімітів у документації та API: значення подані в MB (SI), де 1 MB = 1 000 000 B.
+
+- **Отримання лімітів для поточного контексту (GET `/limits/context`)**  
+  Додано в моделі відповіді `maxInvoiceSizeInMB`, `maxInvoiceWithAttachmentSizeInMB` для властивостей `onlineSession` і `batchSession`.
+  Властивості `maxInvoiceSizeInMib`, `maxInvoiceWithAttachmentSizeInMib` позначено як deprecated (планується видалення: 2025-10-27).
+
+- **Зміна лімітів сесії для поточного контексту (POST `/testdata/limits/context/session`)**  
+  Додано в моделі запиту `maxInvoiceSizeInMB`, `maxInvoiceWithAttachmentSizeInMB` для властивостей `onlineSession` і `batchSession`.
+  Властивості `maxInvoiceSizeInMib`, `maxInvoiceWithAttachmentSizeInMib` позначено як deprecated (планується видалення: 2025-10-27).
+
+- **Статус експорту пакету рахунків-фактур (GET `/invoices/exports/{referenceNumber}`)**  
+  Зміна назви параметра шляху з `operationReferenceNumber` на `referenceNumber`.  
+  Зміна не впливає на контракт HTTP (шлях і значення без змін) та на поведінку endpoint.
+
+- **Дозволи**  
+  - Оновлено описи endpoints приклади endpoints з області permissions/*. Зміна стосується виключно документації (уточнення описів, форматів і прикладів); без змін у поведінці API та контракті.
+  - Зміна назви параметра шляху з `operationReferenceNumber` на `referenceNumber` у "Отримання статусу операції" (POST `/permissions/operations/{referenceNumber}`).  
+  Зміна не впливає на контракт HTTP (шлях і значення без змін) та на поведінку endpoint.
+  - "Надання дозволів непрямим способом" (POST `permissions/indirect/grants`)  
+    Додано підтримку внутрішнього ідентифікатора - розширено властивість `targetIdentifier` значенням `InternalId`.
+  - "Отримання списку власних дозволів" (POST `/permissions/query/personal/grants`)  
+      - Розширено в моделі запиту властивість `targetIdentifier` значенням `InternalId` (можливість вказання внутрішнього ідентифікатора).
+      - Видалено в моделі відповіді значення `PersonalPermissionScope.Owner`. Власницькі дозволи (надані через ZAW-FA або прив'язка NIP/PESEL) не повертаються.
+
+- **Статус аутентифікації (GET `/auth/{referenceNumber}`)**  
+  Розширено таблицю кодів помилок `470` - "Аутентифікація завершена невдачею" з уточненням: "Спроба використання авторизаційних методів померлої особи".
+
+- **Обробка рахунків-фактур PEF**  
+  Змінено значення enum (`FormCode`):
+    - `FA_PEF (3)` на `PEF (3)`,
+    - `FA_KOR_PEF (3)` на `PEF_KOR (3)`.
+
+- **Генерування нового токена (POST `/tokens`)**  
+  - В моделі запиту (`GenerateTokenRequest`) позначено поля `description` і `permissions` як обов'язкові.
+  - В моделі відповіді (`GenerateTokenResponse`) позначено поля `referenceNumber` і `token` як такі, що завжди повертаються.
+
+- **Статус токена KSeF (GET /tokens/{referenceNumber})**
+  - Позначено властивості `authorIdentifier`, `contextIdentifier`, `dateCreated`, `description`, `referenceNumber`, `requestedPermissions`, `status` в моделі відповіді як такі, що завжди повертаються.
+
+- **Отримання списку згенерованих токенів (GET /tokens)**
+  - Позначено властивості `authorIdentifier`, `contextIdentifier`, `dateCreated`, `description`, `referenceNumber`, `requestedPermissions`, `status` в моделі відповіді як такі, що завжди повертаються.
+
+- **Тестові дані - створення фізичної особи (POST `/testdata/person`)**  
+  Розширено запит властивістю `isDeceased` (boolean), що дозволяє створити тестову померлу особу (наприклад, для сценаріїв перевірки коду статусу `470`).
+
+- **OpenAPI**
+  - Уточнено обмеження для властивостей типу integer в requests через додавання атрибутів `minimum` / `exclusiveMinimum`, `maximum` / `exclusiveMaximum`.  
+  - Розширено відповідь полем `referenceNumber` (містить те саме значення, що й попереднє `operationReferenceNumber`). Позначено `operationReferenceNumber` як `deprecated` і буде видалено з відповіді 2025-10-27; потрібно перейти на `referenceNumber`. Характер зміни: перехідний rename із збереженням сумісності (обидві властивості повертаються паралельно до дати видалення).  
+  Стосується endpoints:
+    - POST `/permissions/persons/grants`,
+    - POST `/permissions/entities/grants`,
+    - POST `/permissions/authorizations/grants`,
+    - POST `/permissions/indirect/grants`,
+    - POST `/permissions/subunits/grants`,
+    - POST `/permissions/eu-entities/administration/grants`,
+    - POST `/permissions/eu-entities/grants`,
+    - DELETE `/permissions/common/grants/{permissionId}`,
+    - DELETE `/permissions/authorizations/grants/{permissionId}`,
+    - POST `/invoices/exports`.
+  - Видалено атрибут `required` з властивості `pageSize` в запиті GET `/sessions` ("Отримання списку сесій").
+  - Оновлено приклади (example) у визначеннях endpoints.
+
+### Версія 2.0.0 RC5.2
+- **Дозволи** 
+  - "Надання дозволів адміністратора підпорядкованого суб'єкта" (POST `/permissions/subunits/grants`)  
+  Додано властивість `subunitName` ("Назва підпорядкованої одиниці") у запиті. Поле обов'язкове, коли підпорядкована одиниця ідентифікується внутрішнім ідентифікатором.
+  - "Отримання списку дозволів адміністраторів одиниць і підпорядкованих суб'єктів" (POST `/permissions/query/subunits/grants`)  
+  Додано у відповіді властивість `subunitName` ("Назва підпорядкованої одиниці").
+  - "Отримання списку дозволів для роботи в KSeF, наданих фізичним особам або суб'єктам" (POST `permissions/query/persons/grants`)  
+    Видалено з результатів дозвіл типу `Owner`. Дозвіл `Owner` присвоюється системно фізичній особі і не підлягає наданню, тому не повинен з'являтися в списку наданих дозволів.
+  - "Отримання списку власних дозволів" (POST `/permissions/query/personal/grants`)  
+    Розширено enum фільтра `PersonalPermissionType` значенням `VatUeManage`.
+
+- **Ліміти**  
+  - Додано endpoints для перевірки встановлених лімітів (контекст, аутентифікований суб'єкт):
+    - GET `/limits/context`
+    - GET `/limits/subject`
+  - Додано endpoints для управління лімітами (контекст, аутентифікований суб'єкт) у тестовому середовищі:
+    - POST/DELETE `/testdata/limits/context/session`
+    - POST/DELETE `/testdata/limits/subject/certificate`
+  - Оновлено [Ліміти](limity/limity.md).
+
+- **Статус рахунку-фактури**  
+  Додано властивість `invoicingMode` в моделі відповіді. Оновлено документацію: [Автоматичне визначення режиму надсилання offline](offline/automatyczne-okreslanie-trybu-offline.md).
+
+- **OpenAPI**
+  - Уточнено обмеження для властивостей типу integer в requests через додавання атрибутів `minimum` / `exclusiveMinimum`, `maximum` / `exclusiveMaximum` та значень за замовчуванням `default`.
+  - Оновлено приклади (example) у визначеннях endpoints.
+  - Уточнено описи endpoints.
+  - Додано атрибут `required` для обов'язкових властивостей у запитах і відповідях.
+
+### Версія 2.0.0 RC5.1
+
+- **Отримання списку метаданих сертифікатів (POST /certificates/query)**  
+  Змінено представлення ідентифікатора суб'єкта з пари властивостей `subjectIdentifier` + `subjectIdentifierType` на складений об'єкт `subjectIdentifier` { `type`, `value` }.
+
+- **Отримання списку метаданих рахунків-фактур (POST /invoices/query/metadata)**
+  - Змінено представлення вибраних ідентифікаторів з пар властивостей тип + value на складені об'єкти { type, value }: 
+    - `invoiceMetadataBuyer.identifier` + `invoiceMetadataBuyer.identifierType` на складений об'єкт `invoiceMetadataBuyerIdentifier` { `type`, `value` },
+    - `invoiceMetadataThirdSubject.identifier` + `invoiceMetadataThirdSubject.identifierType` на складений об'єкт `InvoiceMetadataThirdSubjectIdentifier` { `type`, `value` }.
+  - Видалено застарілу властивість `Identitifer` з об'єктів `InvoiceMetadataSeller` та `InvoiceMetadataAuthorizedSubject`.
+  - Змінено властивість `invoiceQuerySeller` на `sellerNip` у фільтрі запиту.
+  - Змінено властивість `invoiceQueryBuyer` на `invoiceQueryBuyerIdentifier` з властивостями { `type`, `value` } у фільтрі запиту.
+
+- **Права доступу**  
+  Змінено представлення вибраних ідентифікаторів з пар властивостей тип + value на складені об'єкти { type, value }: 
+    - "Отримання списку власних прав доступу" (POST `/permissions/query/personal/grants`):  
+      - `contextIdentifier` + `contextIdentifierType` -> `contextIdentifier` { `type`, `value` },
+      - `authorizedIdentifier` + `authorizedIdentifierType` -> `authorizedIdentifier` { `type`, `value` },
+      - `targetIdentifier` + `targetIdentifierType` -> `targetIdentifier` { type, value }.  
+    - "Отримання списку прав доступу для роботи з KSeF, наданих фізичним особам або суб'єктам" (POST `/permissions/query/persons/grants`),
+      - `contextIdentifier` + `contextIdentifierType` -> `contextIdentifier` { `type`, `value` },
+      - `authorizedIdentifier` + `authorizedIdentifierType` -> `authorizedIdentifier` { `type`, `value` },
+      - `targetIdentifier` + `targetIdentifierType` -> `targetIdentifier` { `type`, `value` },
+      - `authorIdentifier` + `authorIdentifierType` -> `authorIdentifier` { `type`, `value` }.    
+    - "Отримання списку прав доступу адміністраторів підрозділів та суб'єктів" (POST `/permissions/query/subunits/grants`):
+      - `authorizedIdentifier` + `authorizedIdentifierType` -> `authorizedIdentifier` { `type`, `value` },
+      - `subunitIdentifier` + `subunitIdentifierType` -> `subunitIdentifier` { `type`, `value` },
+      - `authorIdentifier` + `authorIdentifierType` -> `authorIdentifier` { `type`, `value` }.
+    - "Отримання списку ролей суб'єкта" (POST `/permissions/query/entities/roles`):
+      - `parentEntityIdentifier` + `parentEntityIdentifierType` -> `parentEntityIdentifier` { `type`, `value` }.
+    - "Отримання списку підпорядкованих суб'єктів" (POST `/permissions/query/subordinate-entities/roles`):
+      - `subordinateEntityIdentifier` + `subordinateEntityIdentifierType` -> `subordinateEntityIdentifier` { `type`, `value` }.
+    - "Отримання списку суб'єктних прав доступу для обробки рахунків-фактур" (POST `/permissions/query/authorizations/grants`):
+      - `authorizedEntityIdentifier` + `authorizedEntityIdentifierType` -> `authorizedEntityIdentifier` { `type`, `value` },
+      - `authorizingEntityIdentifier` + `authorizingEntityIdentifierType` -> `authorizingEntityIdentifier` { `type`, `value` },
+      - `authorIdentifier` + `authorIdentifierType` -> `authorIdentifier` { `type`, `value` }
+    - "Отримання списку прав доступу адміністраторів або представників суб'єктів ЄС, уповноважених для самофактурування" (POST `/permissions/query/eu-entities/grants`):
+      - `authorIdentifier` + `authorIdentifierType` -> `authorIdentifier` { `type`, `value` }        
+
+- **Надання прав доступу адміністратора суб'єкта ЄС (POST permissions/eu-entities/administration/grants)**  
+  Змінено назву властивості у запиті з `subjectName` на `euEntityName`.
+
+- **Автентифікація з використанням токена KSeF**  
+  Видалено зайві значення enum `None`, `AllPartners` у властивості `contextIdentifier.type` запиту POST `/auth/ksef-token`.
+
+- **Токени KSeF**  
+  - Уніфіковано модель відповіді GET `/tokens`: властивості `authorIdentifier.type`, `authorIdentifier.value`, `contextIdentifier.type`, `contextIdentifier.value` завжди повертаються (required, non-nullable),
+  - Видалено зайві значення enum `None`, `AllPartners` у властивостях `authorIdentifier.type` та `contextIdentifier.type` у моделі відповіді GET `/tokens` ("Отримання списку згенерованих токенів").
+
+- **Пакетна сесія**  
+  Видалено зайвий код помилки `21401` - "Документ не відповідає схемі (json)".
+
+- **Отримання статусу сесії (GET /sessions/{referenceNumber})**  
+  - Додано код помилки `420` - "Перевищено ліміт рахунків-фактур у сесії".
+
+- **Отримання метаданих рахунків-фактур (GET `/invoices/query/metadata`)**  
+  - Додано у відповідь (завжди повертається) властивість `isTruncated` (boolean) - "Визначає, чи було обрізано результат через перевищення ліміту кількості рахунків-фактур (10 000)",
+  - Позначено властивість `amount.type` у фільтрі запиту як обов'язкову.
+
+- **Експорт пакета рахунків-фактур: замовлення (POST `/invoices/exports`)**
+  - Позначено властивість `operationReferenceNumber` у моделі відповіді як завжди повертається,
+  - Позначено властивість `amount.type` у фільтрі запиту як обов'язкову.
+
+- **Отримання списку прав доступу для роботи з KSeF, наданих фізичним особам або суб'єктам (POST /permissions/query/persons/grants)**  
+  - Додано `contextIdentifier` у фільтр запиту та у модель відповіді.
+
+- **OpenAPI**  
+  Видалено невикористовуваний `operationId` зі специфікації. Зміна організаційного характеру.
+
+### Версія 2.0.0 RC5
+
+- **Підтримка рахунків-фактур PEF та постачальників послуг Peppol**
+  - Додано підтримку рахунків-фактур `PEF`, що надсилаються постачальником послуг Peppol. Нові можливості не змінюють поточну поведінку KSeF для інших форматів, є розширенням API.
+  - Введено новий тип контексту автентифікації: `PeppolId`, що дозволяє працювати в контексті постачальника послуг Peppol.
+  - Автоматична реєстрація постачальника: при першій автентифікації постачальника послуг Peppol (з використанням спеціалізованого сертифіката) відбувається його автоматична реєстрація в системі.
+  - Додано endpoint GET `/peppol/query` ("Список постачальників послуг Peppol"), що повертає зареєстрованих постачальників.
+  - Оновлено правила доступу для відкриття та закриття сесій, відправка рахунків-фактур вимагає дозволу `PefInvoiceWrite`.
+  - Додано нові схеми рахунків-фактур: `FA_PEF (3)`, `FA_KOR_PEF (3)`,
+  - Розширено `ContextIdentifier` за рахунок `PeppolId` у xsd `AuthTokenRequest`.
+
+- **UPO**
+  - Додано елемент `Uwierzytelnienie`, який впорядковує дані з заголовка UPO та розширює їх додатковою інформацією; замінює попередні `IdentyfikatorPodatkowyPodmiotu` та `SkrotZlozonejStruktury`.
+  - `Uwierzytelnienie` містить:
+    - `IdKontekstu` – ідентифікатор контексту автентифікації,
+    - доказ автентифікації (залежно від методу): 
+      - `NumerReferencyjnyTokenaKSeF` - ідентифікатор токена автентифікації в системі KSeF,
+      - `SkrotDokumentuUwierzytelniajacego` - значення хеш-функції документа автентифікації у формі, отриманій системою (включаючи електронний підпис).
+  - У елементі `Dokument` додано:
+    - NipSprzedawcy,
+    - DataWystawieniaFaktury,
+    - DataNadaniaNumeruKSeF.
+  - Уніфіковано схему UPO. UPO для рахунка-фактури та для сесії використовують спільну схему upo-v4-2.xsd. Замінює попередні upo-faktura-v3-0.xsd та upo-sesja-v4-1.xsd.
+
+- **Ліміти запитів API**  
+  Додано специфікацію [лімітів запитів API](limity/limity-api.md).    
+
+- **Автентифікація**  
+  - Уточнено коди статусів у GET `/auth/{referenceNumber}`, `/auth/sessions`: 
+    - `415` (немає дозволів), 
+    - `425` (автентифікацію скасовано), 
+    - `450` (неправильний токен: неправильний токен, неправильний час, скасований, неактивний), 
+    - `460` (помилка сертифіката: недійсний, помилка перевірки ланцюжка, ненадійний ланцюжок, відкликаний, неправильний).  
+  - Оновлення опціональної IP-політики у XSD `AuthTokenRequest`:
+    Замінено `IpAddressPolicy` новою структурою `AuthorizationPolicy`/`AllowedIps`. Оновлено документ [Автентифікація](uwierzytelnianie.md).
+
+- **Авторизація**
+  - Розширено правила доступу на `VatUeManage`, `SubunitManage` для DELETE `/permissions/common/grants/{permissionId}`: операцію можна виконати, якщо суб'єкт має `CredentialsManage`, `VatUeManage` або `SubunitManage`.
+  - Розширено правила доступу на `Introspection` для GET `/sessions/{referenceNumber}/...`: кожен з цих endpoint-ів можна тепер викликати, маючи `InvoiceWrite` або `Introspection`.
+  - Розширено правила доступу на `InvoiceWrite` для GET `/sessions` ("Отримання списку сесій"): маючи дозвіл `InvoiceWrite`, можна отримувати лише сесії, створені автентифікованим суб'єктом; маючи дозвіл `Introspection`, можна отримувати всі сесії.
+  - Змінено правила доступу для DELETE `/tokens/{referenceNumber}`: видалено вимогу дозволу `CredentialsManage`.
+
+- **Отримання даних для заявки на сертифікат (GET `certificates/enrollments/data`)**    
+  - Зміна структури відповіді:
+    - Видалено: givenNames (масив рядків).
+    - Додано: givenName (рядок).
+    - Характер зміни: breaking (зміна назви та типу поля з масиву на текст).
+  - Додано код помилки `25011` — "Неправильний алгоритм підпису CSR".
+  - Уточнено вимоги щодо приватного ключа, що використовується для підпису CSR, у [Сертифікати KSeF](certyfikaty-KSeF.md).
+
+- **Токени KSeF**  
+  - Додано код помилки для відповіді POST `/tokens` ("Створення нового токена"): `26002` - "Не можна створити токен для поточного типу контексту". Токен може бути створений лише в контексті `Nip` або `InternalId`.
+  - Розширено каталог дозволів, які можна призначити токену: додано `SubunitManage` та `EnforcementOperations`.
+  - Додано параметри запиту для фільтрації результатів для GET `/tokens`:
+    - `description` - пошук у описі токена (без урахування регістру), мінімум 3 символи,
+    - `authorIdentifier` - пошук за ідентифікатором творця (без урахування регістру), мінімум 3 символи,
+    - `authorIdentifierType` - тип ідентифікатора творця, що використовується з authorIdentifier (Nip, Pesel, Fingerprint).
+  - Додано властивість 
+    - `lastUseDate` - "Дата останнього використання токена",
+    - `statusDetails` - "Додаткова інформація щодо статусу, що повертається у разі помилок"  
+    у відповідях для:
+    - GET `/tokens` ("список токенів"),
+    - GET `/tokens/{referenceNumber}` ("статус токена").
+
+- **Отримання метаданих рахунків-фактур (GET `/invoices/query/metadata`)**  
+  - Фільтри:
+    - розбивка на сторінки: збільшено максимальний розмір сторінки до 250 записів,
+    - видалено властивість `schemaType` (з значеннями `FA1`, `FA2`, `FA3`), раніше позначену як deprecated,
+    - додано `seller.nip`; `seller.identifier` позначено як deprecated (буде видалено в наступному випуску),
+    - додано `authorizedSubject.nip`; `authorizedSubject.identifier` позначено як deprecated (буде видалено в наступному випуску),
+    - уточнено опис: відсутність значення в `dateRange.to` означає використання поточної дати та часу (UTC),
+    - уточнено максимальний дозволений діапазон `DateRange` на 2 роки.
+  - Сортування:
+    - результати сортуються за зростанням за типом дати, вказаним у `DateRange`; для інкрементального отримання рекомендований тип `PermanentStorage`,
+  - Модель відповіді:
+    - видалено властивість `totalCount`,
+    - змінено назву `fileHash` на `invoiceHash`,
+    - додано `seller.nip`; `seller.identifier` позначено як deprecated (буде видалено в наступному випуску),
+    - додано `authorizedSubject.nip`; `authorizedSubject.identifier` позначено як deprecated (буде видалено в наступному випуску),
+    - позначено `invoiceHash` як завжди повертається,
+    - позначено `invoicingMode` як завжди повертається,
+    - позначено `authorizedSubject.role` ("Суб'єкт, якому надано дозвіл") як завжди повертається,
+    - позначено `invoiceMetadataAuthorizedSubject.role` ("Nip суб'єкта, якому надано дозвіл") як завжди повертається,
+    - позначено `invoiceMetadataThirdSubject.role` ("Список третіх осіб") як завжди повертається.
+  - Видалено позначки [Mock] з описів властивостей.
+
+- **Експорт пакета рахунків-фактур: замовлення (POST `/invoices/exports`)**
+  - Фільтри:
+    - додано `seller.nip`; `seller.identifier` позначено як deprecated (буде видалено в наступному випуску),
+  - Видалено позначки [Mock].
+  - Змінено код помилки: з `21180` на `21181` ("Неправильний запит експорту рахунків-фактур").
+  - Уточнено правила сортування. Рахунки-фактури в пакеті сортуються за зростанням за типом дати, вказаним у `DateRange` під час ініціалізації експорту.
+
+  - **Експорт пакета рахунків-фактур: статус (GET `/invoices/exports/{operationReferenceNumber}`)**
+    - Описи статусів: доповнено документацію статусу експорту:
+      - `100` - "Експорт рахунків-фактур у процесі" 
+      - `200` - "Експорт рахунків-фактур успішно завершено" 
+      - `415` - "Помилка розшифрування наданого ключа"  
+      - `500` - "Невідома помилка ({statusCode})"
+    - Модель відповіді `package`:
+      - додано:
+        - `invoiceCount` - "Загальна кількість рахунків-фактур у пакеті. Максимальна кількість рахунків-фактур у пакеті становить 10 000",
+        - `size` - "Розмір пакету в байтах. Максимальний розмір пакету становить 1 GiB (1 073 741 824 байтів)",
+        - `isTruncated` - "Визначає, чи результат експорту було обрізано через перевищення ліміту кількості рахунків-фактур або розміру пакету",
+        - `lastIssueDate` - "Дата виписки останнього рахунка-фактури, включеного до пакету.\nПоле присутнє лише тоді, коли пакет було обрізано, а експорт фільтрувався за типом дати `Issue`",
+        - `lastInvoicingDate` - "Дата прийняття останнього рахунка-фактури, включеного до пакету.\nПоле присутнє лише тоді, коли пакет було обрізано, а експорт фільтрувався за типом дати `Invoicing`",
+        - `lastPermanentStorageDate` - "Дата постійного збереження останнього рахунка-фактури, включеного до пакету.\nПоле присутнє лише тоді, коли пакет було обрізано, а експорт фільтрувався за типом дати `PermanentStorage`".
+    - Модель відповіді `package.parts`
+      - видалено `fileName`, `headers`,
+      - додано:
+        - `partName` - "Назва файлу частини пакету",
+        - `partSize` - "Розмір частини пакету в байтах. Максимальний розмір частини становить 50MiB (52 428 800 байтів)",
+        - `partHash` - "Хеш SHA256 файлу частини пакету, закодований у форматі Base64",
+        - `encryptedPartSize` - "Розмір зашифрованої частини пакету в байтах",
+        - `encryptedPartHash` - "Хеш SHA256 зашифрованої частини пакету, закодований у форматі Base64",
+        - `expirationDate` - "Момент закінчення терміну дії посилання для завантаження частини",
+      - позначено всі властивості в `package` як завжди повертаються,
+    - Видалено позначки [Mock].
+
+- **Дозволи**
+  - Розширено запит POST `/permissions/eu-entities/administration/grants` ("Надання дозволів адміністратора суб'єкта ЄС") на "Назву суб'єкта" `subjectName`.
+  - Розширено запит POST `/permissions/query/persons/grants` на нове значення `System` для фільтра ідентифікатора суб'єкта, що надає дозволи `authorIdentifier`, та видалення обов'язковості поля `authorIdentifier.value`.
+  - Розширено запит POST `/permissions/query/persons/grants` на нове значення `AllPartners` для фільтра ідентифікатора цільового суб'єкта `targetIdentifier` та видалення обов'язковості поля `targetIdentifier.value`.
+  - Додано запит POST `/permissions/query/personal/grants` для отримання списку власних дозволів.
+  - Додано до запиту POST `/permissions/indirect/grants` ("Надання дозволів опосередковано") нове значення `AllPartners` для "ідентифікатора цільового суб'єкта", що означає загальні дозволи
+
+- **Отримання рахунка-фактури (GET `/invoices/ksef/{ksefNumber}`)**  
+  Додано код помилки для відповіді 400: `21165` - "Рахунок-фактура з вказаним номером KSeF ще недоступний".
+
+- **Додатки до рахунків-фактур**  
+  Додано endpoint GET `/permissions/attachments/status` для перевірки статусу згоди на виписку рахунків-фактур з додатком.
+
+- **Отримання списку сесій**  
+  Розширено дозволи для GET `/sessions`: додано `InvoiceWrite`. Маючи дозвіл `InvoiceWrite`, можна отримувати лише сесії, створені автентифікованим суб'єктом; маючи дозвіл `Introspection`, можна отримувати всі сесії.
+
+- **Інтерактивна сесія**  
+  - Оновлено коди помилок для POST `/sessions/online/{referenceNumber}/invoices` ("Надіслання рахунка-фактури"):
+    - видалено `21154` - "Інтерактивну сесію завершено", 
+    - додано `21180` - "Статус сесії не дозволяє виконати операцію".
+  - Додано помилку `21180` - "Статус сесії не дозволяє виконати операцію" для POST `/sessions/online/{referenceNumber}/close` ("Закриття інтерактивної сесії").
+
+- **Пакетна сесія**  
+  - Додано помилку `21180` - "Статус сесії не дозволяє виконати операцію" для POST `/sessions/batch/{referenceNumber}/close` ("Закриття пакетної сесії").
+
+- **Статус рахунка-фактури в сесії**  
+  Розширено відповідь для GET `/sessions/{referenceNumber}/invoices` ("Отримання рахунків-фактур сесії") та GET `/sessions/{referenceNumber}/invoices/{invoiceReferenceNumber}` ("Отримання статусу рахунка-фактури з сесії") на властивості:
+  - `permanentStorageDate` – дата постійного збереження рахунка-фактури в сховищі KSeF (з цього моменту рахунок-фактура доступний для отримання),
+  - `upoDownloadUrl` – адреса для завантаження UPO.
+
+- **OpenAPI**
+  - Додано універсальний код помилки валідації вхідних даних `21405` до всіх endpoint-ів. Текст помилки від валідатора повертається у відповіді.
+  - Додано відповідь 400 з валідацією, що повертає код помилки `30001` ("Суб'єкт або дозвіл вже існує.") для POST `/testdata/subject` та POST `/testdata/person`.
+  - Оновлено приклади (example) у визначеннях endpoint-ів.
+
+- **Документація**
+  - Уточнено алгоритми підпису та приклади в [Коди QR](kody-qr.md).
+  - Оновлено приклади коду в C# та Java.
+
+### Версія 2.0.0 RC4
+
+- **Сертифікати KSeF**
+  - Додано нову властивість `type` у сертифікатах KSeF.
+  - Доступні типи сертифікатів:
+    - `Authentication` – сертифікат для автентифікації в системі KSeF,
+    - `Offline` – сертифікат, обмежений лише підтвердженням автентичності видавця та цілісності рахунка-фактури в офлайн-режимі (KOD II).
+  - Оновлено документацію процесів `/certificates/enrollments`, `/certificates/query`, `/certificates/retrieve`.
+
+- **Коди QR**
+  - Уточнено, що KOD II може генеруватися лише на основі сертифіката типу `Offline`.
+  - Додано попередження безпеки, що сертифікати `Authentication` не можуть використовуватися для виставлення рахунків-фактур в офлайн-режимі.
+
+- **Статус сесії**
+  - Оновлення авторизації - отримання інформації про сесію, рахунки-фактури та UPO вимагає дозволу: ```InvoiceWrite```.
+  - Змінено код статусу *триває обробка*: з `300` на `150` для пакетної сесії.
+
+- **Отримання метаданих рахунків-фактур (`/invoices/query/metadata`)**  
+Розширено модель відповіді полями:
+  - `fileHash` – хеш SHA256 рахунка-фактури,
+  - `hashOfCorrectedInvoice` – хеш SHA256 виправленого рахунка-фактури в офлайн-режимі,
+  - `thirdSubjects` – список третіх сторін,
+  - `authorizedSubject` – уповноважена особа (новий об'єкт `InvoiceMetadataAuthorizedSubject`, що містить `identifier`, `name`, `role`),
+ - Додано можливість фільтрування за типом документа (`InvoiceQueryFormType`), доступні значення: `FA`, `PEF`, `RR`. 
+ - Поле `schemaType` позначено як deprecated – заплановано до видалення в майбутніх версіях API.
+
+
+- **Документація**
+  - Додано документ, що описує [номер KSeF](faktury/numer-ksef.md).
+  - Додано документ, що описує [технічну виправку](offline/korekta-techniczna.md) для рахунків-фактур, виставлених в офлайн-режимі.
+  - Уточнено спосіб [виявлення дублікатів](faktury/weryfikacja-faktury.md)
+
+- **OpenAPI**
+  - Отримання списку метаданих рахунків-фактур 
+    - Додано властивість: `hasMore` (boolean) – інформує про доступність наступної сторінки результатів. Властивість `totalCount` позначено як deprecated (тимчасово залишається у відповіді для зворотної сумісності).
+    - У фільтруванні за діапазоном `dateRange` властивість `to` (кінцева дата діапазону) більше не є обов'язковою.
+  - Пошук наданих дозволів - у відповіді додано властивість `hasMore`, видалено `pageSize`, `pageOffset`.
+  - Отримання статусу автентифікації - з відповіді видалено зайві `referenceNumber`, `isCurrent`.
+  - Уніфікація пагінації - endpoint `/sessions/{referenceNumber}/invoices` (отримання рахунків-фактур сесії) переходить на пагінацію на основі заголовка запиту `x-continuation-token`; видалено параметр `pageOffset`, `pageSize` залишається без змін. Перша сторінка без заголовка; наступні сторінки отримуються шляхом передачі значення токена, поверненого API. Зміна узгоджена з іншими ресурсами, що використовують `x-continuation-token` (наприклад, `/auth/sessions`, `/sessions/{referenceNumber}/invoices/failed`).
+  - Видалено підтримку ідентифікатора `InternalId` у полі `targetIdentifier` під час надання опосередкованих дозволів (`/permissions/indirect/grants`). Тепер допустимий лише ідентифікатор `Nip`.
+  - Статус операції надання дозволів – розширено список можливих кодів статусу у відповіді:
+    - 410 – Надані ідентифікатори не відповідають або перебувають у неправильному відношенні.
+    - 420 – Використані облікові дані не мають дозволів для виконання цієї операції.
+    - 430 – Контекст ідентифікатора не відповідає потрібній ролі або дозволам.
+    - 440 – Операція не дозволена для вказаних зв'язків ідентифікаторів.
+    - 450 – Операція не дозволена для вказаного ідентифікатора або його типу.
+  - Додано підтримку помилки **21418** – "Переданий токен продовження має неправильний формат" у всіх endpoint, що використовують механізм пагінації з використанням `continuationToken` (`/auth/sessions`, `/sessions`, `/sessions/{referenceNumber}/invoices`, `/sessions/{referenceNumber}/invoices/failed`, `/tokens`).
+  - Уточнено процес отримання пакета рахунків-фактур:
+    - `/invoices/exports` – початок процесу створення пакета рахунків-фактур,
+    - `/invoices/async-query/{operationReferenceNumber}` – перевірка статусу та отримання готового пакета.
+  - Змінено назву моделі `InvoiceMetadataQueryRequest` на `QueryInvoicesMetadataResponse`.
+  - Розширено тип `PersonPermissionsAuthorIdentifier` новим значенням `System` (Системний ідентифікатор). Це значення використовується для позначення дозволів, що надаються KSeF на основі поданого заявлення ZAW-FA. Зміна стосується endpoint: `/permissions/query/persons/grants`.
+
+### Версія 2.0.0 RC3
+
+- **Додавання endpoint для отримання списку метаданих рахунків-фактур**  
+  - `/invoices/query` (mock) замінено на `/invoices/query/metadata` – продуктивний endpoint для отримання метаданих рахунків-фактур
+  - Оновлення пов'язаних моделей даних.
+
+- **Оновлення mock-endpoint `invoices/async-query` для ініціалізації запиту на отримання рахунків-фактур**  
+  Оновлено пов'язані моделі даних.
+
+- **OpenAPI**
+  - Доповнено специфікацію endpointів обов'язковими дозволами (`x-required-permissions`).
+  - Додано відповіді `403 Forbidden` та `401 Unauthorized` у специфікації endpointів.
+  - Додано атрибут ```required``` у відповідях на запити про дозволи.
+  - Оновлено опис endpointу ```/tokens```
+  - Видалено дубльовані визначення ```enum```
+  - Уніфіковано модель відповіді SessionInvoiceStatusResponse у ```/sessions/{referenceNumber}/invoices``` та ```/sessions/{referenceNumber}/invoices/{invoiceReferenceNumber}```.
+  - Додано статус валідації 400: "Автентифікація завершена невдало | Відсутні призначені дозволи".
+
+- **Статус сесії**
+  - Додано статус ```Cancelled``` - "Сесія скасована. Перевищено час на відправку в пакетній сесії, або не надіслано жодного рахунка-фактури в інтерактивній сесії."
+  - Додано нові коди помилок:
+    - 415 - "Неможливість відправки рахунка-фактури з додатком"
+    - 440 - "Сесія скасована, перевищено час відправки"
+    - 445 - "Помилка верифікації, відсутні правильні рахунки-фактури"
+
+- **Статус відправки рахунків-фактур**
+  - Додано дату ```AcquisitionDate``` – дата присвоєння номера KSeF.
+  - Поле ```ReceiveDate``` замінено на ```InvoicingDate``` – дата прийняття рахунка-фактури до системи KSeF.  
+
+- **Відправка рахунків-фактур у сесії**
+  - Додано [валідацію](faktury/weryfikacja-faktury.md#ograniczenia-ilościowe) розміру zip-пакета (100 МБ) та кількості пакетів (50) у пакетній сесії
+  - Додано [валідацію](faktury/weryfikacja-faktury.md#ograniczenia-ilościowe) кількості рахунків-фактур у інтерактивній та пакетній сесіях.
+  - Змінено код статусу "Триває обробка" з 300 на 150.
+
+- **Автентифікація з використанням підпису XAdES**  
+  - Виправлено ContextIdentifier у xsd AuthTokenRequest. Потрібно використати виправлену версію [схеми XSD](https://api-test.ksef.mf.gov.pl/docs/v2/schemas/authv2.xsd). [Підготовка XML-документу](uwierzytelnianie.md#1-przygotowanie-dokumentу-xml-authtokenrequest)
+  - Додано код помилки `21117` - "Неправильний ідентифікатор суб'єкта для вказаного типу контексту".
+
+- **Видалення endpoint для анонімного отримання рахунка-фактури ```invoices/download```**  
+  Функціональність отримання рахунків-фактур без автентифікації видалена; доступна лише у веб-інструменті KSeF для верифікації та отримання рахунків-фактур.
+
+- **Тестові дані - підтримка рахунків-фактур з додатками**  
+  Додано нові endpointи, що дозволяють тестувати відправку рахунків-фактур з додатками.
+
+- **Сертифікати KSeF - Валідація типу та довжини ключа в CSR**  
+  - Доповнено опис endpointу POST ```/certificates/enrollments``` вимогами щодо типів приватних ключів у CSR (RSA, EC),
+  - Додано новий код помилки 25010 у відповіді 400: "Неправильний тип або довжина ключа".
+
+- **Оновлення формату публічних сертифікатів**  
+  `/security/public-key-certificates` – повертає сертифікати у форматі DER, закодовані в Base64.
+
+### Версія 2.0.0 RC2
+- **Нові endpointи для керування сесіями автентифікації**  
+  Дозволяють переглядати та скасовувати активні сесії автентифікації.  
+  [Керування сесіями автентифікації](auth/sesje.md)
+
+- **Новий endpoint для отримання списку сесій відправки рахунків-фактур**\
+  `/sessions` – дозволяє отримати метадані для сесій відправки (інтерактивних та пакетних), з можливістю фільтрування, зокрема, за статусом, датою закриття та типом сесії.\
+  [Отримання списку сесій](faktury/sesje/sesja-sprawdzenie-stanu-i-pobranie-upo.md#1-pobranie-listy-sesji)
+  
+
+- **Зміна у переліку дозволів**  
+  `/permissions/query/authorizations/grants` – додано тип запиту (queryType) у фільтруванні [суб'єктних дозволів](uprawnienia.md#pobranie-listy-uprawnień-podmiotowych-do-obsługi-faktur).
+
+- **Підтримка нової версії схеми рахунка-фактури FA(3)**  
+  Під час відкриття інтерактивної та пакетної сесії можливий вибір схеми FA(3).
+
+- **Додавання поля invoiceFileName у відповіді для пакетної сесії**\
+  `/sessions/{referenceNumber}/invoices` – додано поле invoiceFileName, що містить назву файлу рахунка-фактури. Поле з'являється лише для пакетних сесій.
+   [Отримання інформації про надіслані рахунки-фактури](faktury/sesje/sesja-sprawdzenie-stanu-i-pobranie-upo.md#3-pobranie-informacji-na-temat-przesłanych-faktur)

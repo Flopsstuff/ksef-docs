@@ -136,5 +136,3 @@ await ksefClient.RevokeKsefTokenAsync(referenceNumber, accessToken, cancellation
 ```java
 ksefClient.revokeKsefToken(token.getReferenceNumber(), accessToken);
 ```
-
-</original>

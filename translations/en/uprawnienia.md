@@ -1,8 +1,8 @@
 ---
 original: uprawnienia.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 5e69797
-last_translated: 2026-04-04
+source_commit: d4460b6
+last_translated: 2026-11-21
 ---
 
 > **Translation.** Original: [uprawnienia.md](https://github.com/CIRFMF/ksef-docs/blob/main/uprawnienia.md)
@@ -30,6 +30,7 @@ Permissions can be granted by:
 In practice, this means that every organization must manage the permissions of its employees, e.g., granting permissions to an accounting department employee when hiring a new employee or revoking permissions when such an employee terminates their employment.
 
 ### When Are Permissions Granted?
+
 #### Examples:
 - when starting cooperation with a new employee,
 - when a company enters into cooperation, e.g., with an accounting office, it should grant invoice reading permissions to that accounting office so that the office can process the company's invoices,
@@ -210,9 +211,7 @@ Entity A has the `InvoiceRead` permission with `canDelegate = true` for many cli
 - Granted permission remains active until it is revoked.
 - Implementing time limitation requires logic on the client system side (e.g., permission revocation schedule).
 
-
 ## Granting Permissions
-
 
 ### Granting Permissions to Natural Persons for Work in KSeF.
 
@@ -283,6 +282,7 @@ Permissions can be granted by someone who is:
 
 
 ---
+
 ### Granting Entities Permissions for Invoice Handling
 
 KSeF enables granting permissions to entities that will process invoices on behalf of a given organization – e.g., accounting offices, shared service centers, or outsourcing companies. InvoiceRead and InvoiceWrite permissions can be granted directly and if necessary – with the possibility of further transfer (`canDelegate` flag). This section discusses the mechanism of granting these permissions, required roles, and example implementations.
@@ -334,6 +334,7 @@ OperationResponse response = ksefClient.grantsPermissionEntity(request, accessTo
 ```
 
 ---
+
 ### Granting Entity Permissions
 
 For selected invoicing processes, KSeF provides so-called entity permissions, which are applicable in the context of invoicing on behalf of another entity (`TaxRepresentative`, `SelfInvoicing`, `RRInvoicing`). These permissions can only be granted by the owner or administrator possessing `CredentialsManage`. This section presents the method of granting them, application, and technical limitations.
@@ -388,6 +389,7 @@ GrantAuthorizationPermissionsRequest request = new GrantAuthorizationPermissions
 OperationResponse response = ksefClient.grantsPermissionsProxyEntity(request, accessToken);
 ```
 ---
+
 ### Indirect Permission Granting
 
 The indirect permission granting mechanism enables the operation of a so-called intermediary entity, which – based on previously obtained delegations – can pass selected permissions further, in the context of another entity. This most often concerns accounting offices that serve many clients. This section describes the conditions that must be met to use this functionality and presents the data structure required to perform such granting.
@@ -435,6 +437,7 @@ OperationResponse response = ksefClient.grantsPermissionIndirectEntity(request, 
 
 ```
 ---
+
 ### Granting Subordinate Entity Administrator Permissions
 
 The organizational structure of an entity may include subordinate units or entities – e.g., branches, departments, subsidiaries, VAT group members, and territorial self-government units. KSeF enables assigning permissions to manage such units. The `SubunitManage` permission is required. This section presents the method of granting administrative permissions in the context of a subordinate unit or subordinate entity, taking into account the `InternalId` or `Nip` identifier.
@@ -490,6 +493,7 @@ OperationResponse response = ksefClient.grantsPermissionSubUnit(request, accessT
 
 ```
 ---
+
 ### Granting EU Entity Administrator Permissions
 
 Granting EU entity administrator permissions in KSeF allows authorizing an entity or person designated by an EU entity having the right to self-invoice on behalf of the Polish entity granting the permission. Executing this operation results in the person thus authorized gaining the ability to log in in a complex context: `NipVatUe`, linking the Polish entity granting the permission with the EU entity having the right to self-invoice. After granting EU entity administrator permissions, such person will be able to perform operations on invoices, as well as manage permissions of other persons (so-called EU entity representatives) within this complex context.
@@ -534,6 +538,7 @@ OperationResponse response = ksefClient.grantsPermissionEUEntity(request, access
 
 ```
 ---
+
 ### Granting EU Entity Representative Permissions
 
 An EU entity representative is a person acting on behalf of a unit registered in the EU that needs access to KSeF to view or issue invoices. Such permission can only be granted by a VAT EU administrator. This section presents the data structure and method of calling the appropriate endpoint.
@@ -617,6 +622,7 @@ Example in Java:
 OperationResponse response = ksefClient.revokeCommonPermission(permissionId, accessToken);
 ```
 ---
+
 ### Revoking Entity Permissions
 
 In the case of entity-type permissions (`SelfInvoicing`, `RRInvoicing`, `TaxRepresentative`), a separate revocation method applies – using an endpoint dedicated to authorization operations. These types of permissions are not transferable, so their revocation has immediate effect and ends the possibility of performing invoice operations in the given mode. Knowledge of `permissionId` is required.
@@ -643,12 +649,12 @@ Example in Java:
 OperationResponse response = ksefClient.revokeAuthorizationsPermission(operationId, accessToken);
 ```
 
-
 ## Searching Granted Permissions
 
 KSeF provides a set of endpoints that allow querying the list of active permissions granted to users and entities. These mechanisms are essential for auditing, reviewing access status, and when building administrative interfaces (e.g., for managing access structure in an organization). This section contains a review of search methods divided by categories of granted permissions.
 
 ---
+
 ### Retrieving List of Own Permissions
 
 The query allows retrieving a list of permissions possessed by the authenticated entity.
@@ -684,6 +690,7 @@ QueryPersonalGrantResponse response = ksefClient.searchPersonalGrantPermission(r
 ```
 
 ---
+
 ### Retrieving List of Invoice Handling Permissions in Current Context
 
 The method allows reading received invoice handling permissions in the current login context.
@@ -724,6 +731,7 @@ QueryEntityPermissionsResponse queryEntitiesGrantsAsyncResponse = ksefClient.sea
 ```
 
 ---
+
 ### Retrieving List of Permissions Granted to Natural Persons or Entities for Work in KSeF
 
 The query allows retrieving a list of permissions granted to natural persons or entities – e.g., company employees. Filtering by permission type, state (`Active` / `Inactive`), as well as grantor and recipient identifier is possible. This endpoint is sometimes used during onboarding, auditing, and monitoring personal permissions.
@@ -765,6 +773,7 @@ QueryPersonPermissionsResponse response = ksefClient.searchGrantedPersonPermissi
 
 ```
 ---
+
 ### Retrieving List of Subordinate Unit and Entity Administrator Permissions
 
 This endpoint is used to retrieve information about administrators of subordinate units or subordinate entities (e.g., branches, VAT groups). It allows monitoring who has administrative permissions relative to a given subordinate structure, identified using `InternalId` or `Nip`.
@@ -803,6 +812,7 @@ QuerySubunitPermissionsResponse response = ksefClient.searchSubunitAdminPermissi
 
 ```
 ---
+
 ### Retrieving Entity Role List
 
 The endpoint returns a set of roles assigned to the context in which we are authenticated (i.e., on whose behalf the query is executed). Function mainly used for automatic access checking by client systems.
@@ -829,6 +839,7 @@ Example in Java:
 QueryEntityRolesResponse response = ksefClient.searchEntityInvoiceRoles(0, 10, token);
 ```
 ---
+
 ### Retrieving List of Subordinate Entities
 
 Allows obtaining information about related subordinate entities for the context in which we are authenticated (i.e., on whose behalf the query is executed). Function mainly used to verify the structure of territorial self-government units or VAT groups.
@@ -862,6 +873,7 @@ Example in Java:
 SubordinateEntityRolesQueryResponse response = ksefClient.searchSubordinateEntityInvoiceRoles(queryRequest, pageOffset, pageSize,accessToken);
 ```
 ---
+
 ### Retrieving List of Entity Permissions for Invoice Handling
 
 This endpoint is used to review all granted entity permissions granted by the context in which we are authenticated or granted to the context in which we are authenticated. Supports filtering by permission type and recipient.
@@ -905,6 +917,7 @@ QueryEntityAuthorizationPermissionsResponse response = ksefClient.searchEntityAu
 
 ```
 ---
+
 ### Retrieving List of EU Entity Administrator or Representative Permissions Authorized for Self-invoicing
 
 EU entities can also have permissions assigned for using KSeF. In this section, it is possible to retrieve information about the access granted to them, taking into account VAT EU identifiers and certificate fingerprints.
@@ -968,4 +981,26 @@ Example in Java:
 PermissionStatusInfo status = ksefClient.permissionOperationStatus(referenceNumber, accessToken);
 ```
 
-### Checking Status of Consent for Issuing
+### Checking the status of consent for issuing invoices with attachments
+
+Consent is required for issuing invoices containing attachments and is valid within the current context (`ContextIdentifier`) used during authentication. Consent is granted outside the API, exclusively in the e-Tax Office service, and applications can be submitted starting from January 1, 2026. The API does not provide an operation for granting consent.
+
+GET [/permissions/attachments/status](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Operacje/paths/~1permissions~1attachments~1status/get)
+
+Returns the consent status for the current context. If the consent is not active, an invoice with attachments sent to the KSeF API will be rejected.
+
+C# example:
+[KSeF.Client.Tests.Core\E2E\TestData\TestDataE2ETests.cs](https://github.com/CIRFMF/ksef-client-csharp/blob/main/KSeF.Client.Tests.Core/E2E/TestData/TestDataE2ETests.cs)
+```csharp
+PermissionsAttachmentAllowedResponse attachmentPermissionStatus = await KsefClient.GetAttachmentPermissionStatusAsync(authOperationStatusResponse.AccessToken.Token)
+```
+
+Java example:
+[PermissionAttachmentStatusIntegrationTest.java](https://github.com/CIRFMF/ksef-client-java/blob/main/demo-web-app/src/integrationTest/java/pl/akmf/ksef/sdk/PermissionAttachmentStatusIntegrationTest.java)
+
+```java
+PermissionAttachmentStatusResponse trueResponse = ksefClient.checkPermissionAttachmentInvoiceStatus(token.accessToken());
+```
+
+**Test Environment**  
+In the test environment, the POST `/testdata/attachment` endpoint is available, which grants the ability to send invoices with attachments by the specified entity. The endpoint is exclusively for simulating consent granting in tests and operates within the current context.

@@ -1,8 +1,8 @@
 ---
 original: uprawnienia.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: 5e69797
-last_translated: 2026-04-04
+source_commit: d4460b6
+last_translated: 2026-11-21
 ---
 
 > **Translation.** Original: [uprawnienia.md](https://github.com/CIRFMF/ksef-docs/blob/main/uprawnienia.md)
@@ -30,6 +30,7 @@ last_translated: 2026-04-04
 На практиці це означає, що кожна організація повинна управляти дозволами своїх працівників, наприклад, надавати дозволи працівнику бухгалтерського відділу при прийнятті нового працівника або відкликати дозволи, коли такий працівник припиняє трудові відносини.
 
 ### Коли надаються дозволи?
+
 #### Приклади:
 - при початку співпраці з новим працівником,
 - у випадку, коли компанія вступає в співпрацю, наприклад, з бухгалтерським бюро, вона повинна надати дозволи на читання рахунків цьому бухгалтерському бюро, щоб воно могло обробляти рахунки цієї компанії,
@@ -210,9 +211,7 @@ last_translated: 2026-04-04
 - Наданий дозвіл залишається активним до моменту його відкликання.
 - Впровадження часового обмеження вимагає логіки з боку клієнтської системи (наприклад, розклад відкликання дозволу).
 
-
 ## Надання дозволів
-
 
 ### Надання дозволів фізичним особам для роботи в KSeF.
 
@@ -283,6 +282,7 @@ OperationResponse response = ksefClient.grantsPermissionPerson(request, accessTo
 
 
 ---
+
 ### Надання суб'єктам дозволів для обслуговування рахунків
 
 KSeF дозволяє надавати дозволи суб'єктам, які від імені даної організації будуть обробляти рахунки – наприклад, бухгалтерським бюро, центрам спільних послуг чи аутсорсинговим компаніям. Дозволи InvoiceRead і InvoiceWrite можуть надаватись безпосередньо і за потреби – з можливістю подальшого передавання (флаг `canDelegate`). В цій секції розглянуто механізм надання цих дозволів, потрібні ролі та приклади реалізацій.
@@ -334,6 +334,7 @@ OperationResponse response = ksefClient.grantsPermissionEntity(request, accessTo
 ```
 
 ---
+
 ### Надання дозволів суб'єктів
 
 Для вибраних процесів виставлення рахунків KSeF передбачає т.зв. дозволи суб'єктів, які застосовуються в контексті виставлення рахунків від імені іншого суб'єкта (`TaxRepresentative`, `SelfInvoicing`, `RRInvoicing`). Ці дозволи можуть надаватись виключно власником або адміністратором, що має `CredentialsManage`. Секція представляє спосіб їх надання, застосування та технічні обмеження.
@@ -388,6 +389,7 @@ GrantAuthorizationPermissionsRequest request = new GrantAuthorizationPermissions
 OperationResponse response = ksefClient.grantsPermissionsProxyEntity(request, accessToken);
 ```
 ---
+
 ### Надання дозволів опосередковано
 
 Механізм опосередкованого надання дозволів дозволяє діяльність т.зв. посередницького суб'єкта, який – на основі раніше отриманих делегацій – може передавати вибрані дозволи далі, в контексті іншого суб'єкта. Найчастіше це стосується бухгалтерських бюро, які обслуговують багатьох клієнтів. В секції описано умови, які повинні бути виконані, щоб скористатись цією функціональністю, та представлено структуру даних, потрібних для виконання такого надання.
@@ -435,6 +437,7 @@ OperationResponse response = ksefClient.grantsPermissionIndirectEntity(request, 
 
 ```
 ---
+
 ### Надання дозволів адміністратору підпорядкованого суб'єкта
 
 Організаційна структура суб'єкта може включати підпорядковані підрозділи або суб'єкти – наприклад, відділення, департаменти, дочірні компанії, членів групи ПДВ та одиниці місцевого самоврядування. KSeF дозволяє призначити дозволи для управління такими підрозділами. Потрібно мати дозвіл `SubunitManage`. В цій секції представлено спосіб надання адміністративних дозволів в контексті підпорядкованого підрозділу або суб'єкта, з урахуванням ідентифікатора `InternalId` або `Nip`.
@@ -490,6 +493,7 @@ OperationResponse response = ksefClient.grantsPermissionSubUnit(request, accessT
 
 ```
 ---
+
 ### Надання дозволів адміністратору союзного суб'єкта
 
 Надання дозволів адміністратору союзного суб'єкта в KSeF дозволяє уповноважити суб'єкт або особу, призначену союзним суб'єктом, що має право на самофактурування від імені польського суб'єкта, який надає дозвіл. Виконання цієї операції призводить до того, що уповноважена таким чином особа отримує можливість входу в систему в складеному контексті: `NipVatUe`, що поєднує польський суб'єкт, який надає дозвіл, з союзним суб'єктом, що має право на самофактурування. Після надання дозволів адміністратору союзного суб'єкта така особа зможе виконувати операції з рахунками, а також управляти дозволами інших осіб (т.зв. представників союзного суб'єкта) в рамках цього складеного контексту.
@@ -534,6 +538,7 @@ OperationResponse response = ksefClient.grantsPermissionEUEntity(request, access
 
 ```
 ---
+
 ### Надання дозволів представнику союзного суб'єкта
 
 Представник союзного суб'єкта – це особа, що діє на користь підрозділу, зареєстрованого в ЄС, якому потрібен доступ до KSeF для перегляду або виставлення рахунків. Такий дозвіл може надаватись виключно адміністратором ПДВ ЄС. Секція представляє структуру даних та спосіб виклику відповідного endpoint.
@@ -617,6 +622,7 @@ OperationResponse operationResponse = await KsefClient.RevokeCommonPermissionAsy
 OperationResponse response = ksefClient.revokeCommonPermission(permissionId, accessToken);
 ```
 ---
+
 ### Відкликання дозволів суб'єктів
 
 У випадку дозволів типу суб'єктів (`SelfInvoicing`, `RRInvoicing`, `TaxRepresentative`) діє окремий метод відкликання – з використанням endpoint, призначеного для авторизаційних операцій. Дозволи такого типу не передаються, тому їх відкликання має миттєвий ефект і завершує можливість реалізації операцій з рахунками в даному режимі. Потрібно знати `permissionId`.
@@ -643,21 +649,356 @@ await ksefClient.RevokeAuthorizationsPermissionAsync(permissionId, accessToken, 
 OperationResponse response = ksefClient.revokeAuthorizationsPermission(operationId, accessToken);
 ```
 
-
 ## Пошук наданих дозволів
 
 KSeF надає набір endpoints, що дозволяють запитувати список активних дозволів, наданих користувачам і суб'єктам. Ці механізми необхідні для аудиту, перегляду стану доступу, а також при створенні адміністративних інтерфейсів (наприклад, для управління структурою доступу в організації). Секція містить огляд методів пошуку з розподілом за категоріями наданих дозволів.
 
 ---
+
 ### Отримання списку власних дозволів
 
-Запит дозволяє отримати список дозволів, якими володіє аутентифікований суб'єкт.
- У цьому списку знаходяться дозволи:
+Запит дозволяє отримати список дозволів, якими володіє автентифікована особа.
+ На цьому списку знаходяться дозволи:
 - надані безпосередньо в поточному контексті
-- надані вищестоящим суб'єктом
-- надані опосередковано, де контекстом є посередник або цільовий суб'єкт
-- надані суб'єкту для обслуговування рахунків (`"InvoiceRead"` і `"InvoiceWrite"`) іншим суб'єктом, якщо аутентифікований суб'єкт має дозволи власника (`"Owner"`) 
+- надані вищою особою
+- надані опосередковано, де контекстом є посередник або кінцева особа
+- надані особі для обробки рахунків-фактур (`"InvoiceRead"` і `"InvoiceWrite"`) іншою особою, якщо автентифікована особа має власницькі права (`"Owner"`) 
 
 POST [/permissions/query/personal/grants](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Wyszukiwanie-nadanych-uprawnien/paths/~1permissions~1query~1personal~1grants/post)
 
-При
+Приклад мовою C#:
+[KSeF.Client.Tests.Core\E2E\Permissions\PersonPermission\PersonalPermissions_AuthorizedPesel_InNipContext_E2ETests.cs](https://github.com/CIRFMF/ksef-client-csharp/blob/main/KSeF.Client.Tests.Core/E2E/Permissions/PersonPermission/PersonalPermissions_AuthorizedPesel_InNipContext_E2ETests.cs)
+```csharp
+PersonalPermissionsQueryRequest query = new PersonalPermissionsQueryRequest
+{
+    ContextIdentifier = /*...*/,
+    TargetIdentifier = /*...*/,
+    PermissionTypes = /*...*/,
+    PermissionState = /*...*/
+};
+
+PagedPermissionsResponse<PersonalPermission> searchedGrantedPersonalPermissions = 
+    await KsefClient.SearchGrantedPersonalPermissionsAsync(query, entityAuthorizationInfo.AccessToken.Token);
+```
+
+Приклад мовою Java:
+[SearchPersonalGrantPermissionIntegrationTest.java](https://github.com/CIRFMF/ksef-client-java/blob/main/demo-web-app/src/integrationTest/java/pl/akmf/ksef/sdk/SearchPersonalGrantPermissionIntegrationTest.java)
+
+```java
+QueryPersonalGrantResponse response = ksefClient.searchPersonalGrantPermission(request, pageOffset, pageSize, token.accessToken());
+
+```
+
+---
+
+### Отримання списку дозволів для обробки рахунків-фактур у поточному контексті
+
+Метод дозволяє прочитати отримані дозволи для обробки рахунків-фактур у поточному контексті входу.
+На цьому списку знаходяться дозволи:
+- надані особі для обробки рахунків-фактур іншою особою 
+
+POST [/permissions/query/entities/grants](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Wyszukiwanie-nadanych-uprawnien/paths/~1permissions~1query~entities~1grants/post)
+
+| Поле                  | Опис                                                                 |
+| :-------------------- | :------------------------------------------------------------------- |
+| `contextIdentifier`    | ідентифікатор особи, яка надала дозвіл на обробку рахунків-фактур.   ```Nip```, ```InternalId```  |
+
+Приклад мовою C#:
+[KSeF.Client.Tests.Core\E2E\Permissions\EntityPermission\EntityPermissionGrantQueryE2ETests.cs](https://github.com/CIRFMF/ksef-client-csharp/blob/main/KSeF.Client.Tests.Core/E2E/Permissions/EntityPermission/EntityPermissionGrantQueryE2ETests.cs)
+```
+EntityPermissionGrantQueryRequest request = new EntityPermissionGrantQueryRequest
+{
+    ContextIdentifier = new ContextIdentifier
+    {
+        Type = AuthenticationTokenContextIdentifierType.Nip,
+        Value = nip
+    }
+};
+
+EntityPermissionGrantResponse queryEntitiesGrantsAsyncResponse = 
+    await searchPermissionClient.QueryEntitiesGrantsAsync(request, authOperationStatusResponse.AccessToken.Token);
+```
+
+Приклад мовою Java:
+[SearchEntityPermissionsIntegrationTest.java](https://github.com/CIRFMF/ksef-client-java/blob/main/demo-web-app/src/integrationTest/java/pl/akmf/ksef/sdk/SearchEntityPermissionsIntegrationTest.java)
+```
+PersonPermissionsContextIdentifier contextIdentifier = new PersonPermissionsContextIdentifier();
+contextIdentifier.setValue(nip);
+contextIdentifier.setType(PersonPermissionsContextIdentifier.IdentifierType.NIP);
+EntityPermissionsQueryRequest request = new EntityPermissionsQueryRequest(contextIdentifier);
+
+QueryEntityPermissionsResponse queryEntitiesGrantsAsyncResponse = ksefClient.searchEntityInvoiceContext(request, 0, 10, token.accessToken());
+```
+
+---
+
+### Отримання списку дозволів для роботи в KSeF, наданих фізичним особам або особам
+
+Запит дозволяє отримати список дозволів, наданих фізичним особам або особам – наприклад, працівникам компанії. Можливе фільтрування за типом дозволів, станом (`Active` / `Inactive`), а також ідентифікатором відправника та отримувача. Цей endpoint часто використовується при онбордингу, аудиті та моніторингі особистих дозволів.
+
+POST [/permissions/query/persons/grants](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Wyszukiwanie-nadanych-uprawnien/paths/~1permissions~1query~1persons~1grants/post)
+
+| Поле                  | Опис                                                                 |
+| :-------------------- | :------------------------------------------------------------------- |
+| `authorIdentifier`    | Ідентифікатор особи, що надає дозволи.   ```Nip```, ```Pesel```, ```Fingerprint```, ```System```                      |
+| `authorizedIdentifier`| Ідентифікатор особи, якій надано дозволи.      ```Nip```, ```Pesel```,```Fingerprint```             |
+| `targetIdentifier`    | Ідентифікатор кінцевої особи (для опосередкованих дозволів).  ```Nip```, ```AllPartners```      |
+| `permissionTypes`     | Типи дозволів для фільтрації.   `"CredentialsManage"`, `"CredentialsRead"`, `"InvoiceWrite"`, `"InvoiceRead"`, `"Introspection"`, `"SubunitManage"`, `"EnforcementOperations"`  |
+| `permissionState`     | Стан дозволу.  ```Active``` / ```Inactive```                                                  |
+
+Приклад мовою C#:
+[KSeF.Client.Tests.Core\E2E\Permissions\SubunitPermission\SubunitPermissionsE2ETests.cs](https://github.com/CIRFMF/ksef-client-csharp/blob/main/KSeF.Client.Tests.Core/E2E/Permissions/SubunitPermission/SubunitPermissionsE2ETests.cs)
+
+```csharp
+PagedPermissionsResponse<Client.Core.Models.Permissions.PersonPermission> response =
+    await KsefClient
+    .SearchGrantedPersonPermissionsAsync(
+        personPermissionsQueryRequest,
+        accessToken,
+        pageOffset: 0,
+        pageSize: 10,
+        CancellationToken);
+```
+
+Приклад мовою Java:
+[PersonPermissionIntegrationTest.java](https://github.com/CIRFMF/ksef-client-java/blob/main/demo-web-app/src/integrationTest/java/pl/akmf/ksef/sdk/PersonPermissionIntegrationTest.java)
+
+```java
+PersonPermissionsQueryRequest request = new PersonPermissionsQueryRequestBuilder()
+        .withQueryType(PersonPermissionQueryType.PERMISSION_GRANTED_IN_CURRENT_CONTEXT)
+        .build();
+
+QueryPersonPermissionsResponse response = ksefClient.searchGrantedPersonPermissions(request, pageOffset, pageSize, accessToken);
+
+
+```
+---
+
+### Отримання списку дозволів адміністраторів підрозділів та дочірніх осіб
+
+Цей endpoint використовується для отримання інформації про адміністраторів підрозділів або дочірніх осіб (наприклад, філій, ПДВ-груп). Він дозволяє моніторити, хто має адміністративні права щодо певної дочірньої структури, ідентифікованої за допомогою `InternalId` або `Nip`.
+
+POST [/permissions/query/subunits/grants](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Wyszukiwanie-nadanych-uprawnien/paths/~1permissions~1query~1subunits~1grants/post)
+
+| Поле                  | Опис                                                                 |
+| :-------------------- | :------------------------------------------------------------------- |
+| `subjectIdentifier`    | Ідентифікатор дочірньої особи.   ```InternalId``` або `Nip`            |
+
+Приклад мовою C#:
+[KSeF.Client.Tests.Core\E2E\Permissions\SubunitPermission\SubunitPermissionsE2ETests.cs](https://github.com/CIRFMF/ksef-client-csharp/blob/main/KSeF.Client.Tests.Core/E2E/Permissions/SubunitPermission/SubunitPermissionsE2ETests.cs)
+
+```csharp
+SubunitPermissionsQueryRequest subunitPermissionsQueryRequest = new SubunitPermissionsQueryRequest();
+PagedPermissionsResponse<Client.Core.Models.Permissions.SubunitPermission> response =
+    await KsefClient
+    .SearchSubunitAdminPermissionsAsync(
+        subunitPermissionsQueryRequest,
+        accessToken,
+        pageOffset: 0,
+        pageSize: 10,
+        CancellationToken);
+```
+
+Приклад мовою Java:
+[SubUnitPermissionIntegrationTest.java](https://github.com/CIRFMF/ksef-client-java/blob/main/demo-web-app/src/integrationTest/java/pl/akmf/ksef/sdk/SubUnitPermissionIntegrationTest.java)
+
+```java
+SubunitPermissionsQueryRequest request = new SubunitPermissionsQueryRequestBuilder()
+        .withSubunitIdentifier(new SubunitPermissionsSubunitIdentifier(SubunitPermissionsSubunitIdentifier.IdentifierType.INTERNALID, subUnitNip))
+        .build();
+
+QuerySubunitPermissionsResponse response = ksefClient.searchSubunitAdminPermissions(request, pageOffset, pageSize, accessToken);
+
+
+```
+---
+
+### Отримання списку ролей особи
+
+Endpoint повертає набір ролей, призначених для контексту, в якому ми автентифіковані (тобто того, від імені якого виконується запит). Функція в основному використовується для автоматичної перевірки доступів клієнтськими системами.
+
+GET [/permissions/query/entities/roles](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Wyszukiwanie-nadanych-uprawnien/paths/~1permissions~1query~1entities~1roles/get)
+
+Приклад мовою C#:
+[KSeF.Client.Tests.Core\E2E\Permissions\SubunitPermission\SubunitPermissionsE2ETests.cs](https://github.com/CIRFMF/ksef-client-csharp/blob/main/KSeF.Client.Tests.Core/E2E/Permissions/SubunitPermission/SubunitPermissionsE2ETests.cs)
+
+```csharp
+PagedRolesResponse<EntityRole> response =
+    await KsefClient
+    .SearchEntityInvoiceRolesAsync(
+        accessToken,
+        pageOffset: 0,
+        pageSize: 10,
+        CancellationToken);
+```
+
+Приклад мовою Java:
+[SearchEntityInvoiceRoleIntegrationTest.java](https://github.com/CIRFMF/ksef-client-java/blob/main/demo-web-app/src/integrationTest/java/pl/akmf/ksef/sdk/SearchEntityInvoiceRoleIntegrationTest.java)
+
+```java
+QueryEntityRolesResponse response = ksefClient.searchEntityInvoiceRoles(0, 10, token);
+```
+---
+
+### Отримання списку дочірніх осіб
+
+Дозволяє отримати інформацію про пов'язані дочірні особи для контексту, в якому ми автентифіковані (тобто того, від імені якого виконується запит). Функція в основному використовується для перевірки структури адміністративно-територіальних одиниць або ПДВ-груп.
+
+POST [/permissions/query/subordinate-entities/roles](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Wyszukiwanie-nadanych-uprawnien/paths/~1permissions~1query~1subordinate-entities~1roles/post)
+
+| Поле                     | Опис                                                                                                              |
+| :----------------------- | :---------------------------------------------------------------------------------------------------------------- |
+| `subordinateEntityIdentifier`   | Ідентифікатор особи, якій надано дозволи. ```Nip```                                                     |                                               |
+    
+
+Приклад мовою C#:
+[KSeF.Client.Tests.Core\E2E\Permissions\SubunitPermission\SubunitPermissionsE2ETests.cs](https://github.com/CIRFMF/ksef-client-csharp/blob/main/KSeF.Client.Tests.Core/E2E/Permissions/SubunitPermission/SubunitPermissionsE2ETests.cs)
+
+```csharp
+SubordinateEntityRolesQueryRequest subordinateEntityRolesQueryRequest = new SubordinateEntityRolesQueryRequest();
+PagedRolesResponse<SubordinateEntityRole> response =
+    await KsefClient
+    .SearchSubordinateEntityInvoiceRolesAsync(
+        subordinateEntityRolesQueryRequest,
+        accessToken,
+        pageOffset: 0,
+        pageSize: 10,
+        CancellationToken);
+```
+
+Приклад мовою Java:
+[SearchSubordinateQueryIntegrationTest.java](https://github.com/CIRFMF/ksef-client-java/blob/main/demo-web-app/src/integrationTest/java/pl/akmf/ksef/sdk/SearchSubordinateQueryIntegrationTest.java)
+
+```java
+SubordinateEntityRolesQueryResponse response = ksefClient.searchSubordinateEntityInvoiceRoles(queryRequest, pageOffset, pageSize,accessToken);
+```
+---
+
+### Отримання списку суб'єктних дозволів для обробки рахунків-фактур
+
+Цей endpoint використовується для перегляду всіх наданих суб'єктних дозволів, наданих через контекст, в якому ми автентифіковані, або наданих на контекст, в якому ми автентифіковані. Підтримує фільтрацію за типом дозволів та одержувачем.
+
+POST [/permissions/query/authorizations/grants](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Wyszukiwanie-nadanych-uprawnien/paths/~1permissions~1query~1authorizations~1grants/post)
+
+| Поле                     | Опис                                                                                                              |
+| :----------------------- | :---------------------------------------------------------------------------------------------------------------- |
+| `authorizingIdentifier`  | Ідентифікатор суб'єкта, що надає дозволи.  ```Nip```                                                     |
+| `authorizedIdentifier`   | Ідентифікатор суб'єкта, якому надано дозволи. ```Nip```                                                     |
+| `queryType`              | Тип запиту. Визначає, чи запитуємо про надані, чи отримані дозволи. ```Granted``` ```Received```            |
+| `permissionTypes`        | Типи дозволів для фільтрації.   `"SelfInvoicing"`, `"TaxRepresentative"`, `"RRInvoicing"`,                       |
+
+Приклад мовою C#:
+[KSeF.Client.Tests.Core\E2E\Permissions\SubunitPermission\SubunitPermissionsE2ETests.cs](https://github.com/CIRFMF/ksef-client-csharp/blob/main/KSeF.Client.Tests.Core/E2E/Permissions/SubunitPermission/SubunitPermissionsE2ETests.cs)
+
+```csharp
+PagedAuthorizationsResponse<AuthorizationGrant> response =
+        await KsefClient
+        .SearchEntityAuthorizationGrantsAsync(
+            entityAuthorizationsQueryRequest,
+            accessToken,
+            pageOffset: 0,
+            pageSize: 10,
+            CancellationToken);
+```
+
+Приклад мовою Java:
+[ProxyPermissionIntegrationTest.java](https://github.com/CIRFMF/ksef-client-java/blob/main/demo-web-app/src/integrationTest/java/pl/akmf/ksef/sdk/ProxyPermissionIntegrationTest.java)
+
+```java
+        EntityAuthorizationPermissionsQueryRequest request = new EntityAuthorizationPermissionsQueryRequestBuilder()
+        .withQueryType(QueryType.GRANTED)
+        .build();
+
+QueryEntityAuthorizationPermissionsResponse response = ksefClient.searchEntityAuthorizationGrants(request, pageOffset, pageSize, accessToken);
+
+
+```
+
+---
+
+### Отримання списку дозволів адміністраторів або представників суб'єктів ЄС, уповноважених для самофактурування
+
+Суб'єкти ЄС також можуть мати призначені дозволи для використання KSeF. У цьому розділі можна отримати інформацію про надані їм доступи, з урахуванням ідентифікаторів VAT UE та відбитка пальця сертифіката.
+
+POST [/permissions/query/eu-entities/grants](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Wyszukiwanie-nadanych-uprawnien/paths/~1permissions~1query~1eu-entities~1grants/post)
+
+| Поле                        | Опис                                                                 |
+| :-------------------------- | :------------------------------------------------------------------- |
+| `vatUeIdentifier`           | Ідентифікатор VAT UE.                                                |
+| `authorizedFingerprintIdentifier` | Відбиток пальця сертифіката уповноваженого суб'єкта.                      |
+| `permissionTypes`           | Типи дозволів для фільтрації. Можливі значення: `VatUeManage`, `InvoiceWrite`, `InvoiceRead`, `Introspection`. |
+
+Приклад мовою C#:
+[KSeF.Client.Tests.Core\E2E\Permissions\SubunitPermission\SubunitPermissionsE2ETests.cs](https://github.com/CIRFMF/ksef-client-csharp/blob/main/KSeF.Client.Tests.Core/E2E/Permissions/SubunitPermission/SubunitPermissionsE2ETests.cs)
+
+```csharp
+PagedPermissionsResponse<Client.Core.Models.Permissions.EuEntityPermission> response =
+    await KsefClient
+    .SearchGrantedEuEntityPermissionsAsync(
+        euEntityPermissionsQueryRequest,
+        accessToken,
+        pageOffset: 0,
+        pageSize: 10,
+        CancellationToken);
+```
+
+Приклад мовою Java:
+[EuEntityPermissionIntegrationTest.java](https://github.com/CIRFMF/ksef-client-java/blob/main/demo-web-app/src/integrationTest/java/pl/akmf/ksef/sdk/EuEntityPermissionIntegrationTest.java)
+
+```java
+EuEntityPermissionsQueryRequest request = new EuEntityPermissionsQueryRequestBuilder()
+   .withAuthorizedFingerprintIdentifier(subjectContext)
+   .build();
+
+QueryEuEntityPermissionsResponse response = createKSeFClient().searchGrantedEuEntityPermissions(request, pageOffset, pageSize, accessToken);
+```
+
+## Операції 
+
+Krajowy System e-Faktur дозволяє відстежувати та перевіряти статус операцій, пов'язаних із керуванням дозволами. Кожне надання або скасування дозволів виконується як асинхронна операція, статус якої можна моніторити за допомогою унікального ідентифікатора (`referenceNumber`). У цьому розділі представлено механізм отримання статусу операції та його інтерпретації в контексті автоматизації та контролю правильності адміністративних дій у KSeF.
+
+### Отримання статусу операції
+
+Після надання або скасування дозволу, система повертає номер операції (`referenceNumber`). Завдяки цьому ідентифікатору можна перевірити поточний стан обробки запиту: чи завершився він успішно, чи сталася помилка, чи все ще триває обробка. Ця інформація може бути ключовою в системах нагляду, логіці автоматичного повторення операцій або звітності про адміністративні дії. У цьому розділі наведено приклад виклику API для отримання статусу операції.
+
+GET [/permissions/operations/{referenceNumber}](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Operacje/paths/~1permissions~1operations~1%7BreferenceNumber%7D/get)
+
+Кожна операція надання дозволу повертає ідентифікатор операції, який потрібно використати для перевірки статусу цієї операції.
+
+Приклад мовою C#:
+[KSeF.Client.Tests.Core\E2E\Permissions\SubunitPermission\SubunitPermissionsE2ETests.cs](https://github.com/CIRFMF/ksef-client-csharp/blob/main/KSeF.Client.Tests.Core/E2E/Permissions/SubunitPermission/SubunitPermissionsE2ETests.cs)
+
+```csharp
+var operationStatus = await ksefClient.OperationsStatusAsync(referenceNumber, accessToken, cancellationToken);
+```
+
+Приклад мовою Java:
+[EuEntityPermissionIntegrationTest.java](https://github.com/CIRFMF/ksef-client-java/blob/main/demo-web-app/src/integrationTest/java/pl/akmf/ksef/sdk/EuEntityPermissionIntegrationTest.java)
+
+```java
+PermissionStatusInfo status = ksefClient.permissionOperationStatus(referenceNumber, accessToken);
+```
+
+### Перевірка статусу згоди на виставлення рахунків-фактур з додатками
+
+Згода необхідна для виставлення рахунків-фактур, що містять додатки, і діє в межах поточного контексту (`ContextIdentifier`), використаного при автентифікації. Згода надається поза API, лише в сервісі e-Urząd Skarbowy, а заявки можна подавати з 1 січня 2026 року. API не надає операції подання згоди
+
+GET [/permissions/attachments/status](https://api-test.ksef.mf.gov.pl/docs/v2/index.html#tag/Operacje/paths/~1permissions~1attachments~1status/get)
+
+Повертає статус згоди для поточного контексту. Якщо згода не активна, рахунок-фактура з додатком, надісланий до API KSeF, буде відхилено.
+
+Приклад мовою C#:
+[KSeF.Client.Tests.Core\E2E\TestData\TestDataE2ETests.cs](https://github.com/CIRFMF/ksef-client-csharp/blob/main/KSeF.Client.Tests.Core/E2E/TestData/TestDataE2ETests.cs)
+```csharp
+PermissionsAttachmentAllowedResponse attachmentPermissionStatus = await KsefClient.GetAttachmentPermissionStatusAsync(authOperationStatusResponse.AccessToken.Token)
+```
+
+Приклад мовою Java:
+[PermissionAttachmentStatusIntegrationTest.java](https://github.com/CIRFMF/ksef-client-java/blob/main/demo-web-app/src/integrationTest/java/pl/akmf/ksef/sdk/PermissionAttachmentStatusIntegrationTest.java)
+
+```java
+PermissionAttachmentStatusResponse trueResponse = ksefClient.checkPermissionAttachmentInvoiceStatus(token.accessToken());
+```
+
+**Тестове середовище**  
+У тестовому середовищі доступний endpoint POST `/testdata/attachment`, який надає можливість надсилання рахунків-фактур з додатками через вказаний суб'єкт. Endpoint використовується виключно для симуляції надання згоди в тестах і діє в межах поточного контексту.

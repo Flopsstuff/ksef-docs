@@ -116,11 +116,11 @@
       },
       "uprawnienia.md": {
         "sourceHash": "e54588888d56d0ffc6e629f9a6e334a9fcd4a3adf5a5dde3d348e9574bf8a4f1",
-        "translatedAt": "2026-04-04T18:17:39.378Z"
+        "translatedAt": "2026-11-21T11:19:56.899Z"
       },
       "api-changelog.md": {
         "sourceHash": "45a4240d32bd57bd1fc1b9a5bee749bd60b54f02ec09c92ae2e5d151d6aac25d",
-        "translatedAt": "2026-11-19T16:54:51.060Z"
+        "translatedAt": "2026-11-21T11:18:00.342Z"
       },
       "faktury/sesje/sesja-sprawdzenie-stanu-i-pobranie-upo.md": {
         "sourceHash": "7c888c889b120d6922785c77c1691004654d8818d5d0b94c9bc5f531bb6e8be8",
@@ -250,11 +250,11 @@
       },
       "uprawnienia.md": {
         "sourceHash": "e54588888d56d0ffc6e629f9a6e334a9fcd4a3adf5a5dde3d348e9574bf8a4f1",
-        "translatedAt": "2026-04-04T18:24:09.552Z"
+        "translatedAt": "2026-11-21T11:14:45.020Z"
       },
       "api-changelog.md": {
         "sourceHash": "45a4240d32bd57bd1fc1b9a5bee749bd60b54f02ec09c92ae2e5d151d6aac25d",
-        "translatedAt": "2026-11-19T16:58:09.101Z"
+        "translatedAt": "2026-11-21T11:14:27.558Z"
       },
       "bezpieczenstwo/klucze-publiczne-do-szyfrowania.md": {
         "sourceHash": "02024e6ef459c5d6d7795ff4082d54a0386312f4ffa472a24c1f794c68333676",
@@ -384,11 +384,11 @@
       },
       "api-changelog.md": {
         "sourceHash": "45a4240d32bd57bd1fc1b9a5bee749bd60b54f02ec09c92ae2e5d151d6aac25d",
-        "translatedAt": "2026-11-19T17:03:18.249Z"
+        "translatedAt": "2026-11-21T11:25:54.368Z"
       },
       "uprawnienia.md": {
         "sourceHash": "e54588888d56d0ffc6e629f9a6e334a9fcd4a3adf5a5dde3d348e9574bf8a4f1",
-        "translatedAt": "2026-04-04T18:29:39.772Z"
+        "translatedAt": "2026-11-21T11:27:44.548Z"
       },
       "bezpieczenstwo/klucze-publiczne-do-szyfrowania.md": {
         "sourceHash": "02024e6ef459c5d6d7795ff4082d54a0386312f4ffa472a24c1f794c68333676",
@@ -400,7 +400,7 @@
       },
       "open-api.json": {
         "sourceHash": "6d9d94c754a956729ef19947b65af4261a561afd315a028cfa4dc1c2270fdc1d",
-        "translatedAt": "2026-11-16T17:55:28.329Z"
+        "translatedAt": "2026-11-21T11:30:16.325Z"
       }
     }
   }
