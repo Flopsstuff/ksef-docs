@@ -58,6 +58,12 @@ All scripts run via `ts-node`. No separate build step needed.
 - Runs `escapeVueConflicts()` to escape `<word>` patterns that Vue's template compiler would choke on (e.g., regex named groups like `(?<number>...)`)
 - Runs `normalizeTableSpacing()` to ensure blank lines around markdown tables (upstream often glues a table directly under a heading), skipping code blocks
 
+### CI Workflows (`.github/workflows/`)
+
+- `update-translations.yml` — Mon/Thu cron (+ manual): `yarn sync` → `yarn translate --lang=all --outdated` → `yarn check:translations` → bot commit + push to `main` → **calls `deploy.yml`** (job `deploy`, only if a commit was pushed, building exactly that SHA)
+- `deploy.yml` — builds the site and publishes to GitHub Pages; triggers: `push` to `main`, `workflow_dispatch`, `workflow_call`
+- Why the explicit call: a push made with `GITHUB_TOKEN` does **not** trigger other workflows, so the bot's push never fires `deploy.yml`'s `push` trigger (until 2026-11 bot updates reached the site only with the next human push). Don't replace the call with a push trigger
+
 ### VitePress Config (`site/.vitepress/config.mts`)
 
 - `base: '/ksef-docs/'` for GitHub Pages

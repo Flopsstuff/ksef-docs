@@ -16,6 +16,9 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
+    outputs:
+      # Set only when a commit was pushed; empty = nothing to deploy.
+      pushed_sha: ${{ steps.commit.outputs.sha }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -73,6 +76,7 @@ jobs:
         run: yarn check:translations
 
       - name: Commit and push
+        id: commit
         if: steps.check.outputs.has_updates == 'true' || inputs.force
         run: |
           git config user.name "github-actions[bot]"
@@ -83,3 +87,18 @@ jobs:
           DATE=$(date -u +%Y-%m-%d)
           git commit -m "🤖 Auto-update translations ($DATE)" -m "Changed files:" -m "$CHANGED"
           git push
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  # A push made with GITHUB_TOKEN does not trigger deploy.yml's `push` event,
+  # so deploy explicitly — as a reusable workflow, in this same run, so a
+  # broken build fails the scheduled run you get notified about.
+  deploy:
+    needs: update
+    if: needs.update.outputs.pushed_sha != ''
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/deploy.yml
+    with:
+      ref: ${{ needs.update.outputs.pushed_sha }}
