@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "KSeF API TE",
-    "description": "**API Version:** 2.10.0 (build 2.9.0-te)<br>\n**Public keys** of the Ministry of Finance (for a given environment): [Download keys](#tag/Certyfikaty-klucza-publicznego)<br>\n**Change history:** [Changelog](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)<br>\n**Extended API documentation:** [ksef-docs](https://github.com/CIRFMF/ksef-api/tree/main)\n\n**API server address:**\n- TEST environment: `https://api-test.ksef.mf.gov.pl/v2`",
+    "description": "**API Version:** 2.10.1 (build 2.10.1-te)<br>\n**Public keys** of the Ministry of Finance (for the given environment): [Download keys](#tag/Certyfikaty-klucza-publicznego)<br>\n**Changelog:** [Changelog](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)<br>\n**Extended API documentation:** [ksef-docs](https://github.com/CIRFMF/ksef-api/tree/main)\n\n**API Server Address:**\n- TEST Environment: `https://api-test.ksef.mf.gov.pl/v2`",
     "version": "v2"
   },
   "servers": [
@@ -154,7 +154,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -319,7 +319,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -415,7 +415,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -516,7 +516,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -613,7 +613,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -718,7 +718,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -844,7 +844,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -977,7 +977,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -1107,7 +1107,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -1225,7 +1225,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -1385,7 +1385,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -1511,7 +1511,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -1613,7 +1613,7 @@
             "x-summary": "Bad Request"
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 60 | - | - | -\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 60 | - | - | - |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -1700,7 +1700,7 @@
             "x-summary": "Bad Request"
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 60 | - | - | -\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 60 | - | - | - |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -1782,7 +1782,7 @@
             "x-summary": "Bad Request"
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 60 | - | - | -\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 60 | - | - | - |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -1872,7 +1872,7 @@
             "x-summary": "Bad Request"
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 60 | - | - | -\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 60 | - | - | - |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -1954,7 +1954,7 @@
             "x-summary": "Bad Request"
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 60 | - | - | -\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 60 | - | - | - |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -2051,7 +2051,7 @@
             "x-summary": "Bad Request"
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 60 | - | - | -\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 60 | - | - | - |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -2141,7 +2141,7 @@
             "x-summary": "Bad Request"
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 60 | - | - | -\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 60 | - | - | - |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -2223,7 +2223,7 @@
             "x-summary": "Bad Request"
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 60 | - | - | -\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 60 | - | - | - |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -2305,7 +2305,7 @@
             "x-summary": "Bad Request"
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 60 | - | - | -\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 60 | - | - | - |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -2381,7 +2381,7 @@
             "x-summary": "Bad Request"
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -2459,7 +2459,7 @@
             "x-summary": "Bad Request"
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -2590,7 +2590,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request limits** | 20 | 120 | 240 | collectiveIdentifier",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 20 | 120 | 240 | collectiveIdentifier |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -2748,7 +2748,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request limits** | 20 | 120 | 240 | collectiveIdentifier",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 20 | 120 | 240 | collectiveIdentifier |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -2920,7 +2920,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request limits** | 20 | 120 | 240 | collectiveIdentifier",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 20 | 120 | 240 | collectiveIdentifier |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -3067,7 +3067,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request limits** | 20 | 120 | 240 | collectiveIdentifier",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 20 | 120 | 240 | collectiveIdentifier |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -3197,7 +3197,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -3302,7 +3302,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -3486,7 +3486,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -3594,7 +3594,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -3682,7 +3682,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -3785,7 +3785,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -3873,7 +3873,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -3979,7 +3979,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -4067,7 +4067,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -4157,7 +4157,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -4296,7 +4296,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -4438,7 +4438,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -4571,7 +4571,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -4715,7 +4715,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -4856,7 +4856,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -5007,7 +5007,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -5151,7 +5151,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -5265,7 +5265,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -5381,7 +5381,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -5516,7 +5516,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -5613,7 +5613,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -5679,10 +5679,22 @@
                   "$ref": "#/components/schemas/SystemWarning"
                 }
               },
+              "x-ms-meta-acquisition-date": {
+                "description": "KSeF number assignment date",
+                "schema": {
+                  "type": "string"
+                }
+              },
               "x-ms-meta-hash": {
                 "description": "SHA-256 hash of the invoice, encoded in Base64 format",
                 "schema": {
                   "$ref": "#/components/schemas/Sha256HashBase64"
+                }
+              },
+              "x-ms-meta-permanent-storage-date": {
+                "description": "Date of permanent invoice storage in the KSeF system repository",
+                "schema": {
+                  "type": "string"
                 }
               }
             },
@@ -5731,7 +5743,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 8 | 16 | 64 | invoiceDownload\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 8 | 16 | 64 | invoiceDownload |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -5995,7 +6007,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request count limits** | 8 | 16 | 20 | invoiceMetadata\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 8 | 16 | 20 | invoiceMetadata |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -6146,7 +6158,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request limits** | 8 | 16 | 20 | invoiceExport\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 8 | 16 | 20 | invoiceExport |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -6313,7 +6325,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 60 | 600 | invoiceExportStatus\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 60 | 600 | invoiceExportStatus |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -6562,7 +6574,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request limits** | 5 | 10 | 60 | sessionList\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 5 | 10 | 60 | sessionList |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -6701,7 +6713,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 120 | 1200 | sessionMisc\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 120 | 1200 | sessionMisc |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -6873,7 +6885,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 20 | 200 | sessionInvoiceList\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 20 | 200 | sessionInvoiceList |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -7012,7 +7024,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 30 | 120 | 1200 | invoiceStatus\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 30 | 120 | 1200 | invoiceStatus |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -7169,7 +7181,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 20 | 200 | sessionInvoiceList\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 20 | 200 | sessionInvoiceList |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -7298,7 +7310,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 120 | 1200 | sessionMisc\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 120 | 1200 | sessionMisc |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -7427,7 +7439,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 120 | 1200 | sessionMisc\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 120 | 1200 | sessionMisc |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -7556,7 +7568,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 120 | 1200 | sessionMisc\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 120 | 1200 | sessionMisc |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -7723,7 +7735,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -7956,7 +7968,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -8018,7 +8030,7 @@
           "KSeF tokens"
         ],
         "summary": "Generation of a new token with a specified validity period (rev2)",
-        "description": "Returns a token that can be used for authentication in KSeF. The token is returned only once and can be generated only in the context of a NIP or internal identifier. It can be used for authentication only after obtaining the `Active` status.\n            \nThe validity period of the token is determined by the `validFrom` and `validTo` properties:\n* `validFrom` can be set at most 60 days after the token generation is initiated. If not provided, it takes the value corresponding to the moment of initiation.\n* `validTo` can be set at most 365 days after `validFrom`. If not provided, the validity period is 90 days from `validFrom`.\n            \nIf the validity period has not yet started, a token that has been approved or does not require approval has the status `NotYetActive`. Each token has an independent validity period. Expiration or revocation of a token used for session authentication does not affect the validity of a new token.\n            \nThe first token can be generated only after authentication using the National Node or an XAdES signature accepted in the KSeF authentication process. Subsequent tokens can also be generated in a session authenticated with a KSeF token.\n            \nA token generated after authentication using the National Node or XAdES signature does not require approval. A token generated in a session authenticated with a KSeF token receives the status `AwaitingApproval` and before use must be approved by a separate endpoint, after authentication using the National Node or XAdES signature. Approval is expected within 24 hours of receiving the `AwaitingApproval` status. After this time, the token changes to the `ApprovalExpired` status and can no longer be approved.\n            \nThe maximum number of tokens in a context is 100. The limit includes tokens in the `Active`, `NotYetActive`, `Pending`, and `AwaitingApproval` statuses, regardless of the author and revision of the endpoint used to generate them. Attempting to generate a token beyond the limit results in an error.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).",
+        "description": "Returns a token that can be used for authentication in KSeF. The token is returned only once and can be generated exclusively in the context of a NIP or internal identifier. It can be used for authentication only after obtaining the `Active` status.\n\nThe token validity period is determined by the `validFrom` and `validTo` properties:\n* `validFrom` may fall no later than 60 days after token generation initiation. If not provided, it defaults to the initiation moment.\n* `validTo` may fall no later than 365 days after `validFrom`. If not provided, the validity period is 90 days from `validFrom`.\n\nIf the validity period has not yet started, a token that has been approved or does not require approval has the status `NotYetActive`. Each token has an independent validity period. Expiration or revocation of a token used to authenticate a session does not affect the validity of a new token.\n\nThe first token can be generated only after authentication using the National Node (Węzeł Krajowy) or an XAdES signature accepted in the KSeF authentication process. Subsequent tokens can also be generated in a session authenticated with a KSeF token.\n\nA token generated after authentication using the National Node or an XAdES signature does not require approval. A token generated in a session authenticated with a KSeF token receives the status `AwaitingApproval` and must be approved via a separate endpoint, after authentication using the National Node or an XAdES signature, before use. 24 hours are allowed for approval from the moment the `AwaitingApproval` status is assigned. After this time, the token transitions to the `ApprovalExpired` status and can no longer be approved.\n\nThe maximum number of tokens per context is 100. The limit includes tokens in the `Active`, `NotYetActive`, `Pending`, and `AwaitingApproval` statuses, regardless of the author and the endpoint revision used to generate them. An attempt to generate a token beyond the limit results in an error.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in the **Problem Details** format (`application/problem+json`).",
         "requestBody": {
           "content": {
             "application/json": {
@@ -8104,7 +8116,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -8148,7 +8160,7 @@
           {
             "name": "status",
             "in": "query",
-            "description": "Status of tokens to be returned. If the parameter is not provided, all tokens are returned. The parameter can be passed multiple times.\n| Value | Description |\n| --- | --- |\n| Pending | The token has been created but is still in the process of activation and permission assignment. It cannot yet be used for authentication. |\n| Active | The token is active and can be used for authentication. |\n| Revoking | The token is in the process of being revoked. It can no longer be used for authentication. |\n| Revoked | The token has been revoked and cannot be used for authentication. |\n| Failed | Failed to activate the token. A new token must be generated, the current one cannot be used for authentication. |\n| NotYetActive | The token was generated correctly, but its validity period has not yet started. |\n| AwaitingApproval | The token was generated using a KSeF token and is awaiting approval. Until approval, it cannot be used for authentication. |\n| ApprovalExpired | The 24-hour waiting time for approval has expired. The token can no longer be approved or used for authentication. A new token generation must be initiated again. |\n| Expired | The token's validity period has expired. |",
+            "description": "Status of tokens to return. If the parameter is not provided, all tokens are returned. The parameter can be passed multiple times.\n| Value | Description |\n| --- | --- |\n| Pending | The token has been created but is still in the process of activation and granting permissions. It cannot yet be used for authentication. |\n| Active | The token is active and can be used for authentication. |\n| Revoking | The token is in the process of being revoked. It can no longer be used for authentication. |\n| Revoked | The token has been revoked and cannot be used for authentication. |\n| Failed | Failed to activate the token. A new token must be generated; the current one cannot be used for authentication. |\n| NotYetActive | The token was generated correctly, but its validity period has not yet started. |\n| AwaitingApproval | The token was generated using a KSeF token and is awaiting approval. Until approved, it cannot be used for authentication. |\n| ApprovalExpired | The time for approval has elapsed (24 hours from the `AwaitingApproval` status being set). The token can no longer be approved or used for authentication. A new token generation must be initiated again. |\n| Expired | The token's validity period has expired. |",
             "schema": {
               "type": "array",
               "items": {
@@ -8325,7 +8337,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -8495,7 +8507,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -8609,7 +8621,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -8757,7 +8769,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -8798,7 +8810,7 @@
           "KSeF tokens"
         ],
         "summary": "Token approval",
-        "description": "Approves a token in the `AwaitingApproval` status specified by the reference number. Approval is only required for a token whose generation was initiated in `rev2` after authentication with a KSeF token. Until approved, the token cannot be used for authentication. Tokens generated after authentication by another method or through previous endpoints do not require approval.\n            \n24 hours are allocated for token approval from the moment the `AwaitingApproval` status is assigned. After this time, the token automatically changes to the `ApprovalExpired` status and can no longer be approved or used for authentication. Obtaining a new token requires re-initiating generation.\n            \nThe token can be approved by:\n* an entity with owner permissions (`Owner`),\n* an entity with the `CredentialsManage` permission,\n* the token owner, if they have all the permissions designated for that token.\n            \nThe owner and author of the token is the entity that initiated its generation, indicated in `authorIdentifier`. Approval of the token by another entity does not change its author. When approving as the owner, the identity of the approver must match the type and value of `authorIdentifier`.\n            \nApproval of another entity's token requires owner permissions (`Owner`) or the `CredentialsManage` permission in the given context.\n            \nApproval requires authentication using the National Node or an XAdES signature format accepted in the KSeF authentication process.\n            \nAfter approval, the token changes from the `AwaitingApproval` status to `Active` or `NotYetActive`, depending on whether its validity period has begun.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in the **Problem Details** format (`application/problem+json`).",
+        "description": "Approves a token in `AwaitingApproval` status indicated by the reference number. Approval requires only a token whose generation was initiated in `rev2` after authentication with a KSeF token. Until approved, the token cannot be used for authentication. Tokens generated after authentication by another method or through previous endpoints do not require approval.\n\nAn approval window of 24 hours is provided from the moment the `AwaitingApproval` status is assigned. After this time, the token automatically transitions to `ApprovalExpired` status and can no longer be approved or used for authentication. Obtaining a new token requires re-initiating generation.\n\nA token may be approved by:\n* an entity with ownership permissions (`Owner`),\n* an entity with the `CredentialsManage` permission,\n* the token owner, if they possess all permissions intended for that token.\n\nThe owner and author of the token is the entity that initiated its generation, indicated in `authorIdentifier`. Approval of the token by another entity does not change its author. When approving as the owner, the identity of the approver must match the type and value of `authorIdentifier`.\n\nApproval of another entity's token requires ownership permissions (`Owner`) or the `CredentialsManage` permission in the given context.\n\nApproval requires authentication using the National Node or an XAdES signature accepted in the KSeF authentication process.\n\nAfter approval, the token transitions from `AwaitingApproval` to `Active` or `NotYetActive`, depending on whether its validity period has begun.\n\n**Headers:**\n\n`X-Error-Format: problem-details` - setting this header causes errors to be returned in **Problem Details** format (`application/problem+json`).",
         "parameters": [
           {
             "name": "referenceNumber",
@@ -8858,7 +8870,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -8959,7 +8971,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -9071,7 +9083,7 @@
             "x-summary": "Bad Request"
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 60 | - | - | -\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 60 | - | - | - |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -9157,7 +9169,7 @@
             "x-summary": "Bad Request"
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 60 | - | - | -\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 60 | - | - | - |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -9255,7 +9267,7 @@
             "x-summary": "Bad Request"
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 60 | - | - | -\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 60 | - | - | - |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -9359,7 +9371,7 @@
             "x-summary": "Bad Request"
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 60 | - | - | -\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 60 | - | - | - |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -9435,7 +9447,7 @@
                 "examples": {
                   "Kod 100 | Uwierzytelnianie w toku": {
                     "value": {
-                      "startDate": "0001-01-01T00:00:00+00:00",
+                      "startDate": "2025-05-14T13:23:39+00:00",
                       "authenticationMethod": "Token",
                       "status": {
                         "code": 100,
@@ -9445,7 +9457,7 @@
                   },
                   "Kod 200 | Uwierzytelnianie zakończone sukcesem": {
                     "value": {
-                      "startDate": "0001-01-01T00:00:00+00:00",
+                      "startDate": "2025-05-14T13:23:39+00:00",
                       "authenticationMethod": "Token",
                       "status": {
                         "code": 200,
@@ -9455,7 +9467,7 @@
                   },
                   "Kod 460 | Uwierzytelnianie zakończone niepowodzeniem | Nieważny certyfikat": {
                     "value": {
-                      "startDate": "0001-01-01T00:00:00+00:00",
+                      "startDate": "2025-05-14T13:23:39+00:00",
                       "authenticationMethod": "Token",
                       "status": {
                         "code": 460,
@@ -9468,7 +9480,7 @@
                   },
                   "Kod 460 | Uwierzytelnianie zakończone niepowodzeniem | Błąd weryfikacji łańcucha certyfikatów": {
                     "value": {
-                      "startDate": "0001-01-01T00:00:00+00:00",
+                      "startDate": "2025-05-14T13:23:39+00:00",
                       "authenticationMethod": "Token",
                       "status": {
                         "code": 460,
@@ -9481,7 +9493,7 @@
                   },
                   "Kod 460 | Uwierzytelnianie zakończone niepowodzeniem | Niezaufany łańcuch certyfikatów": {
                     "value": {
-                      "startDate": "0001-01-01T00:00:00+00:00",
+                      "startDate": "2025-05-14T13:23:39+00:00",
                       "authenticationMethod": "Token",
                       "status": {
                         "code": 460,
@@ -9494,7 +9506,7 @@
                   },
                   "Kod 460 | Uwierzytelnianie zakończone niepowodzeniem | Certyfikat odwołany": {
                     "value": {
-                      "startDate": "0001-01-01T00:00:00+00:00",
+                      "startDate": "2025-05-14T13:23:39+00:00",
                       "authenticationMethod": "Token",
                       "status": {
                         "code": 460,
@@ -9507,7 +9519,7 @@
                   },
                   "Kod 460 | Uwierzytelnianie zakończone niepowodzeniem | Niepoprawny certyfikat": {
                     "value": {
-                      "startDate": "0001-01-01T00:00:00+00:00",
+                      "startDate": "2025-05-14T13:23:39+00:00",
                       "authenticationMethod": "Token",
                       "status": {
                         "code": 460,
@@ -9520,7 +9532,7 @@
                   },
                   "Kod 500 | Nieznany błąd": {
                     "value": {
-                      "startDate": "0001-01-01T00:00:00+00:00",
+                      "startDate": "2025-05-14T13:23:39+00:00",
                       "authenticationMethod": "Token",
                       "status": {
                         "code": 500,
@@ -9615,7 +9627,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 60 | - | - | -\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 60 | - | - | - |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -9906,7 +9918,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 60 | - | - | -\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 60 | - | - | - |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -10011,7 +10023,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 60 | - | - | -\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 60 | - | - | - |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -10112,7 +10124,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 60 | - | - | -\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 60 | - | - | - |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -10240,7 +10252,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | onlineSession\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | onlineSession |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -10385,7 +10397,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 180 | invoiceSend\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 180 | invoiceSend |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -10491,7 +10503,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request Limits** | 20 | 60 | 240 | onlineSessionClose",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 20 | 60 | 240 | onlineSessionClose |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -10648,7 +10660,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 20 | 60 | batchSession\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 20 | 60 | batchSession |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -10753,7 +10765,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | grupa\n| --- | --- | --- | --- | --- |\n| **Request limits** | 20 | 40 | 120 | batchSessionClose",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 20 | 40 | 120 | batchSessionClose |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -10923,7 +10935,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -11109,7 +11121,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -11288,7 +11300,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -11460,7 +11472,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -11606,7 +11618,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -11775,7 +11787,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -11963,7 +11975,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -12138,7 +12150,7 @@
             }
           },
           "429": {
-            "description": "| | req / s | req / min | req / h | group\n| --- | --- | --- | --- | --- |\n| **Request rate limits** | 10 | 30 | 120 | other\n",
+            "description": "| | req / s | req / min | req / h | group |\n| --- | --- | --- | --- | --- |\n| **Request limits** | 10 | 30 | 120 | other |",
             "headers": {
               "Retry-After": {
                 "schema": {
@@ -13719,6 +13731,8 @@
         "type": "object",
         "properties": {
           "collectiveIdentifierNumbers": {
+            "maxItems": 10,
+            "minItems": 1,
             "type": "array",
             "items": {
               "type": "string"
@@ -21013,7 +21027,7 @@
           "Expired"
         ],
         "type": "string",
-        "description": "| Value | Description |\n| --- | --- |\n| Pending | Token has been created but is still in the process of activation and permission granting. It cannot yet be used for authentication. |\n| Active | Token is active and can be used for authentication. |\n| Revoking | Token is in the process of revocation. It can no longer be used for authentication. |\n| Revoked | Token has been revoked and cannot be used for authentication. |\n| Failed | Failed to activate the token. A new token must be generated, the current one cannot be used for authentication. |\n| NotYetActive | Token was generated correctly, however, its validity period has not yet started. |\n| AwaitingApproval | Token was generated using a KSeF token and is awaiting approval. Until approval, it cannot be used for authentication. |\n| ApprovalExpired | 24-hour waiting time for approval has expired. Token can no longer be approved or used for authentication. A new token generation must be initiated again. |\n| Expired | Token validity period has expired. |"
+        "description": "| Value | Description |\n| --- | --- |\n| Pending | The token has been created but is still in the process of activation and granting permissions. It cannot yet be used for authentication. |\n| Active | The token is active and can be used for authentication. |\n| Revoking | The token is in the process of being revoked. It can no longer be used for authentication. |\n| Revoked | The token has been revoked and cannot be used for authentication. |\n| Failed | Failed to activate the token. A new token must be generated; the current one cannot be used for authentication. |\n| NotYetActive | The token was generated correctly, but its validity period has not yet started. |\n| AwaitingApproval | The token was generated using a KSeF token and is awaiting approval. Until approved, it cannot be used for authentication. |\n| ApprovalExpired | The approval time has elapsed (24 hours from the assignment of the `AwaitingApproval` status). The token can no longer be approved or used for authentication. The generation of a new token must be initiated again. |\n| Expired | The token's validity period has expired. |"
       },
       "TokenStatusResponse": {
         "required": [
@@ -21214,7 +21228,7 @@
                 "$ref": "#/components/schemas/TokenStatusRev2Code"
               }
             ],
-            "description": "Dictionary value code.\n| Code | DisplayName | Description |\n| --- | --- | --- |\n| Pending | Token in activation process | Token has been created, but its activation and granting of permissions is in progress. It cannot yet be used for authentication. |\n| Active | Active token | Token is active and can be used for authentication. |\n| Revoking | Token in revocation process | Token is in the process of being revoked. It can no longer be used for authentication. |\n| Revoked | Revoked token | Token has been revoked and cannot be used for authentication. |\n| Failed | Token activation failed | Failed to activate the token. A new token must be generated. The current token cannot be used for authentication. |\n| NotYetActive | Token not yet active | Token was generated correctly, but its validity period has not yet started. |\n| AwaitingApproval | Token awaiting approval | Token was generated using a KSeF token and is awaiting approval. Until approved, it cannot be used for authentication. |\n| ApprovalExpired | Token approval deadline expired | The 24-hour approval deadline has expired. The token can no longer be approved or used for authentication. A new token generation must be initiated. |\n| Expired | Token expired | The token's validity period has expired. |\n| FutureValue | | Token status unknown at the time of the current model version release. The actual status code is available in the `rawCode` field, and its name is in the `displayName` field. |"
+            "description": "Dictionary value code.\n| Code | DisplayName | Description |\n| --- | --- | --- |\n| Pending | Token being activated | The token has been created, but its activation and granting of permissions are in progress. It cannot yet be used for authentication. |\n| Active | Active token | The token is active and can be used for authentication. |\n| Revoking | Token being revoked | The token is in the process of being revoked. It can no longer be used for authentication. |\n| Revoked | Revoked token | The token has been revoked and cannot be used for authentication. |\n| Failed | Token activation failed | Failed to activate the token. A new token must be generated. The current token cannot be used for authentication. |\n| NotYetActive | Token not yet active | The token was generated correctly, but its validity period has not yet started. |\n| AwaitingApproval | Token awaiting approval | The token was generated using a KSeF token and is awaiting approval. Until approved, it cannot be used for authentication. |\n| ApprovalExpired | Token approval deadline passed | The approval time has elapsed (24 hours from the assignment of the `AwaitingApproval` status). The token can no longer be approved or used for authentication. The generation of a new token must be initiated again. |\n| Expired | Token expired | The token's validity period has expired. |\n| FutureValue |  | Token status unknown at the time of the current model release. The actual status code is available in the `rawCode` field, and its name in the `displayName` field. |"
           },
           "rawCode": {
             "minLength": 1,
@@ -21242,7 +21256,7 @@
           "FutureValue"
         ],
         "type": "string",
-        "description": "| Code | DisplayName | Opis |\n| --- | --- | --- |\n| Pending | Token in activation | Token has been created, but its activation and granting of permissions are in progress.            It cannot yet be used for authentication. |\n| Active | Active token | Token is active and can be used for authentication. |\n| Revoking | Token in revocation | Token is in the process of being revoked.            It can no longer be used for authentication. |\n| Revoked | Revoked token | Token has been revoked and cannot be used for authentication. |\n| Failed | Token activation failed | Failed to activate the token. A new token must be generated.            The current token cannot be used for authentication. |\n| NotYetActive | Token not yet active | Token was generated correctly, but its validity period            has not yet started. |\n| AwaitingApproval | Token awaiting approval | Token was generated using a KSeF token and is awaiting approval. Until approved, it cannot be used for authentication. |\n| ApprovalExpired | Token approval deadline expired | The 24-hour waiting period for approval has expired. Token can no longer be approved or used for authentication. A new token generation must be initiated. |\n| Expired | Token expired | The token's validity period has expired. |\n| FutureValue | | Token status unknown at the time of the current model version release.            The actual status code is available in the `rawCode` field,            and its name is in the `displayName` field. |"
+        "description": "| Code | DisplayName | Description |\n| --- | --- | --- |\n| Pending | Token being activated | The token has been created, but its activation and granting of permissions is in progress. It cannot yet be used for authentication. |\n| Active | Active token | The token is active and can be used for authentication. |\n| Revoking | Token being revoked | The token is being revoked. It can no longer be used for authentication. |\n| Revoked | Revoked token | The token has been revoked and cannot be used for authentication. |\n| Failed | Token activation failed | Failed to activate the token. A new token must be generated. The current token cannot be used for authentication. |\n| NotYetActive | Token not yet active | The token was generated correctly, but its validity period has not yet started. |\n| AwaitingApproval | Token awaiting approval | The token was generated using a KSeF token and is awaiting approval. Until approved, it cannot be used for authentication. |\n| ApprovalExpired | Approval deadline passed | The time for approval has passed (24 hours from the `AwaitingApproval` status). The token can no longer be approved or used for authentication. A new token generation must be initiated again. |\n| Expired | Token expired | The token validity period has expired. |\n| FutureValue |  | Token status unknown at the time of the current model release. The actual status code is available in the `rawCode` field, and its name in the `displayName` field. |"
       },
       "TokensEffectiveContextLimits": {
         "required": [
@@ -21485,7 +21499,8 @@
       "name": "Collective identifiers"
     },
     {
-      "name": "Limits and restrictions"
+      "name": "Limits and restrictions",
+      "description": "**API Request Limits**\n\nThe number of requests to the KSeF API is limited. Limits are counted in a sliding time window, and the req/s, req/min, and req/h thresholds apply simultaneously.\n\nTwo types of request limits apply, and exceeding either of them results in the request being blocked:\n\n- **operation limits** – counted separately for each operation. Default values for this environment are provided in the `429` response of each operation.\n  - **operations in context** (authenticated with an access token) – the limit is counted per **context and IP address pair**, so requests in the same context from different IP addresses are counted separately.\n  - **operations without context** (e.g., authentication process operations) – the limit is counted **only per IP address**, because the request is not associated with any context.\n\nA blocked request results in a `429 Too Many Requests` response, and the `Retry-After` header indicates after how many seconds the request can be retried.\n\nThe limits applicable in the current context, including the global limit, are returned by the `GET /rate-limits` operation.\n\nDetailed description of limit calculation, blocking, and limits on individual environments: [API Request Limits](https://github.com/CIRFMF/ksef-api/blob/main/limity/limity-api.md#limity-%C5%BC%C4%85da%C5%84-api).\n\n**Context Limits and Authenticated Entity Limits**\n\nIndependently of request limits, [context limits](https://github.com/CIRFMF/ksef-api/blob/main/limity/limity.md#limity-na-kontekst) apply, e.g., maximum invoice size and number of invoices in a session, and [authenticated entity limits](https://github.com/CIRFMF/ksef-api/blob/main/limity/limity.md#limity-na-uwierzytelniony-podmiot), e.g., number of certificate applications and active KSeF certificates. The values applicable in the current context and for the current entity are returned by the `GET /limits/context` and `GET /limits/subject` operations."
     },
     {
       "name": "Granting permissions"

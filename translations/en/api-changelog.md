@@ -1,13 +1,29 @@
 ---
 original: api-changelog.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: d4460b6
-last_translated: 2026-11-21
+source_commit: c67c589
+last_translated: 2026-11-26
 ---
 
 > **Translation.** Original: [api-changelog.md](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)
 
 ## Changes in API 2.0
+
+### Version 2.10.1
+
+| Environment | Deployment Date | Availability of `rev2` token endpoints |
+| ---------- | -------------: | -----------------------------------: |
+| **TEST** | 25.11.2026 | 25.11.2026 |
+| **DEMO** | 26.11.2026 | 30.12.2026 |
+| **PROD** | 01.12.2026 | 01.01.2027 |
+
+Due to the applicable regulation, the new `rev2` token endpoints will be made available on DEMO and PROD environments at later dates than the remaining functionality of version 2.10.1.
+
+- **Retrieving an invoice by KSeF number (GET `/invoices/ksef/{ksefNumber}`)**  
+  Added response headers `acquisitionDate` (date of KSeF number assignment) and `permanentStorageDate` (date of permanent invoice storage), enabling retrieval of this information without an additional metadata query.
+
+- **OpenAPI**   
+  Completed the definition of `collectiveIdentifierNumbers` in the POST `/collective-identifiers/invoices` request with `minItems`: 1 and `maxItems`: 10, consistent with the previous description and operation behavior.
 
 ### Version 2.10.0
 | Environment | Deployment Date |

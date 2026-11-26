@@ -1,13 +1,29 @@
 ---
 original: api-changelog.md
 source_repo: https://github.com/CIRFMF/ksef-docs
-source_commit: d4460b6
-last_translated: 2026-11-21
+source_commit: c67c589
+last_translated: 2026-11-26
 ---
 
 > **Translation.** Original: [api-changelog.md](https://github.com/CIRFMF/ksef-docs/blob/main/api-changelog.md)
 
 ## Изменения в API 2.0
+
+### Версия 2.10.1
+
+| Среда | Дата развертывания | Доступность эндпоинтов токенов `rev2` |
+| ----- | ----------------: | ------------------------------------: |
+| **TEST** | 25.11.2026 | 25.11.2026 |
+| **DEMO** | 26.11.2026 | 30.12.2026 |
+| **PROD** | 01.12.2026 | 01.01.2027 |
+
+В связи с действующим регламентом новые эндпоинты токенов `rev2` будут доступны в средах DEMO и PROD в более поздние сроки, чем остальная функциональность версии 2.10.1.
+
+- **Получение счета-фактуры по номеру KSeF (GET `/invoices/ksef/{ksefNumber}`)**  
+  Добавлены заголовки ответа `acquisitionDate` (дата присвоения номера KSeF) и `permanentStorageDate` (дата постоянного хранения счета-фактуры), позволяющие получить эту информацию без дополнительного запроса метаданных.
+
+- **OpenAPI**  
+  В определении `collectiveIdentifierNumbers` в запросе POST `/collective-identifiers/invoices` добавлены `minItems`: 1 и `maxItems`: 10, в соответствии с существующим описанием и работой операции.
 
 ### Версия 2.10.0
 | Среда | Дата внедрения |
